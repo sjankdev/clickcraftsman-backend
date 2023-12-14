@@ -105,8 +105,8 @@ public class AuthController {
                             roles.add(workerRole);
                             break;
                         default:
-                            Role userRole = roleRepository.findByName(ERole.ROLE_CLIENT).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(userRole);
+                            Role clientRole = roleRepository.findByName(ERole.ROLE_CLIENT).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(clientRole);
                     }
                 });
             }
@@ -115,10 +115,21 @@ public class AuthController {
 
             if (strRoles != null && strRoles.contains("worker")) {
                 WorkerProfile workerProfile = new WorkerProfile();
+                workerProfile.setFirstName(signUpRequest.getFirstName());
+                workerProfile.setLastName(signUpRequest.getLastName());
+                workerProfile.setContactPhone(signUpRequest.getContactPhone());
+                workerProfile.setLocation(signUpRequest.getLocation());
+                workerProfile.setSkills(signUpRequest.getSkills());
+                workerProfile.setPortfolio(signUpRequest.getPortfolio());
+                workerProfile.setYearsOfExperience(signUpRequest.getYearsOfExperience());
                 workerProfile.setUser(user);
                 user.setWorkerProfile(workerProfile);
             } else {
                 ClientProfile clientProfile = new ClientProfile();
+                clientProfile.setFirstName(signUpRequest.getFirstName());
+                clientProfile.setLastName(signUpRequest.getLastName());
+                clientProfile.setContactPhone(signUpRequest.getContactPhone());
+                clientProfile.setLocation(signUpRequest.getLocation());
                 clientProfile.setUser(user);
                 user.setClientProfile(clientProfile);
             }
