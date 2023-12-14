@@ -114,23 +114,10 @@ public class AuthController {
             user.setRoles(roles);
 
             if (strRoles != null && strRoles.contains("worker")) {
-                WorkerProfile workerProfile = new WorkerProfile();
-                workerProfile.setFirstName(signUpRequest.getFirstName());
-                workerProfile.setLastName(signUpRequest.getLastName());
-                workerProfile.setContactPhone(signUpRequest.getContactPhone());
-                workerProfile.setLocation(signUpRequest.getLocation());
-                workerProfile.setSkills(signUpRequest.getSkills());
-                workerProfile.setPortfolio(signUpRequest.getPortfolio());
-                workerProfile.setYearsOfExperience(signUpRequest.getYearsOfExperience());
-                workerProfile.setUser(user);
+                WorkerProfile workerProfile = WorkerProfile.createFromSignupRequestWorker(signUpRequest, user);
                 user.setWorkerProfile(workerProfile);
             } else {
-                ClientProfile clientProfile = new ClientProfile();
-                clientProfile.setFirstName(signUpRequest.getFirstName());
-                clientProfile.setLastName(signUpRequest.getLastName());
-                clientProfile.setContactPhone(signUpRequest.getContactPhone());
-                clientProfile.setLocation(signUpRequest.getLocation());
-                clientProfile.setUser(user);
+                ClientProfile clientProfile = ClientProfile.createFromSignupRequestClient(signUpRequest, user);
                 user.setClientProfile(clientProfile);
             }
 

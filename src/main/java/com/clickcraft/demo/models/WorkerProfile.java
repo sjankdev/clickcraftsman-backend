@@ -1,6 +1,8 @@
 package com.clickcraft.demo.models;
 
+import com.clickcraft.demo.payload.request.SignupRequest;
 import jakarta.persistence.*;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -113,5 +115,18 @@ public class WorkerProfile {
     public void removeJobOffer(WorkerOfferJob jobOffer) {
         jobOffers.remove(jobOffer);
         jobOffer.setWorkerProfile(null);
+    }
+
+    public static WorkerProfile createFromSignupRequestWorker(SignupRequest signUpRequest, User user) {
+        WorkerProfile workerProfile = new WorkerProfile();
+        workerProfile.setFirstName(signUpRequest.getFirstName());
+        workerProfile.setLastName(signUpRequest.getLastName());
+        workerProfile.setContactPhone(signUpRequest.getContactPhone());
+        workerProfile.setLocation(signUpRequest.getLocation());
+        workerProfile.setSkills(signUpRequest.getSkills());
+        workerProfile.setPortfolio(signUpRequest.getPortfolio());
+        workerProfile.setYearsOfExperience(signUpRequest.getYearsOfExperience());
+        workerProfile.setUser(user);
+        return workerProfile;
     }
 }
