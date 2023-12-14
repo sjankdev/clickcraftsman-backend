@@ -15,41 +15,67 @@ public class SignupRequest {
     @Email
     private String email;
 
-    private Set<String> role;
-
     @NotBlank
     @Size(min = 6, max = 40)
     private String password;
 
+    private Set<String> role;
+
+    private String firstName;
+
+    private String lastName;
+
+    private String contactPhone;
+
+    private String location;
+
+    private String skills;
+
+    private String portfolio;
+
+    private int yearsOfExperience;
+
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public Set<String> getRole() {
-        return this.role;
+        return role;
     }
 
-    public void setRole(Set<String> role) {
-        this.role = role;
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getContactPhone() {
+        return contactPhone;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public String getSkills() {
+        return skills;
+    }
+
+    public String getPortfolio() {
+        return portfolio;
+    }
+
+    public int getYearsOfExperience() {
+        return yearsOfExperience;
     }
 }
