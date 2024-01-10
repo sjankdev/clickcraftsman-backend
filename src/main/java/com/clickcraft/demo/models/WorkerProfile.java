@@ -2,6 +2,8 @@ package com.clickcraft.demo.models;
 
 import com.clickcraft.demo.payload.request.SignupRequest;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,12 +16,20 @@ public class WorkerProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
+    @Size(min = 3, max = 20)
     private String firstName;
 
+    @NotBlank
+    @Size(min = 3, max = 20)
     private String lastName;
 
+    @NotBlank
+    @Size(min = 3, max = 20)
     private String contactPhone;
 
+    @NotBlank
+    @Size(min = 2, max = 40)
     private String location;
 
     private String skills;
