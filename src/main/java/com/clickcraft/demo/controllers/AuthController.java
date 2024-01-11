@@ -11,6 +11,7 @@ import com.clickcraft.demo.payload.request.SignupRequest;
 import com.clickcraft.demo.payload.response.JwtResponse;
 import com.clickcraft.demo.payload.response.MessageResponse;
 import com.clickcraft.demo.repository.RoleRepository;
+import com.clickcraft.demo.repository.SkillRepository;
 import com.clickcraft.demo.repository.UserRepository;
 import com.clickcraft.demo.security.jwt.JwtUtils;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
@@ -53,6 +54,9 @@ public class AuthController {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    SkillRepository skillRepository;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -115,6 +119,22 @@ public class AuthController {
 
             if (strRoles != null && strRoles.contains("worker")) {
                 WorkerProfile workerProfile = WorkerProfile.createFromSignupRequestWorker(signUpRequest, user);
+
+                // Check if there are selected skills
+                Set<String> selectedSkills = signUpRequest.getSkills();
+                if (selectedSkills != null && !selectedSkills.isEmpty()) {
+                    String selectedSkillName = selectedSkills.iterator().next();
+
+                    Skill skill = skillRepository.findBySkillName(selectedSkillName)
+                            .orElseGet(() -> {
+                                Skill newSkill = new Skill();
+                                newSkill.setSkillName(selectedSkillName);
+                                return skillRepository.save(newSkill);
+                            });
+
+                    workerProfile.getSkills().add(skill);
+                }
+
                 user.setWorkerProfile(workerProfile);
             } else {
                 ClientProfile clientProfile = ClientProfile.createFromSignupRequestClient(signUpRequest, user);
