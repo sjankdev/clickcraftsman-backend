@@ -32,7 +32,6 @@ public class WorkerProfile {
     @Size(min = 2, max = 40)
     private String location;
 
-    private String skills;
 
     private String portfolio;
 
@@ -44,6 +43,30 @@ public class WorkerProfile {
 
     @OneToMany(mappedBy = "workerProfile", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<WorkerOfferJob> jobOffers = new HashSet<>();
+
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "worker_profile_skills",
+            joinColumns = @JoinColumn(name = "worker_profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id"))
+    private Set<Skill> skills = new HashSet<>();
+
+
+    public void addSkill(Skill skill) {
+        this.skills.add(skill);
+    }
+
+    public static WorkerProfile createFromSignupRequestWorker(SignupRequest signUpRequest, User user) {
+        WorkerProfile workerProfile = new WorkerProfile();
+        workerProfile.setFirstName(signUpRequest.getFirstName());
+        workerProfile.setLastName(signUpRequest.getLastName());
+        workerProfile.setContactPhone(signUpRequest.getContactPhone());
+        workerProfile.setLocation(signUpRequest.getLocation());
+        workerProfile.setPortfolio(signUpRequest.getPortfolio());
+        workerProfile.setYearsOfExperience(signUpRequest.getYearsOfExperience());
+        workerProfile.setUser(user);
+        return workerProfile;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -75,14 +98,6 @@ public class WorkerProfile {
 
     public void setLocation(String location) {
         this.location = location;
-    }
-
-    public String getSkills() {
-        return skills;
-    }
-
-    public void setSkills(String skills) {
-        this.skills = skills;
     }
 
     public String getPortfolio() {
@@ -127,16 +142,11 @@ public class WorkerProfile {
         jobOffer.setWorkerProfile(null);
     }
 
-    public static WorkerProfile createFromSignupRequestWorker(SignupRequest signUpRequest, User user) {
-        WorkerProfile workerProfile = new WorkerProfile();
-        workerProfile.setFirstName(signUpRequest.getFirstName());
-        workerProfile.setLastName(signUpRequest.getLastName());
-        workerProfile.setContactPhone(signUpRequest.getContactPhone());
-        workerProfile.setLocation(signUpRequest.getLocation());
-        workerProfile.setSkills(signUpRequest.getSkills());
-        workerProfile.setPortfolio(signUpRequest.getPortfolio());
-        workerProfile.setYearsOfExperience(signUpRequest.getYearsOfExperience());
-        workerProfile.setUser(user);
-        return workerProfile;
+    public Set<Skill> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(Set<Skill> skills) {
+        this.skills = skills;
     }
 }

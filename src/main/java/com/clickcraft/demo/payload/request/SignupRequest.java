@@ -37,11 +37,12 @@ public class SignupRequest {
     @Size(min = 2, max = 40)
     private String location;
 
-    private String skills;
-
     private String portfolio;
 
     private int yearsOfExperience;
+
+    private Set<String> skills;
+
 
     public String getUsername() {
         return username;
@@ -75,8 +76,12 @@ public class SignupRequest {
         return location;
     }
 
-    public String getSkills() {
+    public Set<String> getSkills() {
         return skills;
+    }
+
+    public void setSkills(Set<String> skills) {
+        this.skills = skills;
     }
 
     public String getPortfolio() {
