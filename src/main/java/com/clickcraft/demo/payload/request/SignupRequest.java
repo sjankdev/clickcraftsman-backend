@@ -7,10 +7,6 @@ import jakarta.validation.constraints.*;
 public class SignupRequest {
 
     @NotBlank
-    @Size(min = 3, max = 20)
-    private String username;
-
-    @NotBlank
     @Size(max = 50)
     @Email
     private String email;
@@ -43,10 +39,6 @@ public class SignupRequest {
 
     private Set<String> skills;
 
-
-    public String getUsername() {
-        return username;
-    }
 
     public String getEmail() {
         return email;
