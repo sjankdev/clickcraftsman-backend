@@ -120,21 +120,19 @@ public class AuthController {
             if (strRoles != null && strRoles.contains("worker")) {
                 WorkerProfile workerProfile = WorkerProfile.createFromSignupRequestWorker(signUpRequest, user);
 
-                // Check if there are selected skills
                 Set<String> selectedSkills = signUpRequest.getSkills();
                 if (selectedSkills != null && !selectedSkills.isEmpty()) {
-                    String selectedSkillName = selectedSkills.iterator().next();
+                    for (String selectedSkillName : selectedSkills) {
+                        Skill skill = skillRepository.findBySkillName(selectedSkillName)
+                                .orElseGet(() -> {
+                                    Skill newSkill = new Skill();
+                                    newSkill.setSkillName(selectedSkillName);
+                                    return skillRepository.save(newSkill);
+                                });
 
-                    Skill skill = skillRepository.findBySkillName(selectedSkillName)
-                            .orElseGet(() -> {
-                                Skill newSkill = new Skill();
-                                newSkill.setSkillName(selectedSkillName);
-                                return skillRepository.save(newSkill);
-                            });
-
-                    workerProfile.getSkills().add(skill);
+                        workerProfile.getSkills().add(skill);
+                    }
                 }
-
                 user.setWorkerProfile(workerProfile);
             } else {
                 ClientProfile clientProfile = ClientProfile.createFromSignupRequestClient(signUpRequest, user);
