@@ -114,8 +114,8 @@ public class AuthController {
 
             user.setRoles(roles);
 
-            if (strRoles != null && strRoles.contains("worker")) {
-                FreelancerProfile freelancerProfile = FreelancerProfile.createFromSignupRequestWorker(signUpRequest, user);
+            if (strRoles != null && strRoles.contains("freelancer")) {
+                FreelancerProfile freelancerProfile = FreelancerProfile.createFromSignupRequestFreelancer(signUpRequest, user);
 
                 Set<String> selectedSkills = signUpRequest.getSkills();
                 if (selectedSkills != null && !selectedSkills.isEmpty()) {

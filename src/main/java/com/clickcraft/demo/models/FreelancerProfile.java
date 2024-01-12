@@ -53,7 +53,7 @@ public class FreelancerProfile {
         this.skills.add(skill);
     }
 
-    public static FreelancerProfile createFromSignupRequestWorker(SignupRequest signUpRequest, User user) {
+    public static FreelancerProfile createFromSignupRequestFreelancer(SignupRequest signUpRequest, User user) {
         FreelancerProfile freelancerProfile = new FreelancerProfile();
         freelancerProfile.setFirstName(signUpRequest.getFirstName());
         freelancerProfile.setLastName(signUpRequest.getLastName());
