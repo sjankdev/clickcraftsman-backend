@@ -1,7 +1,7 @@
 package com.clickcraft.demo.security.services;
 
 import com.clickcraft.demo.models.User;
-import com.clickcraft.demo.repository.UserRepository;
+import com.clickcraft.demo.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

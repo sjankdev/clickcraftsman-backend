@@ -1,6 +1,5 @@
 package com.clickcraft.demo.models;
 
-
 import jakarta.persistence.*;
 
 @Entity
@@ -10,7 +9,6 @@ public class ClientJobPosting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_profile_id")
@@ -24,4 +22,3 @@ public class ClientJobPosting {
         this.clientProfile = clientProfile;
     }
 }
-

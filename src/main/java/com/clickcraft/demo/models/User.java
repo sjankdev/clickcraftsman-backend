@@ -9,7 +9,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
+@Table(name = "users", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "email")
+})
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User {
 
@@ -32,16 +34,15 @@ public class User {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+    private Set < Role > roles = new HashSet < > ();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private ClientProfile clientProfile;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private WorkerProfile workerProfile;
+    private FreelancerProfile freelancerProfile;
 
-    public User() {
-    }
+    public User() {}
 
     public User(String email, String password) {
         this.email = email;
@@ -80,11 +81,11 @@ public class User {
         this.password = password;
     }
 
-    public Set<Role> getRoles() {
+    public Set < Role > getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(Set < Role > roles) {
         this.roles = roles;
     }
 
@@ -96,11 +97,11 @@ public class User {
         this.clientProfile = clientProfile;
     }
 
-    public WorkerProfile getWorkerProfile() {
-        return workerProfile;
+    public FreelancerProfile getFreelancerProfile() {
+        return freelancerProfile;
     }
 
-    public void setWorkerProfile(WorkerProfile workerProfile) {
-        this.workerProfile = workerProfile;
+    public void setFreelancerProfile(FreelancerProfile freelancerProfile) {
+        this.freelancerProfile = freelancerProfile;
     }
 }

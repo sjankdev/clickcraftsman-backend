@@ -37,7 +37,7 @@ public class ClientProfile {
     private User user;
 
     @OneToMany(mappedBy = "clientProfile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ClientJobPosting> jobPostings = new HashSet<>();
+    private Set < ClientJobPosting > jobPostings = new HashSet < > ();
 
     public String getFirstName() {
         return firstName;
@@ -71,7 +71,7 @@ public class ClientProfile {
         this.location = location;
     }
 
-    public void setJobPostings(Set<ClientJobPosting> jobPostings) {
+    public void setJobPostings(Set < ClientJobPosting > jobPostings) {
         this.jobPostings = jobPostings;
     }
 
@@ -83,7 +83,7 @@ public class ClientProfile {
         this.user = user;
     }
 
-    public Set<ClientJobPosting> getJobPostings() {
+    public Set < ClientJobPosting > getJobPostings() {
         return jobPostings;
     }
 

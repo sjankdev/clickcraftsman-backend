@@ -39,7 +39,6 @@ public class SignupRequest {
 
     private Set<String> skills;
 
-
     public String getEmail() {
         return email;
     }
