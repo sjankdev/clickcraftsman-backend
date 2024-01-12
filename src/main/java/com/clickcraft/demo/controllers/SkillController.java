@@ -16,10 +16,10 @@ import java.util.List;
 public class SkillController {
 
     @Autowired
-    private  SkillService skillService;
+    private SkillService skillService;
 
     @GetMapping("/getAllSkills")
-    public List<Skill> getAllSkills() {
+    public List < Skill > getAllSkills() {
         return skillService.getAllSkills();
     }
 }

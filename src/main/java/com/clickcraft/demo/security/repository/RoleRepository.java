@@ -1,4 +1,4 @@
-package com.clickcraft.demo.repository;
+package com.clickcraft.demo.security.repository;
 
 import java.util.Optional;
 

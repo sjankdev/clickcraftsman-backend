@@ -9,8 +9,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "worker_profiles")
-public class WorkerProfile {
+@Table(name = "freelancers_profiles")
+public class FreelancerProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,6 @@ public class WorkerProfile {
     @Size(min = 2, max = 40)
     private String location;
 
-
     private String portfolio;
 
     private int yearsOfExperience;
@@ -42,30 +41,28 @@ public class WorkerProfile {
     private User user;
 
     @OneToMany(mappedBy = "workerProfile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<WorkerOfferJob> jobOffers = new HashSet<>();
+    private Set < FreelancerOfferJob > jobOffers = new HashSet < > ();
 
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "worker_profile_skills",
-            joinColumns = @JoinColumn(name = "worker_profile_id"),
-            inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    private Set<Skill> skills = new HashSet<>();
+    @JoinTable(name = "freelancer_profile_skills", joinColumns = @JoinColumn(name = "freelancer_profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
+    private Set < Skill > skills = new HashSet < > ();
 
 
     public void addSkill(Skill skill) {
         this.skills.add(skill);
     }
 
-    public static WorkerProfile createFromSignupRequestWorker(SignupRequest signUpRequest, User user) {
-        WorkerProfile workerProfile = new WorkerProfile();
-        workerProfile.setFirstName(signUpRequest.getFirstName());
-        workerProfile.setLastName(signUpRequest.getLastName());
-        workerProfile.setContactPhone(signUpRequest.getContactPhone());
-        workerProfile.setLocation(signUpRequest.getLocation());
-        workerProfile.setPortfolio(signUpRequest.getPortfolio());
-        workerProfile.setYearsOfExperience(signUpRequest.getYearsOfExperience());
-        workerProfile.setUser(user);
-        return workerProfile;
+    public static FreelancerProfile createFromSignupRequestWorker(SignupRequest signUpRequest, User user) {
+        FreelancerProfile freelancerProfile = new FreelancerProfile();
+        freelancerProfile.setFirstName(signUpRequest.getFirstName());
+        freelancerProfile.setLastName(signUpRequest.getLastName());
+        freelancerProfile.setContactPhone(signUpRequest.getContactPhone());
+        freelancerProfile.setLocation(signUpRequest.getLocation());
+        freelancerProfile.setPortfolio(signUpRequest.getPortfolio());
+        freelancerProfile.setYearsOfExperience(signUpRequest.getYearsOfExperience());
+        freelancerProfile.setUser(user);
+        return freelancerProfile;
     }
 
     public String getFirstName() {
@@ -116,7 +113,7 @@ public class WorkerProfile {
         this.yearsOfExperience = yearsOfExperience;
     }
 
-    public void setJobOffers(Set<WorkerOfferJob> jobOffers) {
+    public void setJobOffers(Set < FreelancerOfferJob > jobOffers) {
         this.jobOffers = jobOffers;
     }
 
@@ -128,25 +125,25 @@ public class WorkerProfile {
         this.user = user;
     }
 
-    public Set<WorkerOfferJob> getJobOffers() {
+    public Set < FreelancerOfferJob > getJobOffers() {
         return jobOffers;
     }
 
-    public void addJobOffer(WorkerOfferJob jobOffer) {
+    public void addJobOffer(FreelancerOfferJob jobOffer) {
         jobOffers.add(jobOffer);
-        jobOffer.setWorkerProfile(this);
+        jobOffer.setFreelancerProfile(this);
     }
 
-    public void removeJobOffer(WorkerOfferJob jobOffer) {
+    public void removeJobOffer(FreelancerOfferJob jobOffer) {
         jobOffers.remove(jobOffer);
-        jobOffer.setWorkerProfile(null);
+        jobOffer.setFreelancerProfile(null);
     }
 
-    public Set<Skill> getSkills() {
+    public Set < Skill > getSkills() {
         return skills;
     }
 
-    public void setSkills(Set<Skill> skills) {
+    public void setSkills(Set < Skill > skills) {
         this.skills = skills;
     }
 }

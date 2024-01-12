@@ -11,7 +11,7 @@ import java.util.List;
 public class SkillService {
 
     @Autowired
-    private  SkillRepository skillRepository;
+    private SkillRepository skillRepository;
 
     public List<Skill> getAllSkills() {
         return skillRepository.findAll();

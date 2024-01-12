@@ -1,4 +1,4 @@
-package com.clickcraft.demo.controllers;
+package com.clickcraft.demo.security.controllers;
 
 import java.util.HashSet;
 import java.util.List;
@@ -10,9 +10,9 @@ import com.clickcraft.demo.payload.request.LoginRequest;
 import com.clickcraft.demo.payload.request.SignupRequest;
 import com.clickcraft.demo.payload.response.JwtResponse;
 import com.clickcraft.demo.payload.response.MessageResponse;
-import com.clickcraft.demo.repository.RoleRepository;
+import com.clickcraft.demo.security.repository.RoleRepository;
 import com.clickcraft.demo.repository.SkillRepository;
-import com.clickcraft.demo.repository.UserRepository;
+import com.clickcraft.demo.security.repository.UserRepository;
 import com.clickcraft.demo.security.jwt.JwtUtils;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -102,9 +101,9 @@ public class AuthController {
                             Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                             roles.add(modRole);
                             break;
-                        case "worker":
-                            Role workerRole = roleRepository.findByName(ERole.ROLE_WORKER).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(workerRole);
+                        case "freelancer":
+                            Role freelancerRole = roleRepository.findByName(ERole.ROLE_FREELANCER).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(freelancerRole);
                             break;
                         default:
                             Role clientRole = roleRepository.findByName(ERole.ROLE_CLIENT).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
@@ -116,7 +115,7 @@ public class AuthController {
             user.setRoles(roles);
 
             if (strRoles != null && strRoles.contains("worker")) {
-                WorkerProfile workerProfile = WorkerProfile.createFromSignupRequestWorker(signUpRequest, user);
+                FreelancerProfile freelancerProfile = FreelancerProfile.createFromSignupRequestWorker(signUpRequest, user);
 
                 Set<String> selectedSkills = signUpRequest.getSkills();
                 if (selectedSkills != null && !selectedSkills.isEmpty()) {
@@ -128,10 +127,10 @@ public class AuthController {
                                     return skillRepository.save(newSkill);
                                 });
 
-                        workerProfile.getSkills().add(skill);
+                        freelancerProfile.getSkills().add(skill);
                     }
                 }
-                user.setWorkerProfile(workerProfile);
+                user.setFreelancerProfile(freelancerProfile);
             } else {
                 ClientProfile clientProfile = ClientProfile.createFromSignupRequestClient(signUpRequest, user);
                 user.setClientProfile(clientProfile);
