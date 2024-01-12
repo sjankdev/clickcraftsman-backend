@@ -1,21 +1,21 @@
 package com.clickcraft.demo.models;
 
 public enum ELocations {
-    BEOGRAD, BOR, VALJEVO, VRANJE, VRŠAC, ZAJEČAR, ZRENJANIN, JAGODINA, KIKINDA, KRAGUJEVAC,
-    KRALJEVO, KRUŠEVAC, LESKOVAC, LOZNICA, NIŠ, NOVI_PAZAR, NOVI_SAD, PANČEVO, PIROT, POŽAREVAC,
-    PRIŠTINA, PROKUPLJE, SMEDEREVO, SOMBOR, SREMSKA_MITROVICA, SUBOTICA, UŽICE, ČAČAK, ŠABAC,
-    ADA, ALEKSANDROVAC, ALEKSINAC, ALIBUNAR, APATIN, ARANĐELOVAC, ARILJE, BABUŠNICA, BAJINA_BAŠTA,
-    BATOČINA, BAĆ, BAČKA_PALANKA, BAČKA_TOPOLA, BAČKI_PETROVAC, BELA_PALANKA, BELA_CRKVA,
-    BEOČIN, BEČEJ, BLACE, BOGATIĆ, BOJNIK, BOLJEVAC, BOSILEGRAD, BRUS, BUJANOVAC, VARVARIN,
-    VELIKA_PLANA, VELIKO_GRADIŠTE, VLADIMIRCI, VLADIČIN_HAN, VLASOTINCE, VRBAS, VRNJAČKA_BANJA, GADŽIN_HAN, GOLUBAC, GORNJI_MILANOVAC, DESPOTOVAC,
-    DIMITROVGRAD, DOLJEVAC, ŽABALJ, ŽABARI, ŽAGUBICA, ŽITIŠTE, ŽITORADJA,
-    ZUBIN_POTOK, IVANJICA, INDĐIJA, IRIG, KANJIŽA, KLADOVO, KNJAŽEVAC,
-    KOVAČICA, KOVIN, KOSJERIĆ, KOSOVSKA_KAMENICA, KOSOVSKA_MITROVICA, KOCELJEVA,
-    KRUPANJ, KULA, KURŠUMLIJA, KUČEVO, LAJKOVAC, LAPOVO, LEBANE, LEPOSAVIĆ, LIPLJAN, LUČANI, LJIG,
-    LJUBOVIJA, MAJDANPEK, MALI_ZVORNIK, MALI_IĐOŠ, MALO_CRNIĆE, MEDVEĐA, MEROŠINA, MIONICA, NEGOTIN,
-    NOVA_VAROŠ, NOVA_CRNJA, NOVI_BEČEJ, NOVI_KNEŽEVAC, OPOVO, OSEČINA,
-    ODŽACI, PARAĆIN, PETROVAC_NA_MLAVI, PEĆINCI, PLANDIŠTE, POŽEGA, PRIBOJ, PRIJEPOLJE, RAŽANJ, RAČA, RAŠKA, REKOVAC, RUMA, SVILAJNAC, SVRLJIG, SENTA, SEČANJ,
-    SJENICA, SMEDEREVSKA_PALANKA, SOKOBANJA, SRBOBRAN, SREMSKI_KARLOVCI, STARA_PAZOVA,
-    SUVA_REKA, SURDULICA, TEMERIN, TITEL, TOPOLA, TRGOVIŠTE, TRSTENIK, TUTIN, ĆICEVAC, ĆUPRIJA,
-    UB, UROŠEVAC, CRNA_TRAVA, ČAJETINA, ČOKA, ŠID
+    Beograd, Bor, Valjevo, Vranje, Vršac, Zaječar, Zrenjanin, Jagodina, Kikinda, Kragujevac,
+    Kraljevo, Kruševac, Leskovac, Loznica, Niš, Novi_pazar, Novi_sad, Pančevo, Pirot, Požarevac,
+    Priština, Prokuplje, Smederevo, Sombor, Sremska_mitrovica, Subotica, Užice, Čačak, Šabac,
+    Ada, Aleksandrovac, Aleksinac, Alibunar, Apatin, Aranđelovac, Arilje, Babušnica, Bajina_bašta,
+    Batočina, Bać, Bačka_palanka, Bačka_topola, Bački_petrovac, Bela_palanka, Bela_crkva,
+    Beočin, Bečej, Blace, Bogatić, Bojnik, Boljevac, Bosilegrad, Brus, Bujanovac, Varvarin,
+    Velika_plana, Veliko_gradište, Vladimirci, Vladičin_han, Vlasotince, Vrbas, Vrnjačka_banja, Gadžin_han, Golubac, Gornji_milanovac, Despotovac,
+    Dimitrovgrad, Doljevac, Žabalj, Žabari, Žagubica, Žitište, Žitoradja,
+    Zubin_potok, Ivanjica, Indđija, Irig, Kanjiža, Kladovo, Knjaževac,
+    Kovačica, Kovin, Kosjerić, Kosovska_kamenica, Kosovska_mitrovica, Koceljeva,
+    Krupanj, Kula, Kuršumlija, Kučevo, Lajkovac, Lapovo, Lebane, Leposavić, Lipljan, Lučani, Ljig,
+    Ljubovija, Majdanpek, Mali_zvornik, Mali_iđoš, Malo_crniće, Medveđa, Merošina, Mionica, Negotin,
+    Nova_varoš, Nova_crnja, Novi_bečej, Novi_kneževac, Opovo, Osečina,
+    Odžaci, Paraćin, Petrovac_na_mlavi, Pećinci, Plandište, Požega, Priboj, Prijepolje, Ražanj, Rača, Raška, Rekovac, Ruma, Svilajnac, Svrljig, Senta, Sečanj,
+    Sjenica, Smederevska_palanka, Sokobanja, Srbobran, Sremski_karlovci, Stara_pazova,
+    Suva_reka, Surdulica, Temerin, Titel, Topola, Trgovište, Trstenik, Tutin, Ćicevac, Ćuprija,
+    Ub, Uroševac, Crna_trava, Čajetina, Čoka, Šid
 }
