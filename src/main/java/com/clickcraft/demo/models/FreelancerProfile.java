@@ -40,7 +40,7 @@ public class FreelancerProfile {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "workerProfile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "freelancerProfile", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set < FreelancerOfferJob > jobOffers = new HashSet < > ();
 
 

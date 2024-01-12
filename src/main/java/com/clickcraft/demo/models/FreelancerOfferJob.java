@@ -11,7 +11,7 @@ public class FreelancerOfferJob {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "worker_profile_id")
+    @JoinColumn(name = "freelancer_profile_id")
     private FreelancerProfile freelancerProfile;
 
     public FreelancerProfile getFreelancerProfile() {
