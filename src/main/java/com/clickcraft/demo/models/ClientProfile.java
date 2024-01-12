@@ -28,16 +28,15 @@ public class ClientProfile {
     @Size(min = 3, max = 20)
     private String contactPhone;
 
-    @NotBlank
-    @Size(min = 2, max = 40)
-    private String location;
+    @Enumerated(EnumType.STRING)
+    private ELocations location;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "clientProfile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set < ClientJobPosting > jobPostings = new HashSet < > ();
+    private Set<ClientJobPosting> jobPostings = new HashSet<>();
 
     public String getFirstName() {
         return firstName;
@@ -63,15 +62,15 @@ public class ClientProfile {
         this.contactPhone = contactPhone;
     }
 
-    public String getLocation() {
+    public ELocations getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(ELocations location) {
         this.location = location;
     }
 
-    public void setJobPostings(Set < ClientJobPosting > jobPostings) {
+    public void setJobPostings(Set<ClientJobPosting> jobPostings) {
         this.jobPostings = jobPostings;
     }
 
@@ -83,7 +82,7 @@ public class ClientProfile {
         this.user = user;
     }
 
-    public Set < ClientJobPosting > getJobPostings() {
+    public Set<ClientJobPosting> getJobPostings() {
         return jobPostings;
     }
 
@@ -102,7 +101,7 @@ public class ClientProfile {
         clientProfile.setFirstName(signUpRequest.getFirstName());
         clientProfile.setLastName(signUpRequest.getLastName());
         clientProfile.setContactPhone(signUpRequest.getContactPhone());
-        clientProfile.setLocation(signUpRequest.getLocation());
+        clientProfile.setLocation(ELocations.valueOf(signUpRequest.getLocation()));
         clientProfile.setUser(user);
         user.setClientProfile(clientProfile);
         return clientProfile;

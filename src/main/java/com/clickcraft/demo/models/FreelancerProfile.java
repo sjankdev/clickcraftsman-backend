@@ -28,9 +28,8 @@ public class FreelancerProfile {
     @Size(min = 3, max = 20)
     private String contactPhone;
 
-    @NotBlank
-    @Size(min = 2, max = 40)
-    private String location;
+    @Enumerated(EnumType.STRING)
+    private ELocations location;
 
     private String portfolio;
 
@@ -41,12 +40,12 @@ public class FreelancerProfile {
     private User user;
 
     @OneToMany(mappedBy = "freelancerProfile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set < FreelancerOfferJob > jobOffers = new HashSet < > ();
+    private Set<FreelancerOfferJob> jobOffers = new HashSet<>();
 
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "freelancer_profile_skills", joinColumns = @JoinColumn(name = "freelancer_profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    private Set < Skill > skills = new HashSet < > ();
+    private Set<Skill> skills = new HashSet<>();
 
 
     public void addSkill(Skill skill) {
@@ -58,7 +57,7 @@ public class FreelancerProfile {
         freelancerProfile.setFirstName(signUpRequest.getFirstName());
         freelancerProfile.setLastName(signUpRequest.getLastName());
         freelancerProfile.setContactPhone(signUpRequest.getContactPhone());
-        freelancerProfile.setLocation(signUpRequest.getLocation());
+        freelancerProfile.setLocation(ELocations.valueOf(signUpRequest.getLocation()));
         freelancerProfile.setPortfolio(signUpRequest.getPortfolio());
         freelancerProfile.setYearsOfExperience(signUpRequest.getYearsOfExperience());
         freelancerProfile.setUser(user);
@@ -89,11 +88,11 @@ public class FreelancerProfile {
         this.contactPhone = contactPhone;
     }
 
-    public String getLocation() {
+    public ELocations getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(ELocations location) {
         this.location = location;
     }
 
@@ -113,7 +112,7 @@ public class FreelancerProfile {
         this.yearsOfExperience = yearsOfExperience;
     }
 
-    public void setJobOffers(Set < FreelancerOfferJob > jobOffers) {
+    public void setJobOffers(Set<FreelancerOfferJob> jobOffers) {
         this.jobOffers = jobOffers;
     }
 
@@ -125,7 +124,7 @@ public class FreelancerProfile {
         this.user = user;
     }
 
-    public Set < FreelancerOfferJob > getJobOffers() {
+    public Set<FreelancerOfferJob> getJobOffers() {
         return jobOffers;
     }
 
@@ -139,11 +138,11 @@ public class FreelancerProfile {
         jobOffer.setFreelancerProfile(null);
     }
 
-    public Set < Skill > getSkills() {
+    public Set<Skill> getSkills() {
         return skills;
     }
 
-    public void setSkills(Set < Skill > skills) {
+    public void setSkills(Set<Skill> skills) {
         this.skills = skills;
     }
 }
