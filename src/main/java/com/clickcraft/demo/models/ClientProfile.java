@@ -1,10 +1,12 @@
 package com.clickcraft.demo.models;
 
+import com.clickcraft.demo.dto.JobPostingRequest;
 import com.clickcraft.demo.payload.request.SignupRequest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -106,5 +108,16 @@ public class ClientProfile {
         user.setClientProfile(clientProfile);
         return clientProfile;
     }
+
+    public void postJob(JobPostingRequest jobPostingRequest) {
+        ClientJobPosting jobPosting = new ClientJobPosting();
+        jobPosting.setJobName(jobPostingRequest.getJobName());
+        jobPosting.setDescription(jobPostingRequest.getDescription());
+        jobPosting.setDatePosted(new Date());
+        jobPosting.setClientProfile(this);
+
+        this.addJobPosting(jobPosting);
+    }
+
 
 }
