@@ -22,8 +22,8 @@ public class ClientJobPosting {
     @Size(max = 1000)
     private String description;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date datePosted;
+    @Column(name = "date_posted")
+    private Date datePosted = new Date();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_profile_id")
