@@ -1,27 +1,41 @@
 package com.clickcraft.demo.models;
 
 import jakarta.persistence.*;
-import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.Date;
 
 @Entity
-@Table(name = "job_postings")
+@Table(name = "client_job_postings")
 public class ClientJobPosting {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
+    @Size(max = 100)
     private String jobName;
 
+    @NotBlank
+    @Size(max = 1000)
     private String description;
 
-    private Date datePosted;
+    @Column(name = "date_posted")
+    private Date datePosted = new Date();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_profile_id")
     private ClientProfile clientProfile;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getJobName() {
         return jobName;
