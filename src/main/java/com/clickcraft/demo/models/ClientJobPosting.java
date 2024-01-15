@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -24,19 +25,18 @@ public class ClientJobPosting {
     private String description;
 
     @Column(name = "date_posted")
-    private Date datePosted = new Date();
+    private LocalDate datePosted = LocalDate.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_profile_id")
     private ClientProfile clientProfile;
 
     @ManyToMany
-    @JoinTable(
-            name = "job_posting_skills",
-            joinColumns = @JoinColumn(name = "job_posting_id"),
-            inverseJoinColumns = @JoinColumn(name = "skill_id")
-    )
+    @JoinTable(name = "job_posting_skills", joinColumns = @JoinColumn(name = "job_posting_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
     private List<Skill> requiredSkills;
+
+    public ClientJobPosting() {
+    }
 
     public Long getId() {
         return id;
@@ -62,11 +62,11 @@ public class ClientJobPosting {
         this.description = description;
     }
 
-    public Date getDatePosted() {
+    public LocalDate getDatePosted() {
         return datePosted;
     }
 
-    public void setDatePosted(Date datePosted) {
+    public void setDatePosted(LocalDate datePosted) {
         this.datePosted = datePosted;
     }
 

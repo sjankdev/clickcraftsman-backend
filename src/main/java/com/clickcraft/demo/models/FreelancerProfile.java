@@ -47,6 +47,8 @@ public class FreelancerProfile {
     @JoinTable(name = "freelancer_profile_skills", joinColumns = @JoinColumn(name = "freelancer_profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
     private Set<Skill> skills = new HashSet<>();
 
+    public FreelancerProfile() {
+    }
 
     public void addSkill(Skill skill) {
         this.skills.add(skill);
@@ -126,16 +128,6 @@ public class FreelancerProfile {
 
     public Set<FreelancerOfferJob> getJobOffers() {
         return jobOffers;
-    }
-
-    public void addJobOffer(FreelancerOfferJob jobOffer) {
-        jobOffers.add(jobOffer);
-        jobOffer.setFreelancerProfile(this);
-    }
-
-    public void removeJobOffer(FreelancerOfferJob jobOffer) {
-        jobOffers.remove(jobOffer);
-        jobOffer.setFreelancerProfile(null);
     }
 
     public Set<Skill> getSkills() {

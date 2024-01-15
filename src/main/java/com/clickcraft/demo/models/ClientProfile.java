@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,6 +40,9 @@ public class ClientProfile {
 
     @OneToMany(mappedBy = "clientProfile", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ClientJobPosting> jobPostings = new HashSet<>();
+
+    public ClientProfile() {
+    }
 
     public String getFirstName() {
         return firstName;
@@ -93,11 +97,6 @@ public class ClientProfile {
         jobPosting.setClientProfile(this);
     }
 
-    public void removeJobPosting(ClientJobPosting jobPosting) {
-        jobPostings.remove(jobPosting);
-        jobPosting.setClientProfile(null);
-    }
-
     public static ClientProfile createFromSignupRequestClient(SignupRequest signUpRequest, User user) {
         ClientProfile clientProfile = new ClientProfile();
         clientProfile.setFirstName(signUpRequest.getFirstName());
@@ -108,16 +107,5 @@ public class ClientProfile {
         user.setClientProfile(clientProfile);
         return clientProfile;
     }
-
-    public void postJob(ClientJobPosting jobPostingRequest) {
-        ClientJobPosting jobPosting = new ClientJobPosting();
-        jobPosting.setJobName(jobPostingRequest.getJobName());
-        jobPosting.setDescription(jobPostingRequest.getDescription());
-        jobPosting.setDatePosted(new Date());
-        jobPosting.setClientProfile(this);
-
-        this.addJobPosting(jobPosting);
-    }
-
 
 }

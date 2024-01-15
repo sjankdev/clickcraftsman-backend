@@ -9,6 +9,7 @@ import com.clickcraft.demo.service.ClientProfileService;
 import com.clickcraft.demo.service.JobPostingService;
 import com.clickcraft.demo.service.SkillService;
 
+import java.time.LocalDate;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/jobpostings")
+@RequestMapping("/api/job-postings")
 public class JobPostingController {
 
     private static final Logger log = Logger.getLogger(JobPostingController.class.getName());
@@ -56,7 +57,7 @@ public class JobPostingController {
         ClientJobPosting jobPosting = new ClientJobPosting();
         jobPosting.setJobName(jobPostingRequest.getJobName());
         jobPosting.setDescription(jobPostingRequest.getDescription());
-        jobPosting.setDatePosted(new Date());
+        jobPosting.setDatePosted(LocalDate.now());
         jobPosting.setClientProfile(clientProfile);
 
         List<Skill> requiredSkills = skillService.getSkillsByNames(jobPostingRequest.getRequiredSkillIds());

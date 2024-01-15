@@ -1,9 +1,6 @@
 package com.clickcraft.demo.controllers;
 
 import com.clickcraft.demo.models.ELocations;
-import com.clickcraft.demo.models.Skill;
-import com.clickcraft.demo.service.SkillService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
