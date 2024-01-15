@@ -23,10 +23,10 @@ import java.util.List;
 public class JobPostingController {
 
     @Autowired
-    private JobPostingService jobPostingService;
+    private ClientProfileService clientProfileService;
 
     @Autowired
-    private ClientProfileService clientProfileService;
+    private JobPostingService jobPostingService;
 
     @Autowired
     private SkillService skillService;
@@ -56,8 +56,11 @@ public class JobPostingController {
         List<Skill> requiredSkills = skillService.getSkillsByIds(jobPostingRequest.getRequiredSkillIds());
         jobPosting.setRequiredSkills(requiredSkills);
 
-        clientProfile.postJob(jobPosting);
+        clientProfileService.postJob(clientProfile, jobPosting);
+
+        jobPostingService.saveJobPosting(jobPosting);
 
         return ResponseEntity.ok(new MessageResponse("Job posted successfully!"));
     }
+
 }
