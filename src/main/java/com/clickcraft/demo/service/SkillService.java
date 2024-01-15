@@ -29,6 +29,15 @@ public class SkillService {
         return skillRepository.findAllById(validSkillIds);
     }
 
+    public List<Skill> getSkillsByNames(List<String> skillNames) {
+        if (skillNames == null || skillNames.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return skillRepository.findBySkillNameIn(skillNames);
+    }
+
+
     public List<Skill> getAllSkills() {
         return skillRepository.findAll();
     }

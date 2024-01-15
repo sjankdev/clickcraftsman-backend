@@ -8,6 +8,9 @@ import com.clickcraft.demo.payload.response.MessageResponse;
 import com.clickcraft.demo.service.ClientProfileService;
 import com.clickcraft.demo.service.JobPostingService;
 import com.clickcraft.demo.service.SkillService;
+
+import java.util.logging.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,6 +24,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/jobpostings")
 public class JobPostingController {
+
+    private static final Logger log = Logger.getLogger(JobPostingController.class.getName());
+
 
     @Autowired
     private ClientProfileService clientProfileService;
@@ -53,7 +59,8 @@ public class JobPostingController {
         jobPosting.setDatePosted(new Date());
         jobPosting.setClientProfile(clientProfile);
 
-        List<Skill> requiredSkills = skillService.getSkillsByIds(jobPostingRequest.getRequiredSkillIds());
+        List<Skill> requiredSkills = skillService.getSkillsByNames(jobPostingRequest.getRequiredSkillIds());
+
         jobPosting.setRequiredSkills(requiredSkills);
 
         clientProfileService.postJob(clientProfile, jobPosting);

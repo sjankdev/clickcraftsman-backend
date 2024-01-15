@@ -6,7 +6,7 @@ import java.util.List;
 public class JobPostingRequest {
     private String jobName;
     private String description;
-    private List<Long> requiredSkillIds;
+    private List<String> requiredSkillIds;
 
     public String getJobName() {
         return jobName;
@@ -24,11 +24,11 @@ public class JobPostingRequest {
         this.description = description;
     }
 
-    public List<Long> getRequiredSkillIds() {
+    public List<String> getRequiredSkillIds() {
         return requiredSkillIds;
     }
 
-    public void setRequiredSkillIds(List<Long> requiredSkillIds) {
+    public void setRequiredSkillIds(List<String> requiredSkillIds) {
         this.requiredSkillIds = requiredSkillIds;
     }
 }
