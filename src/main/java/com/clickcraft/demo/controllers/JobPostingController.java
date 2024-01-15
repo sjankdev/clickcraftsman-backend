@@ -57,6 +57,7 @@ public class JobPostingController {
         jobPosting.setDescription(jobPostingRequest.getDescription());
         jobPosting.setDatePosted(LocalDate.now());
         jobPosting.setClientProfile(clientProfile);
+        jobPosting.setRemote(jobPostingRequest.getIsRemote());
 
         List < Skill > requiredSkills = skillService.getSkillsByNames(jobPostingRequest.getRequiredSkillIds());
 
