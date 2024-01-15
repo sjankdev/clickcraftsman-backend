@@ -5,8 +5,9 @@ import java.util.List;
 public class JobPostingRequest {
     private String jobName;
     private String description;
-    private List < String > requiredSkillIds;
+    private List<String> requiredSkillIds;
     private Boolean isRemote;
+    private String location;
 
     public String getJobName() {
         return jobName;
@@ -38,5 +39,13 @@ public class JobPostingRequest {
 
     public void setIsRemote(Boolean isRemote) {
         this.isRemote = isRemote;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

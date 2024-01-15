@@ -39,6 +39,9 @@ public class ClientJobPosting {
     @JsonProperty("isRemote")
     private Boolean remote;
 
+    @Column(name = "location")
+    private String location;
+
     public ClientJobPosting() {
     }
 
@@ -96,5 +99,13 @@ public class ClientJobPosting {
 
     public void setRemote(Boolean remote) {
         this.remote = remote;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }
