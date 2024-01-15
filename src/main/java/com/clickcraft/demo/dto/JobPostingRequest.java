@@ -6,6 +6,7 @@ public class JobPostingRequest {
     private String jobName;
     private String description;
     private List < String > requiredSkillIds;
+    private Boolean isRemote;
 
     public String getJobName() {
         return jobName;
@@ -23,11 +24,19 @@ public class JobPostingRequest {
         this.description = description;
     }
 
-    public List < String > getRequiredSkillIds() {
+    public List<String> getRequiredSkillIds() {
         return requiredSkillIds;
     }
 
-    public void setRequiredSkillIds(List < String > requiredSkillIds) {
+    public void setRequiredSkillIds(List<String> requiredSkillIds) {
         this.requiredSkillIds = requiredSkillIds;
+    }
+
+    public Boolean getIsRemote() {
+        return isRemote;
+    }
+
+    public void setIsRemote(Boolean isRemote) {
+        this.isRemote = isRemote;
     }
 }

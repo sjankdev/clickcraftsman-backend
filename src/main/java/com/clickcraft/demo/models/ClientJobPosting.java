@@ -1,5 +1,6 @@
 package com.clickcraft.demo.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -32,9 +33,14 @@ public class ClientJobPosting {
 
     @ManyToMany
     @JoinTable(name = "job_posting_skills", joinColumns = @JoinColumn(name = "job_posting_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    private List < Skill > requiredSkills;
+    private List<Skill> requiredSkills;
 
-    public ClientJobPosting() {}
+    @Column(name = "is_remote")
+    @JsonProperty("isRemote")
+    private Boolean remote;
+
+    public ClientJobPosting() {
+    }
 
     public Long getId() {
         return id;
@@ -76,11 +82,19 @@ public class ClientJobPosting {
         this.clientProfile = clientProfile;
     }
 
-    public List < Skill > getRequiredSkills() {
+    public List<Skill> getRequiredSkills() {
         return requiredSkills;
     }
 
-    public void setRequiredSkills(List < Skill > requiredSkills) {
+    public void setRequiredSkills(List<Skill> requiredSkills) {
         this.requiredSkills = requiredSkills;
+    }
+
+    public Boolean getRemote() {
+        return remote;
+    }
+
+    public void setRemote(Boolean remote) {
+        this.remote = remote;
     }
 }
