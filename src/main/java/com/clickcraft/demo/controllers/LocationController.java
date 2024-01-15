@@ -1,9 +1,6 @@
 package com.clickcraft.demo.controllers;
 
 import com.clickcraft.demo.models.ELocations;
-import com.clickcraft.demo.models.Skill;
-import com.clickcraft.demo.service.SkillService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +17,8 @@ import java.util.stream.Collectors;
 public class LocationController {
 
     @GetMapping("/getAllLocations")
-    public ResponseEntity<List<String>> getAllLocations() {
-        List<String> locations = Arrays.stream(ELocations.values())
+    public ResponseEntity < List < String >> getAllLocations() {
+        List < String > locations = Arrays.stream(ELocations.values())
                 .map(Enum::name)
                 .collect(Collectors.toList());
 

@@ -40,13 +40,13 @@ public class FreelancerProfile {
     private User user;
 
     @OneToMany(mappedBy = "freelancerProfile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<FreelancerOfferJob> jobOffers = new HashSet<>();
-
+    private Set < FreelancerOfferJob > jobOffers = new HashSet < > ();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "freelancer_profile_skills", joinColumns = @JoinColumn(name = "freelancer_profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    private Set<Skill> skills = new HashSet<>();
+    private Set < Skill > skills = new HashSet < > ();
 
+    public FreelancerProfile() {}
 
     public void addSkill(Skill skill) {
         this.skills.add(skill);
@@ -112,7 +112,7 @@ public class FreelancerProfile {
         this.yearsOfExperience = yearsOfExperience;
     }
 
-    public void setJobOffers(Set<FreelancerOfferJob> jobOffers) {
+    public void setJobOffers(Set < FreelancerOfferJob > jobOffers) {
         this.jobOffers = jobOffers;
     }
 
@@ -124,25 +124,15 @@ public class FreelancerProfile {
         this.user = user;
     }
 
-    public Set<FreelancerOfferJob> getJobOffers() {
+    public Set < FreelancerOfferJob > getJobOffers() {
         return jobOffers;
     }
 
-    public void addJobOffer(FreelancerOfferJob jobOffer) {
-        jobOffers.add(jobOffer);
-        jobOffer.setFreelancerProfile(this);
-    }
-
-    public void removeJobOffer(FreelancerOfferJob jobOffer) {
-        jobOffers.remove(jobOffer);
-        jobOffer.setFreelancerProfile(null);
-    }
-
-    public Set<Skill> getSkills() {
+    public Set < Skill > getSkills() {
         return skills;
     }
 
-    public void setSkills(Set<Skill> skills) {
+    public void setSkills(Set < Skill > skills) {
         this.skills = skills;
     }
 }

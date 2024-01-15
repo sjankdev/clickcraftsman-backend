@@ -15,12 +15,12 @@ public class SkillService {
     @Autowired
     private SkillRepository skillRepository;
 
-    public List<Skill> getSkillsByIds(List<Long> skillIds) {
+    public List < Skill > getSkillsByIds(List < Long > skillIds) {
         if (skillIds == null) {
             return Collections.emptyList();
         }
 
-        List<Long> validSkillIds = skillIds.stream().filter(id -> id != null && id > 0).collect(Collectors.toList());
+        List < Long > validSkillIds = skillIds.stream().filter(id -> id != null && id > 0).collect(Collectors.toList());
 
         if (validSkillIds.isEmpty()) {
             return Collections.emptyList();
@@ -29,7 +29,7 @@ public class SkillService {
         return skillRepository.findAllById(validSkillIds);
     }
 
-    public List<Skill> getSkillsByNames(List<String> skillNames) {
+    public List < Skill > getSkillsByNames(List < String > skillNames) {
         if (skillNames == null || skillNames.isEmpty()) {
             return Collections.emptyList();
         }
@@ -37,8 +37,7 @@ public class SkillService {
         return skillRepository.findBySkillNameIn(skillNames);
     }
 
-
-    public List<Skill> getAllSkills() {
+    public List < Skill > getAllSkills() {
         return skillRepository.findAll();
     }
 }

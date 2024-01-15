@@ -59,7 +59,7 @@ public class AuthController {
     SkillRepository skillRepository;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity < ? > authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
@@ -68,14 +68,14 @@ public class AuthController {
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
+        List < String > roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
 
         return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getEmail(), roles));
     }
 
     @Transactional
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+    public ResponseEntity < ? > registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         try {
 
             if (userRepository.existsByEmail(signUpRequest.getEmail())) {
@@ -84,8 +84,8 @@ public class AuthController {
 
             User user = new User(signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
 
-            Set<String> strRoles = signUpRequest.getRole();
-            Set<Role> roles = new HashSet<>();
+            Set < String > strRoles = signUpRequest.getRole();
+            Set < Role > roles = new HashSet < > ();
 
             if (strRoles == null) {
                 Role userRole = roleRepository.findByName(ERole.ROLE_CLIENT).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
@@ -117,9 +117,9 @@ public class AuthController {
             if (strRoles != null && strRoles.contains("freelancer")) {
                 FreelancerProfile freelancerProfile = FreelancerProfile.createFromSignupRequestFreelancer(signUpRequest, user);
 
-                Set<String> selectedSkills = signUpRequest.getSkills();
+                Set < String > selectedSkills = signUpRequest.getSkills();
                 if (selectedSkills != null && !selectedSkills.isEmpty()) {
-                    for (String selectedSkillName : selectedSkills) {
+                    for (String selectedSkillName: selectedSkills) {
                         Skill skill = skillRepository.findBySkillName(selectedSkillName)
                                 .orElseGet(() -> {
                                     Skill newSkill = new Skill();
@@ -144,4 +144,4 @@ public class AuthController {
         }
     }
 
-    }
+}

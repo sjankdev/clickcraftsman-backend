@@ -1,12 +1,11 @@
 package com.clickcraft.demo.dto;
 
-
 import java.util.List;
 
 public class JobPostingRequest {
     private String jobName;
     private String description;
-    private List<String> requiredSkillIds;
+    private List < String > requiredSkillIds;
 
     public String getJobName() {
         return jobName;
@@ -24,11 +23,11 @@ public class JobPostingRequest {
         this.description = description;
     }
 
-    public List<String> getRequiredSkillIds() {
+    public List < String > getRequiredSkillIds() {
         return requiredSkillIds;
     }
 
-    public void setRequiredSkillIds(List<String> requiredSkillIds) {
+    public void setRequiredSkillIds(List < String > requiredSkillIds) {
         this.requiredSkillIds = requiredSkillIds;
     }
 }

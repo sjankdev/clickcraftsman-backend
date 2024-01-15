@@ -15,7 +15,7 @@ public class SignupRequest {
     @Size(min = 6, max = 40)
     private String password;
 
-    private Set<String> role;
+    private Set < String > role;
 
     @NotBlank
     @Size(min = 3, max = 20)
@@ -37,7 +37,7 @@ public class SignupRequest {
 
     private int yearsOfExperience;
 
-    private Set<String> skills;
+    private Set < String > skills;
 
     public String getEmail() {
         return email;
@@ -47,7 +47,7 @@ public class SignupRequest {
         return password;
     }
 
-    public Set<String> getRole() {
+    public Set < String > getRole() {
         return role;
     }
 
@@ -67,11 +67,11 @@ public class SignupRequest {
         return location;
     }
 
-    public Set<String> getSkills() {
+    public Set < String > getSkills() {
         return skills;
     }
 
-    public void setSkills(Set<String> skills) {
+    public void setSkills(Set < String > skills) {
         this.skills = skills;
     }
 

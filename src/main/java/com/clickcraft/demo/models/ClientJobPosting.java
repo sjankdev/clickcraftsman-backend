@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -24,19 +24,17 @@ public class ClientJobPosting {
     private String description;
 
     @Column(name = "date_posted")
-    private Date datePosted = new Date();
+    private LocalDate datePosted = LocalDate.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_profile_id")
     private ClientProfile clientProfile;
 
     @ManyToMany
-    @JoinTable(
-            name = "job_posting_skills",
-            joinColumns = @JoinColumn(name = "job_posting_id"),
-            inverseJoinColumns = @JoinColumn(name = "skill_id")
-    )
-    private List<Skill> requiredSkills;
+    @JoinTable(name = "job_posting_skills", joinColumns = @JoinColumn(name = "job_posting_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
+    private List < Skill > requiredSkills;
+
+    public ClientJobPosting() {}
 
     public Long getId() {
         return id;
@@ -62,11 +60,11 @@ public class ClientJobPosting {
         this.description = description;
     }
 
-    public Date getDatePosted() {
+    public LocalDate getDatePosted() {
         return datePosted;
     }
 
-    public void setDatePosted(Date datePosted) {
+    public void setDatePosted(LocalDate datePosted) {
         this.datePosted = datePosted;
     }
 
@@ -78,11 +76,11 @@ public class ClientJobPosting {
         this.clientProfile = clientProfile;
     }
 
-    public List<Skill> getRequiredSkills() {
+    public List < Skill > getRequiredSkills() {
         return requiredSkills;
     }
 
-    public void setRequiredSkills(List<Skill> requiredSkills) {
+    public void setRequiredSkills(List < Skill > requiredSkills) {
         this.requiredSkills = requiredSkills;
     }
 }
