@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "client_job_postings")
@@ -28,6 +29,14 @@ public class ClientJobPosting {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_profile_id")
     private ClientProfile clientProfile;
+
+    @ManyToMany
+    @JoinTable(
+            name = "job_posting_skills",
+            joinColumns = @JoinColumn(name = "job_posting_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id")
+    )
+    private List<Skill> requiredSkills;
 
     public Long getId() {
         return id;
@@ -67,5 +76,13 @@ public class ClientJobPosting {
 
     public void setClientProfile(ClientProfile clientProfile) {
         this.clientProfile = clientProfile;
+    }
+
+    public List<Skill> getRequiredSkills() {
+        return requiredSkills;
+    }
+
+    public void setRequiredSkills(List<Skill> requiredSkills) {
+        this.requiredSkills = requiredSkills;
     }
 }

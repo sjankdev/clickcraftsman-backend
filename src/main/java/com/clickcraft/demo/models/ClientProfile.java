@@ -109,7 +109,7 @@ public class ClientProfile {
         return clientProfile;
     }
 
-    public void postJob(JobPostingRequest jobPostingRequest) {
+    public void postJob(ClientJobPosting jobPostingRequest) {
         ClientJobPosting jobPosting = new ClientJobPosting();
         jobPosting.setJobName(jobPostingRequest.getJobName());
         jobPosting.setDescription(jobPostingRequest.getDescription());

@@ -13,6 +13,10 @@ public class SkillService {
     @Autowired
     private SkillRepository skillRepository;
 
+    public List<Skill> getSkillsByIds(List<Long> skillIds) {
+        return skillRepository.findAllById(skillIds);
+    }
+
     public List<Skill> getAllSkills() {
         return skillRepository.findAll();
     }
