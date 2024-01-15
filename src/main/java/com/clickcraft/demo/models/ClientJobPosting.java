@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -33,10 +32,9 @@ public class ClientJobPosting {
 
     @ManyToMany
     @JoinTable(name = "job_posting_skills", joinColumns = @JoinColumn(name = "job_posting_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    private List<Skill> requiredSkills;
+    private List < Skill > requiredSkills;
 
-    public ClientJobPosting() {
-    }
+    public ClientJobPosting() {}
 
     public Long getId() {
         return id;
@@ -78,11 +76,11 @@ public class ClientJobPosting {
         this.clientProfile = clientProfile;
     }
 
-    public List<Skill> getRequiredSkills() {
+    public List < Skill > getRequiredSkills() {
         return requiredSkills;
     }
 
-    public void setRequiredSkills(List<Skill> requiredSkills) {
+    public void setRequiredSkills(List < Skill > requiredSkills) {
         this.requiredSkills = requiredSkills;
     }
 }

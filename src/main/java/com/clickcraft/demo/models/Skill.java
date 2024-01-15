@@ -16,8 +16,7 @@ public class Skill {
     @Size(min = 2, max = 50)
     private String skillName;
 
-    public Skill() {
-    }
+    public Skill() {}
 
     public String getSkillName() {
         return skillName;

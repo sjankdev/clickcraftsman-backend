@@ -14,8 +14,7 @@ public class FreelancerOfferJob {
     @JoinColumn(name = "freelancer_profile_id")
     private FreelancerProfile freelancerProfile;
 
-    public FreelancerOfferJob() {
-    }
+    public FreelancerOfferJob() {}
 
     public FreelancerProfile getFreelancerProfile() {
         return freelancerProfile;

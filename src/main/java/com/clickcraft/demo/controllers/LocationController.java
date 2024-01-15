@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 public class LocationController {
 
     @GetMapping("/getAllLocations")
-    public ResponseEntity<List<String>> getAllLocations() {
-        List<String> locations = Arrays.stream(ELocations.values())
+    public ResponseEntity < List < String >> getAllLocations() {
+        List < String > locations = Arrays.stream(ELocations.values())
                 .map(Enum::name)
                 .collect(Collectors.toList());
 

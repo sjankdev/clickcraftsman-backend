@@ -1,13 +1,10 @@
 package com.clickcraft.demo.models;
 
-import com.clickcraft.demo.dto.JobPostingRequest;
 import com.clickcraft.demo.payload.request.SignupRequest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,10 +36,9 @@ public class ClientProfile {
     private User user;
 
     @OneToMany(mappedBy = "clientProfile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ClientJobPosting> jobPostings = new HashSet<>();
+    private Set < ClientJobPosting > jobPostings = new HashSet < > ();
 
-    public ClientProfile() {
-    }
+    public ClientProfile() {}
 
     public String getFirstName() {
         return firstName;
@@ -76,7 +72,7 @@ public class ClientProfile {
         this.location = location;
     }
 
-    public void setJobPostings(Set<ClientJobPosting> jobPostings) {
+    public void setJobPostings(Set < ClientJobPosting > jobPostings) {
         this.jobPostings = jobPostings;
     }
 
@@ -88,7 +84,7 @@ public class ClientProfile {
         this.user = user;
     }
 
-    public Set<ClientJobPosting> getJobPostings() {
+    public Set < ClientJobPosting > getJobPostings() {
         return jobPostings;
     }
 

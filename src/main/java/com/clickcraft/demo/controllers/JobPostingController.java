@@ -18,7 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -27,7 +26,6 @@ import java.util.List;
 public class JobPostingController {
 
     private static final Logger log = Logger.getLogger(JobPostingController.class.getName());
-
 
     @Autowired
     private ClientProfileService clientProfileService;
@@ -39,7 +37,7 @@ public class JobPostingController {
     private SkillService skillService;
 
     @PostMapping("/post")
-    public ResponseEntity<?> postJob(@RequestBody JobPostingRequest jobPostingRequest) {
+    public ResponseEntity < ? > postJob(@RequestBody JobPostingRequest jobPostingRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -60,7 +58,7 @@ public class JobPostingController {
         jobPosting.setDatePosted(LocalDate.now());
         jobPosting.setClientProfile(clientProfile);
 
-        List<Skill> requiredSkills = skillService.getSkillsByNames(jobPostingRequest.getRequiredSkillIds());
+        List < Skill > requiredSkills = skillService.getSkillsByNames(jobPostingRequest.getRequiredSkillIds());
 
         jobPosting.setRequiredSkills(requiredSkills);
 
