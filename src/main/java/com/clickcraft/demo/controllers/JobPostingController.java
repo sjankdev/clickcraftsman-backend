@@ -37,7 +37,7 @@ public class JobPostingController {
     private SkillService skillService;
 
     @PostMapping("/post")
-    public ResponseEntity < ? > postJob(@RequestBody JobPostingRequest jobPostingRequest) {
+    public ResponseEntity<?> postJob(@RequestBody JobPostingRequest jobPostingRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -58,8 +58,9 @@ public class JobPostingController {
         jobPosting.setDatePosted(LocalDate.now());
         jobPosting.setClientProfile(clientProfile);
         jobPosting.setRemote(jobPostingRequest.getIsRemote());
+        jobPosting.setLocation(jobPostingRequest.getLocation());
 
-        List < Skill > requiredSkills = skillService.getSkillsByNames(jobPostingRequest.getRequiredSkillIds());
+        List<Skill> requiredSkills = skillService.getSkillsByNames(jobPostingRequest.getRequiredSkillIds());
 
         jobPosting.setRequiredSkills(requiredSkills);
 
