@@ -25,11 +25,11 @@ public class ClientJobPosting {
     private String description;
 
     @Column(name = "date_posted")
-    private LocalDate datePosted = LocalDate.now();
+    private final LocalDate datePosted;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_profile_id")
-    private ClientProfile clientProfile;
+    private final ClientProfile clientProfile;
 
     @ManyToMany
     @JoinTable(name = "job_posting_skills", joinColumns = @JoinColumn(name = "job_posting_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
@@ -43,6 +43,19 @@ public class ClientJobPosting {
     private String location;
 
     public ClientJobPosting() {
+        this.datePosted = LocalDate.now();
+        this.clientProfile = null;
+    }
+
+    public ClientJobPosting(String jobName, String description, ClientProfile clientProfile,
+                            LocalDate datePosted, Boolean isRemote, String location, List<Skill> requiredSkills) {
+        this.jobName = jobName;
+        this.description = description;
+        this.clientProfile = clientProfile;
+        this.datePosted = datePosted;
+        this.remote = isRemote;
+        this.location = location;
+        this.requiredSkills = requiredSkills;
     }
 
     public Long getId() {
@@ -73,16 +86,8 @@ public class ClientJobPosting {
         return datePosted;
     }
 
-    public void setDatePosted(LocalDate datePosted) {
-        this.datePosted = datePosted;
-    }
-
     public ClientProfile getClientProfile() {
         return clientProfile;
-    }
-
-    public void setClientProfile(ClientProfile clientProfile) {
-        this.clientProfile = clientProfile;
     }
 
     public List<Skill> getRequiredSkills() {
