@@ -90,7 +90,6 @@ public class ClientProfile {
 
     public void addJobPosting(ClientJobPosting jobPosting) {
         jobPostings.add(jobPosting);
-        jobPosting.setClientProfile(this);
     }
 
     public static ClientProfile createFromSignupRequestClient(SignupRequest signUpRequest, User user) {
