@@ -27,13 +27,19 @@ public class TestController {
         return "Freelancer Content.";
     }
 
-    @GetMapping("/client-jobs")
+    @GetMapping("/client-received-applications")
     @PreAuthorize("hasRole('CLIENT') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public String clientAccessClientJobs() {
         return "Client Content. Client posted Jobs.";
     }
 
-    @GetMapping("/all-jobs")
+    @GetMapping("/client-projects")
+    @PreAuthorize("hasRole('CLIENT') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public String clientAccessMyJobs() {
+        return "Client Content. Client posted jobs.";
+    }
+
+    @GetMapping("/projects")
     @PreAuthorize("hasRole('FREELANCER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public String freelancerAccessAllJobs() {
         return "Freelancer Content. All Jobs";
