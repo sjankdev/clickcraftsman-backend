@@ -27,6 +27,12 @@ public class TestController {
         return "Freelancer Content.";
     }
 
+    @GetMapping("/client-jobs")
+    @PreAuthorize("hasRole('CLIENT') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public String clientAccessClientJobs() {
+        return "Client Content. Client posted Jobs.";
+    }
+
     @GetMapping("/all-jobs")
     @PreAuthorize("hasRole('FREELANCER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public String freelancerAccessAllJobs() {
