@@ -1,6 +1,7 @@
 package com.clickcraft.demo.service;
 
 import com.clickcraft.demo.models.ClientJobPosting;
+import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.repository.JobPostingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,4 +21,10 @@ public class JobPostingService {
     public List<ClientJobPosting> getAllJobPostings() {
         return jobPostingRepository.findAll();
     }
+
+    public List<ClientJobPosting> getClientJobPostings(ClientProfile clientProfile) {
+        return jobPostingRepository.findByClientProfile(clientProfile);
+    }
+
+
 }
