@@ -8,7 +8,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "client_job_postings")
@@ -46,6 +48,10 @@ public class ClientJobPosting {
 
     @Column(name = "location")
     private String location;
+
+    @OneToMany(mappedBy = "clientJobPosting", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Set<JobApplication> jobApplications = new HashSet<>();
 
     public ClientJobPosting() {
         this.datePosted = LocalDate.now();
@@ -117,5 +123,13 @@ public class ClientJobPosting {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public Set<JobApplication> getJobApplications() {
+        return jobApplications;
+    }
+
+    public void setJobApplications(Set<JobApplication> jobApplications) {
+        this.jobApplications = jobApplications;
     }
 }
