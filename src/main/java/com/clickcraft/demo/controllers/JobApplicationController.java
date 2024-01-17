@@ -1,6 +1,7 @@
 package com.clickcraft.demo.controllers;
 
 import com.clickcraft.demo.dto.JobApplicationRequest;
+import com.clickcraft.demo.dto.JobApplicationResponse;
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.FreelancerProfile;
@@ -14,12 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -34,6 +35,9 @@ public class JobApplicationController {
 
     @Autowired
     private FreelancerProfileService freelancerProfileService;
+
+    @Autowired
+    private ClientProfileService clientProfileService;
 
     @PostMapping("/apply/{jobId}")
     public ResponseEntity<?> applyForJob(@PathVariable Long jobId, @RequestBody JobApplicationRequest applicationRequest, Authentication authentication) {
@@ -88,6 +92,30 @@ public class JobApplicationController {
 
         return ResponseEntity.ok(appliedJobIds);
     }
+
+    @GetMapping("/client-job-applications")
+    public ResponseEntity<List<JobApplicationResponse>> getClientJobApplications(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.badRequest().body(Collections.emptyList());
+        }
+
+        String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
+
+        ClientProfile clientProfile = clientProfileService.getClientProfileByEmail(userEmail);
+
+        if (clientProfile == null) {
+            return ResponseEntity.badRequest().body(Collections.emptyList());
+        }
+
+        List<JobApplication> clientJobApplications = jobApplicationRepository.findClientJobApplications(clientProfile);
+
+        List<JobApplicationResponse> responseList = clientJobApplications.stream()
+                .map(JobApplicationResponse::fromEntity)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(responseList);
+    }
+
 
 
 }
