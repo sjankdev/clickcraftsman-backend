@@ -18,6 +18,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/job-applications")
@@ -34,7 +37,6 @@ public class JobApplicationController {
 
     @PostMapping("/apply/{jobId}")
     public ResponseEntity<?> applyForJob(@PathVariable Long jobId, @RequestBody JobApplicationRequest applicationRequest, Authentication authentication) {
-
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.badRequest().body(new MessageResponse("User not authenticated."));
         }
@@ -48,15 +50,43 @@ public class JobApplicationController {
             return ResponseEntity.badRequest().body(new MessageResponse("Freelancer profile not found."));
         }
 
-        ClientJobPosting jobPosting = jobPostingRepository.findById(jobId).orElseThrow(() -> new RuntimeException("Job posting not found for jobId: " + jobId));
+        ClientJobPosting jobPosting = jobPostingRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job posting not found for jobId: " + jobId));
+
+        boolean hasApplied = jobApplicationRepository.existsByFreelancerProfileAndClientJobPosting(freelancerProfile, jobPosting);
+
+        if (hasApplied) {
+            return ResponseEntity.badRequest().body(new MessageResponse("You have already applied for this job."));
+        }
+
+        String messageToClient = applicationRequest.getMessageToClient();
 
         JobApplication jobApplication = new JobApplication();
         jobApplication.setClientJobPosting(jobPosting);
         jobApplication.setFreelancerProfile(freelancerProfile);
+        jobApplication.setMessageToClient(messageToClient);
 
         jobApplicationRepository.save(jobApplication);
 
         return ResponseEntity.ok("Job application submitted successfully");
+    }
+
+    @GetMapping("/applied-jobs")
+    public ResponseEntity<List<Long>> getAppliedJobs(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.badRequest().body(Collections.emptyList());
+        }
+
+        String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
+        FreelancerProfile freelancerProfile = freelancerProfileService.getFreelancerProfileByEmail(userEmail);
+
+        if (freelancerProfile == null) {
+            return ResponseEntity.badRequest().body(Collections.emptyList());
+        }
+
+        List<Long> appliedJobIds = jobApplicationRepository.findAppliedJobIdsByFreelancerProfile(freelancerProfile);
+
+        return ResponseEntity.ok(appliedJobIds);
     }
 
 
