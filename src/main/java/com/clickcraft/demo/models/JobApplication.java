@@ -3,8 +3,8 @@ package com.clickcraft.demo.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "job_offers")
-public class FreelancerOfferJob {
+@Table(name = "job_applications")
+public class JobApplication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,7 +14,12 @@ public class FreelancerOfferJob {
     @JoinColumn(name = "freelancer_profile_id")
     private FreelancerProfile freelancerProfile;
 
-    public FreelancerOfferJob() {}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_job_posting_id")
+    private ClientJobPosting clientJobPosting;
+
+    public JobApplication() {
+    }
 
     public FreelancerProfile getFreelancerProfile() {
         return freelancerProfile;
@@ -22,5 +27,13 @@ public class FreelancerOfferJob {
 
     public void setFreelancerProfile(FreelancerProfile freelancerProfile) {
         this.freelancerProfile = freelancerProfile;
+    }
+
+    public ClientJobPosting getClientJobPosting() {
+        return clientJobPosting;
+    }
+
+    public void setClientJobPosting(ClientJobPosting clientJobPosting) {
+        this.clientJobPosting = clientJobPosting;
     }
 }
