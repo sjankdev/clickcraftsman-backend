@@ -34,7 +34,6 @@ public class JobApplicationController {
 
     @PostMapping("/apply/{jobId}")
     public ResponseEntity<?> applyForJob(@PathVariable Long jobId, @RequestBody JobApplicationRequest applicationRequest, Authentication authentication) {
-
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.badRequest().body(new MessageResponse("User not authenticated."));
         }
@@ -48,7 +47,14 @@ public class JobApplicationController {
             return ResponseEntity.badRequest().body(new MessageResponse("Freelancer profile not found."));
         }
 
-        ClientJobPosting jobPosting = jobPostingRepository.findById(jobId).orElseThrow(() -> new RuntimeException("Job posting not found for jobId: " + jobId));
+        ClientJobPosting jobPosting = jobPostingRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job posting not found for jobId: " + jobId));
+
+        boolean hasApplied = jobApplicationRepository.existsByFreelancerProfileAndClientJobPosting(freelancerProfile, jobPosting);
+
+        if (hasApplied) {
+            return ResponseEntity.badRequest().body(new MessageResponse("You have already applied for this job."));
+        }
 
         JobApplication jobApplication = new JobApplication();
         jobApplication.setClientJobPosting(jobPosting);

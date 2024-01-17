@@ -3,7 +3,9 @@ package com.clickcraft.demo.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "job_applications")
+@Table(name = "job_applications", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"freelancer_profile_id", "client_job_posting_id"})
+})
 public class JobApplication {
 
     @Id
