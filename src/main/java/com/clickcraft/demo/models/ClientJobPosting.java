@@ -1,5 +1,7 @@
 package com.clickcraft.demo.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "client_job_postings")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "requiredSkills"})
 public class ClientJobPosting {
 
     @Id
@@ -29,10 +32,12 @@ public class ClientJobPosting {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_profile_id")
+    @JsonIgnore
     private final ClientProfile clientProfile;
 
     @ManyToMany
     @JoinTable(name = "job_posting_skills", joinColumns = @JoinColumn(name = "job_posting_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
+    @JsonIgnore
     private List<Skill> requiredSkills;
 
     @Column(name = "is_remote")
