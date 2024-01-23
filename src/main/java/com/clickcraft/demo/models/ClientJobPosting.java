@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "client_job_postings")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "requiredSkills"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ClientJobPosting {
 
     @Id
@@ -39,7 +39,6 @@ public class ClientJobPosting {
 
     @ManyToMany
     @JoinTable(name = "job_posting_skills", joinColumns = @JoinColumn(name = "job_posting_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    @JsonIgnore
     private List<Skill> requiredSkills;
 
     @Column(name = "is_remote")
