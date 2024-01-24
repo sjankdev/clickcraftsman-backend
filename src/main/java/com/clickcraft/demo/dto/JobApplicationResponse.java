@@ -7,7 +7,8 @@ public class JobApplicationResponse {
     private Long id;
     private String messageToClient;
     private ClientJobPosting jobPosting;
-
+    private String freelancerFirstName;
+    private String freelancerLastName;
 
     public static JobApplicationResponse fromEntity(JobApplication application) {
         JobApplicationResponse response = new JobApplicationResponse();
@@ -42,5 +43,21 @@ public class JobApplicationResponse {
 
     public void setJobPosting(ClientJobPosting jobPosting) {
         this.jobPosting = jobPosting;
+    }
+
+    public String getFreelancerFirstName() {
+        return freelancerFirstName;
+    }
+
+    public void setFreelancerFirstName(String freelancerFirstName) {
+        this.freelancerFirstName = freelancerFirstName;
+    }
+
+    public String getFreelancerLastName() {
+        return freelancerLastName;
+    }
+
+    public void setFreelancerLastName(String freelancerLastName) {
+        this.freelancerLastName = freelancerLastName;
     }
 }
