@@ -110,7 +110,12 @@ public class JobApplicationController {
         List<JobApplication> clientJobApplications = jobApplicationRepository.findClientJobApplications(clientProfile);
 
         List<JobApplicationResponse> responseList = clientJobApplications.stream()
-                .map(JobApplicationResponse::fromEntity)
+                .map(jobApplication -> {
+                    JobApplicationResponse response = JobApplicationResponse.fromEntity(jobApplication);
+                    response.setFreelancerFirstName(jobApplication.getFreelancerProfile().getFirstName());
+                    response.setFreelancerLastName(jobApplication.getFreelancerProfile().getLastName());
+                    return response;
+                })
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(responseList);
