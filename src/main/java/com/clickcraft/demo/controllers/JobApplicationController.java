@@ -136,7 +136,12 @@ public class JobApplicationController {
             logger.info("Fetched {} job applications for jobId: {}", jobApplications.size(), jobId);
 
             List<JobApplicationResponse> responseList = jobApplications.stream()
-                    .map(JobApplicationResponse::fromEntity)
+                    .map(jobApplication -> {
+                        JobApplicationResponse response = JobApplicationResponse.fromEntity(jobApplication);
+                        response.setFreelancerFirstName(jobApplication.getFreelancerProfile().getFirstName());
+                        response.setFreelancerLastName(jobApplication.getFreelancerProfile().getLastName());
+                        return response;
+                    })
                     .collect(Collectors.toList());
 
             return ResponseEntity.ok(responseList);
@@ -145,7 +150,6 @@ public class JobApplicationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 
 
 }
