@@ -11,7 +11,10 @@ import com.clickcraft.demo.repository.JobApplicationRepository;
 import com.clickcraft.demo.repository.JobPostingRepository;
 import com.clickcraft.demo.service.ClientProfileService;
 import com.clickcraft.demo.service.FreelancerProfileService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,6 +29,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/job-applications")
 public class JobApplicationController {
+
+    private static final Logger logger = LoggerFactory.getLogger(JobApplicationController.class);
 
     @Autowired
     private JobPostingRepository jobPostingRepository;
@@ -121,6 +126,30 @@ public class JobApplicationController {
         return ResponseEntity.ok(responseList);
     }
 
+    @GetMapping("/job-applications/{jobId}")
+    public ResponseEntity<List<JobApplicationResponse>> getJobApplicationsForJob(@PathVariable Long jobId) {
+        try {
+            logger.info("Fetching job applications for jobId: {}", jobId);
+
+            List<JobApplication> jobApplications = jobApplicationRepository.findJobApplicationsByJobId(jobId);
+
+            logger.info("Fetched {} job applications for jobId: {}", jobApplications.size(), jobId);
+
+            List<JobApplicationResponse> responseList = jobApplications.stream()
+                    .map(jobApplication -> {
+                        JobApplicationResponse response = JobApplicationResponse.fromEntity(jobApplication);
+                        response.setFreelancerFirstName(jobApplication.getFreelancerProfile().getFirstName());
+                        response.setFreelancerLastName(jobApplication.getFreelancerProfile().getLastName());
+                        return response;
+                    })
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(responseList);
+        } catch (Exception e) {
+            logger.error("Error fetching job applications for job {}", jobId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
 
 }

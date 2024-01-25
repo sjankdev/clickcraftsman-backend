@@ -5,8 +5,9 @@ import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.JobApplication;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -21,6 +22,9 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
             "JOIN ja.clientJobPosting jp " +
             "WHERE jp.clientProfile = :clientProfile")
     List<JobApplication> findClientJobApplications(ClientProfile clientProfile);
+
+    @Query("SELECT ja FROM JobApplication ja " +
+            "JOIN ja.clientJobPosting jp " +
+            "WHERE jp.id = :jobId")  // Modified query
+    List<JobApplication> findJobApplicationsByJobId(@Param("jobId") Long jobId);
 }
-
-
