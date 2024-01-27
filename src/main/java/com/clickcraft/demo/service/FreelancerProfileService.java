@@ -53,6 +53,7 @@ public class FreelancerProfileService {
 
     private PublicProfileDTO convertToPublicProfileDTO(FreelancerProfile freelancerProfile) {
         PublicProfileDTO publicProfileDTO = new PublicProfileDTO();
+        publicProfileDTO.setId(freelancerProfile.getId());
         publicProfileDTO.setFirstName(freelancerProfile.getFirstName());
         publicProfileDTO.setLastName(freelancerProfile.getLastName());
         publicProfileDTO.setContactPhone(freelancerProfile.getContactPhone());
@@ -62,4 +63,5 @@ public class FreelancerProfileService {
         publicProfileDTO.setSkills(freelancerProfile.getSkills().stream().map(Skill::getSkillName).collect(Collectors.toSet()));
         return publicProfileDTO;
     }
+
 }
