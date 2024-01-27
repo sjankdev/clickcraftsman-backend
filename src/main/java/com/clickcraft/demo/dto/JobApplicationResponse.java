@@ -1,6 +1,7 @@
 package com.clickcraft.demo.dto;
 
 import com.clickcraft.demo.models.ClientJobPosting;
+import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.JobApplication;
 
 public class JobApplicationResponse {
@@ -16,6 +17,14 @@ public class JobApplicationResponse {
         response.setId(application.getId());
         response.setMessageToClient(application.getMessageToClient());
         response.setJobPosting(application.getClientJobPosting());
+
+        FreelancerProfile freelancerProfile = application.getFreelancerProfile();
+        if (freelancerProfile != null) {
+            response.setFreelancerId(freelancerProfile.getId());
+            response.setFreelancerFirstName(freelancerProfile.getFirstName());
+            response.setFreelancerLastName(freelancerProfile.getLastName());
+        }
+
         return response;
     }
 
