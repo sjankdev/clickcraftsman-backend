@@ -138,6 +138,7 @@ public class JobApplicationController {
             List<JobApplicationResponse> responseList = jobApplications.stream()
                     .map(jobApplication -> {
                         JobApplicationResponse response = JobApplicationResponse.fromEntity(jobApplication);
+                        response.setFreelancerId(jobApplication.getFreelancerProfile().getId());
                         response.setFreelancerFirstName(jobApplication.getFreelancerProfile().getFirstName());
                         response.setFreelancerLastName(jobApplication.getFreelancerProfile().getLastName());
                         return response;
@@ -150,6 +151,4 @@ public class JobApplicationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-
 }
