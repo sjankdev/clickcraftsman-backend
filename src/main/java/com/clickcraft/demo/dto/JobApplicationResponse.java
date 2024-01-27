@@ -9,6 +9,7 @@ public class JobApplicationResponse {
     private ClientJobPosting jobPosting;
     private String freelancerFirstName;
     private String freelancerLastName;
+    private Long freelancerId;
 
     public static JobApplicationResponse fromEntity(JobApplication application) {
         JobApplicationResponse response = new JobApplicationResponse();
@@ -27,6 +28,14 @@ public class JobApplicationResponse {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getFreelancerId() {
+        return freelancerId;
+    }
+
+    public void setFreelancerId(Long freelancerId) {
+        this.freelancerId = freelancerId;
     }
 
     public String getMessageToClient() {
