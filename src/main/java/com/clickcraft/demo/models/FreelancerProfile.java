@@ -65,6 +65,10 @@ public class FreelancerProfile {
         return freelancerProfile;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getFirstName() {
         return firstName;
     }

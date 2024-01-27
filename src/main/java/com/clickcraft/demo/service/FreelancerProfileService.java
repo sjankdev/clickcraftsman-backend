@@ -33,9 +33,8 @@ public class FreelancerProfileService {
                     .map(this::convertToPublicProfileDTO)
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            // Log the exception for debugging
             e.printStackTrace();
-            throw e; // rethrow the exception
+            throw e;
         }
     }
 
@@ -45,14 +44,14 @@ public class FreelancerProfileService {
                     .orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
             return convertToPublicProfileDTO(freelancerProfile);
         } catch (Exception e) {
-            // Log the exception for debugging
             e.printStackTrace();
-            throw e; // rethrow the exception
+            throw e;
         }
     }
 
     private PublicProfileDTO convertToPublicProfileDTO(FreelancerProfile freelancerProfile) {
         PublicProfileDTO publicProfileDTO = new PublicProfileDTO();
+        publicProfileDTO.setId(freelancerProfile.getId());
         publicProfileDTO.setFirstName(freelancerProfile.getFirstName());
         publicProfileDTO.setLastName(freelancerProfile.getLastName());
         publicProfileDTO.setContactPhone(freelancerProfile.getContactPhone());
@@ -62,4 +61,5 @@ public class FreelancerProfileService {
         publicProfileDTO.setSkills(freelancerProfile.getSkills().stream().map(Skill::getSkillName).collect(Collectors.toSet()));
         return publicProfileDTO;
     }
+
 }

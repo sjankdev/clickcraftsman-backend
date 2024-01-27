@@ -6,6 +6,7 @@ import java.util.Set;
 
 public class PublicProfileDTO {
 
+    private Long id;
     private String firstName;
     private String lastName;
     private String contactPhone;
@@ -15,6 +16,14 @@ public class PublicProfileDTO {
     private Set<String> skills;
 
     public PublicProfileDTO() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFirstName() {
