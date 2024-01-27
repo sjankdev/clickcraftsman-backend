@@ -33,9 +33,8 @@ public class FreelancerProfileService {
                     .map(this::convertToPublicProfileDTO)
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            // Log the exception for debugging
             e.printStackTrace();
-            throw e; // rethrow the exception
+            throw e;
         }
     }
 
@@ -45,9 +44,8 @@ public class FreelancerProfileService {
                     .orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
             return convertToPublicProfileDTO(freelancerProfile);
         } catch (Exception e) {
-            // Log the exception for debugging
             e.printStackTrace();
-            throw e; // rethrow the exception
+            throw e;
         }
     }
 

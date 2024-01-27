@@ -23,7 +23,6 @@ public class FreelancerController {
             List<PublicProfileDTO> publicProfiles = freelancerProfileService.getAllPublicProfiles();
             return new ResponseEntity<>(publicProfiles, HttpStatus.OK);
         } catch (Exception e) {
-            // Log the exception for debugging
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -32,17 +31,14 @@ public class FreelancerController {
     @GetMapping("/{freelancerId}")
     public ResponseEntity<PublicProfileDTO> getPublicProfileById(@PathVariable String freelancerId) {
         try {
-            // Check if freelancerId is a valid Long
             Long id = Long.valueOf(freelancerId);
 
             PublicProfileDTO publicProfile = freelancerProfileService.getPublicProfileById(id);
             return new ResponseEntity<>(publicProfile, HttpStatus.OK);
         } catch (NumberFormatException e) {
-            // Log the exception for debugging
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            // Log the exception for debugging
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
