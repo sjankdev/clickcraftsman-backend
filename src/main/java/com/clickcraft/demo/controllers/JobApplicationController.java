@@ -75,6 +75,12 @@ public class JobApplicationController {
         jobApplication.setFreelancerProfile(freelancerProfile);
         jobApplication.setMessageToClient(messageToClient);
 
+        JobApplication savedJobApplication = jobApplicationRepository.save(jobApplication);
+
+        JobApplicationResponse response = JobApplicationResponse.fromEntity(savedJobApplication);
+
+        response.setFreelancerId(freelancerProfile.getId());
+
         jobApplicationRepository.save(jobApplication);
 
         return ResponseEntity.ok("Job application submitted successfully");
@@ -138,12 +144,22 @@ public class JobApplicationController {
             List<JobApplicationResponse> responseList = jobApplications.stream()
                     .map(jobApplication -> {
                         JobApplicationResponse response = JobApplicationResponse.fromEntity(jobApplication);
-                        response.setFreelancerId(jobApplication.getFreelancerProfile().getId());
-                        response.setFreelancerFirstName(jobApplication.getFreelancerProfile().getFirstName());
-                        response.setFreelancerLastName(jobApplication.getFreelancerProfile().getLastName());
+                        FreelancerProfile freelancerProfile = jobApplication.getFreelancerProfile();
+
+                        if (freelancerProfile != null) {
+                            response.setFreelancerId(freelancerProfile.getId());
+                            response.setFreelancerFirstName(freelancerProfile.getFirstName());
+                            response.setFreelancerLastName(freelancerProfile.getLastName());
+                        } else {
+                            // Log or print a message if freelancerProfile is null
+                            logger.info("Freelancer profile is null for job application with id: {}", jobApplication.getId());
+                        }
+
                         return response;
                     })
                     .collect(Collectors.toList());
+
+
 
             return ResponseEntity.ok(responseList);
         } catch (Exception e) {
