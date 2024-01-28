@@ -6,6 +6,8 @@ import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.payload.response.MessageResponse;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
 import com.clickcraft.demo.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,37 +20,52 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user")
 public class UserController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
     @Autowired
     private UserService userService;
 
     @GetMapping("/profile")
     public ResponseEntity<UserProfileDTO> getUserProfile() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null) {
-            Object principal = authentication.getPrincipal();
-            System.out.println("Received a request to fetch user profile. Principal class: " + principal.getClass());
-
-            if (principal instanceof UserDetailsImpl) {
-                UserDetailsImpl userDetails = (UserDetailsImpl) principal;
-                System.out.println("Logged-in User: " + userDetails.getUsername() + " (Email: " + userDetails.getEmail() + ")");
+            if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
+                logger.info("Received a request to fetch user profile. Logged-in User: {} (Email: {})", userDetails.getUsername(), userDetails.getEmail());
 
                 User user = userService.getUserByEmail(userDetails.getEmail());
-
                 UserProfileDTO userProfileDTO = UserProfileDTO.fromUser(user);
-                System.out.println("User Profile Data: " + userProfileDTO);
+
+                logger.info("User Profile Data: {}", userProfileDTO);
                 return ResponseEntity.ok(userProfileDTO);
             }
-        }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            logger.error("Error fetching user profile", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping("/update")
     public ResponseEntity<MessageResponse> updateUserProfile(@RequestBody UserProfileUpdateRequest updateRequest) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getUserByEmail(userDetails.getEmail());
+        try {
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User user = userService.getUserByEmail(userDetails.getEmail());
 
+            updateProfileData(user, updateRequest);
+
+            userService.saveUser(user);
+
+            logger.info("User profile updated successfully for user: {}", userDetails.getEmail());
+            return ResponseEntity.ok(new MessageResponse("User profile updated successfully!"));
+        } catch (Exception e) {
+            logger.error("Error updating user profile", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    private void updateProfileData(User user, UserProfileUpdateRequest updateRequest) {
         if (user.getClientProfile() != null) {
             user.getClientProfile().setFirstName(updateRequest.getFirstName());
             user.getClientProfile().setLastName(updateRequest.getLastName());
@@ -56,9 +73,5 @@ public class UserController {
             user.getFreelancerProfile().setFirstName(updateRequest.getFirstName());
             user.getFreelancerProfile().setLastName(updateRequest.getLastName());
         }
-
-        userService.saveUser(user);
-
-        return ResponseEntity.ok(new MessageResponse("User profile updated successfully!"));
     }
 }

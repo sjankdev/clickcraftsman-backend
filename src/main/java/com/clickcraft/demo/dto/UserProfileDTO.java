@@ -7,19 +7,22 @@ public class UserProfileDTO {
     private String firstName;
     private String lastName;
 
-    public UserProfileDTO() {
+    private UserProfileDTO() {
     }
 
     public static UserProfileDTO fromUser(User user) {
         UserProfileDTO userProfileDTO = new UserProfileDTO();
 
-        if (user.getClientProfile() != null) {
-            userProfileDTO.setFirstName(user.getClientProfile().getFirstName());
-            userProfileDTO.setLastName(user.getClientProfile().getLastName());
-        } else if (user.getFreelancerProfile() != null) {
-            userProfileDTO.setFirstName(user.getFreelancerProfile().getFirstName());
-            userProfileDTO.setLastName(user.getFreelancerProfile().getLastName());
+        if (user != null) {
+            if (user.getClientProfile() != null) {
+                userProfileDTO.setFirstName(user.getClientProfile().getFirstName());
+                userProfileDTO.setLastName(user.getClientProfile().getLastName());
+            } else if (user.getFreelancerProfile() != null) {
+                userProfileDTO.setFirstName(user.getFreelancerProfile().getFirstName());
+                userProfileDTO.setLastName(user.getFreelancerProfile().getLastName());
+            }
         }
+
         return userProfileDTO;
     }
 
@@ -39,5 +42,3 @@ public class UserProfileDTO {
         this.lastName = lastName;
     }
 }
-
-
