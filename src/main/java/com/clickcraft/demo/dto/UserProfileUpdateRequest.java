@@ -2,6 +2,8 @@ package com.clickcraft.demo.dto;
 
 import com.clickcraft.demo.models.ELocations;
 
+import java.util.Set;
+
 public class UserProfileUpdateRequest {
     private String firstName;
     private String lastName;
@@ -9,6 +11,7 @@ public class UserProfileUpdateRequest {
     private ELocations location;
     private String portfolio;
     private int yearsOfExperience;
+    private Set<String> skills;
 
     public UserProfileUpdateRequest() {
     }
@@ -59,5 +62,13 @@ public class UserProfileUpdateRequest {
 
     public void setYearsOfExperience(int yearsOfExperience) {
         this.yearsOfExperience = yearsOfExperience;
+    }
+
+    public Set<String> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(Set<String> skills) {
+        this.skills = skills;
     }
 }

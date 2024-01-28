@@ -1,7 +1,12 @@
 package com.clickcraft.demo.dto;
 
 import com.clickcraft.demo.models.ELocations;
+import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.models.User;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UserProfileDTO {
     private String firstName;
@@ -10,6 +15,7 @@ public class UserProfileDTO {
     private ELocations location;
     private String portfolio;
     private int yearsOfExperience;
+    private Set<String> skills;
 
     private UserProfileDTO() {
     }
@@ -30,6 +36,7 @@ public class UserProfileDTO {
                 userProfileDTO.setLocation(user.getFreelancerProfile().getLocation());
                 userProfileDTO.setPortfolio(user.getFreelancerProfile().getPortfolio());
                 userProfileDTO.setYearsOfExperience(user.getFreelancerProfile().getYearsOfExperience());
+                userProfileDTO.setSkills(user.getFreelancerProfile().getSkills().stream().map(Skill::getSkillName).collect(Collectors.toSet()));
             }
         }
         return userProfileDTO;
@@ -81,5 +88,13 @@ public class UserProfileDTO {
 
     public void setYearsOfExperience(int yearsOfExperience) {
         this.yearsOfExperience = yearsOfExperience;
+    }
+
+    public Set<String> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(Set<String> skills) {
+        this.skills = skills;
     }
 }

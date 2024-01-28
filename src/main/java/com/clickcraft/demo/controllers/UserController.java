@@ -2,8 +2,10 @@ package com.clickcraft.demo.controllers;
 
 import com.clickcraft.demo.dto.UserProfileDTO;
 import com.clickcraft.demo.dto.UserProfileUpdateRequest;
+import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.payload.response.MessageResponse;
+import com.clickcraft.demo.repository.SkillRepository;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
 import com.clickcraft.demo.service.UserService;
 import org.slf4j.Logger;
@@ -15,6 +17,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/user")
@@ -24,6 +29,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    SkillRepository skillRepository;
 
     @GetMapping("/profile")
     public ResponseEntity<UserProfileDTO> getUserProfile() {
@@ -78,6 +86,19 @@ public class UserController {
             user.getFreelancerProfile().setLocation(updateRequest.getLocation());
             user.getFreelancerProfile().setYearsOfExperience(updateRequest.getYearsOfExperience());
             user.getFreelancerProfile().setPortfolio(updateRequest.getPortfolio());
+            Set<Skill> skills = updateRequest.getSkills().stream()
+                    .map(skillName -> {
+                        Skill skill = skillRepository.findBySkillName(skillName)
+                                .orElseGet(() -> {
+                                    Skill newSkill = new Skill(skillName);
+                                    skillRepository.save(newSkill);
+                                    return newSkill;
+                                });
+                        return skill;
+                    })
+                    .collect(Collectors.toSet());
+
+            user.getFreelancerProfile().setSkills(skills);
         }
     }
 }
