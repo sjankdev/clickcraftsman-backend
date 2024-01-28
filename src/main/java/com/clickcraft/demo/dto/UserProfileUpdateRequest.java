@@ -1,8 +1,14 @@
 package com.clickcraft.demo.dto;
 
+import com.clickcraft.demo.models.ELocations;
+
 public class UserProfileUpdateRequest {
     private String firstName;
     private String lastName;
+    private String contactPhone;
+    private ELocations location;
+    private String portfolio;
+    private int yearsOfExperience;
 
     public UserProfileUpdateRequest() {
     }
@@ -21,5 +27,37 @@ public class UserProfileUpdateRequest {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getContactPhone() {
+        return contactPhone;
+    }
+
+    public void setContactPhone(String contactPhone) {
+        this.contactPhone = contactPhone;
+    }
+
+    public ELocations getLocation() {
+        return location;
+    }
+
+    public void setLocation(ELocations location) {
+        this.location = location;
+    }
+
+    public String getPortfolio() {
+        return portfolio;
+    }
+
+    public void setPortfolio(String portfolio) {
+        this.portfolio = portfolio;
+    }
+
+    public int getYearsOfExperience() {
+        return yearsOfExperience;
+    }
+
+    public void setYearsOfExperience(int yearsOfExperience) {
+        this.yearsOfExperience = yearsOfExperience;
     }
 }

@@ -69,9 +69,15 @@ public class UserController {
         if (user.getClientProfile() != null) {
             user.getClientProfile().setFirstName(updateRequest.getFirstName());
             user.getClientProfile().setLastName(updateRequest.getLastName());
+            user.getClientProfile().setContactPhone(updateRequest.getContactPhone());
+            user.getClientProfile().setLocation(updateRequest.getLocation());
         } else if (user.getFreelancerProfile() != null) {
             user.getFreelancerProfile().setFirstName(updateRequest.getFirstName());
             user.getFreelancerProfile().setLastName(updateRequest.getLastName());
+            user.getFreelancerProfile().setContactPhone(updateRequest.getContactPhone());
+            user.getFreelancerProfile().setLocation(updateRequest.getLocation());
+            user.getFreelancerProfile().setYearsOfExperience(updateRequest.getYearsOfExperience());
+            user.getFreelancerProfile().setPortfolio(updateRequest.getPortfolio());
         }
     }
 }
