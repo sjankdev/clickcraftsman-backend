@@ -18,6 +18,10 @@ public class Skill {
 
     public Skill() {}
 
+    public Skill(String skillName) {
+        this.skillName = skillName;
+    }
+
     public String getSkillName() {
         return skillName;
     }
