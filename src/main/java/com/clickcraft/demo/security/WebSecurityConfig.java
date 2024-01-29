@@ -57,7 +57,7 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable).exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler)).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll().requestMatchers("/api/user/**").permitAll().requestMatchers("/api/public-freelancers/**").permitAll().requestMatchers("/api/test/**").permitAll().requestMatchers("/api/job-applications/**").permitAll().requestMatchers("/api/job-postings/**").permitAll().requestMatchers("/api/skills/**").permitAll().requestMatchers("/api/locations/**").permitAll().anyRequest().authenticated());
+        http.csrf(AbstractHttpConfigurer::disable).exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler)).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll().requestMatchers("/api/user/**").permitAll().requestMatchers("/api/freelancer/**").permitAll().requestMatchers("/api/test/**").permitAll().requestMatchers("/api/job/**").permitAll().requestMatchers("/api/utils/**").permitAll().anyRequest().authenticated());
 
         http.authenticationProvider(authenticationProvider());
 

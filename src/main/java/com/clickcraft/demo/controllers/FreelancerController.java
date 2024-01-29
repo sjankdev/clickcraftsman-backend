@@ -11,7 +11,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/public-freelancers")
+@RequestMapping("/api/freelancer")
 public class FreelancerController {
 
     @Autowired
@@ -43,5 +43,4 @@ public class FreelancerController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }
