@@ -2,6 +2,7 @@ package com.clickcraft.demo.controllers;
 
 import com.clickcraft.demo.dto.JobApplicationRequest;
 import com.clickcraft.demo.dto.JobApplicationResponse;
+import com.clickcraft.demo.dto.JobPostingRequest;
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.FreelancerProfile;
@@ -11,6 +12,8 @@ import com.clickcraft.demo.repository.JobApplicationRepository;
 import com.clickcraft.demo.repository.JobPostingRepository;
 import com.clickcraft.demo.service.ClientProfileService;
 import com.clickcraft.demo.service.FreelancerProfileService;
+import com.clickcraft.demo.service.JobPostingService;
+import com.clickcraft.demo.service.SkillService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,19 +21,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/job-applications")
-public class JobApplicationController {
+@RequestMapping("/api/job")
+public class JobController {
 
-    private static final Logger logger = LoggerFactory.getLogger(JobApplicationController.class);
+    private static final Logger logger = LoggerFactory.getLogger(JobController.class);
 
     @Autowired
     private JobPostingRepository jobPostingRepository;
@@ -43,6 +48,15 @@ public class JobApplicationController {
 
     @Autowired
     private ClientProfileService clientProfileService;
+
+    @Autowired
+    private JobPostingService jobPostingService;
+
+    @Autowired
+    private SkillService skillService;
+
+    public JobController() {
+    }
 
     @PostMapping("/apply/{jobId}")
     public ResponseEntity<?> applyForJob(@PathVariable Long jobId, @RequestBody JobApplicationRequest applicationRequest, Authentication authentication) {
@@ -104,7 +118,7 @@ public class JobApplicationController {
         return ResponseEntity.ok(appliedJobIds);
     }
 
-    @GetMapping("/client-job-applications")
+    @GetMapping("/client-received-applications")
     public ResponseEntity<List<JobApplicationResponse>> getClientJobApplications(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.badRequest().body(Collections.emptyList());
@@ -151,7 +165,6 @@ public class JobApplicationController {
                             response.setFreelancerFirstName(freelancerProfile.getFirstName());
                             response.setFreelancerLastName(freelancerProfile.getLastName());
                         } else {
-                            // Log or print a message if freelancerProfile is null
                             logger.info("Freelancer profile is null for job application with id: {}", jobApplication.getId());
                         }
 
@@ -159,12 +172,62 @@ public class JobApplicationController {
                     })
                     .collect(Collectors.toList());
 
-
-
             return ResponseEntity.ok(responseList);
         } catch (Exception e) {
             logger.error("Error fetching job applications for job {}", jobId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PostMapping("/post")
+    public ResponseEntity<?> postJob(@RequestBody JobPostingRequest jobPostingRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("User not authenticated."));
+        }
+
+        String userEmail = authentication.getName();
+
+        ClientProfile clientProfile = clientProfileService.getClientProfileByEmail(userEmail);
+
+        if (clientProfile == null) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Client profile not found."));
+        }
+
+        ClientJobPosting jobPosting = new ClientJobPosting(jobPostingRequest.getJobName(), jobPostingRequest.getDescription(), clientProfile, LocalDate.now(), jobPostingRequest.getIsRemote(), jobPostingRequest.getLocation(), skillService.getSkillsByNames(jobPostingRequest.getRequiredSkillIds()));
+
+        clientProfile.addJobPosting(jobPosting);
+
+        jobPostingService.saveJobPosting(jobPosting);
+
+        return ResponseEntity.ok(new MessageResponse("Job posted successfully!"));
+    }
+
+    @GetMapping("/getAllJobs")
+    public List <ClientJobPosting> getAllJobs() {
+        return jobPostingService.getAllJobPostings();
+    }
+
+    @GetMapping("/client-job-postings")
+    public ResponseEntity<List<ClientJobPosting>> getClientJobPostings() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.badRequest().body(Collections.emptyList());
+        }
+
+        String userEmail = authentication.getName();
+
+        ClientProfile clientProfile = clientProfileService.getClientProfileByEmail(userEmail);
+
+        if (clientProfile == null) {
+            return ResponseEntity.badRequest().body(Collections.emptyList());
+        }
+
+        List<ClientJobPosting> clientJobPostings = jobPostingService.getClientJobPostings(clientProfile);
+
+        return ResponseEntity.ok(clientJobPostings);
+    }
+
 }
