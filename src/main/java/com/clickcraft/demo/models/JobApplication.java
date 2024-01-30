@@ -8,9 +8,16 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "job_applications", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"freelancer_profile_id", "client_job_posting_id"})
+        @UniqueConstraint(columnNames = {
+                "freelancer_profile_id",
+                "client_job_posting_id"
+        })
 })
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "freelancerProfile"})
+@JsonIgnoreProperties({
+        "hibernateLazyInitializer",
+        "handler",
+        "freelancerProfile"
+})
 
 public class JobApplication {
 
@@ -31,8 +38,7 @@ public class JobApplication {
     @JoinColumn(name = "client_job_posting_id")
     private ClientJobPosting clientJobPosting;
 
-    public JobApplication() {
-    }
+    public JobApplication() {}
 
     public FreelancerProfile getFreelancerProfile() {
         return freelancerProfile;

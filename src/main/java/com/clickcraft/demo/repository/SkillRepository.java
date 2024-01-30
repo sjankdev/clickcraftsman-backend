@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SkillRepository extends JpaRepository < Skill, Long > {
+
     Optional < Skill > findBySkillName(String skillName);
 
     List < Skill > findBySkillNameIn(List < String > skillNames);

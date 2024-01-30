@@ -14,7 +14,10 @@ import java.util.Set;
 
 @Entity
 @Table(name = "client_job_postings")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({
+        "hibernateLazyInitializer",
+        "handler"
+})
 public class ClientJobPosting {
 
     @Id
@@ -39,7 +42,7 @@ public class ClientJobPosting {
 
     @ManyToMany
     @JoinTable(name = "job_posting_skills", joinColumns = @JoinColumn(name = "job_posting_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    private List<Skill> requiredSkills;
+    private List < Skill > requiredSkills;
 
     @Column(name = "is_remote")
     @JsonProperty("isRemote")
@@ -50,7 +53,7 @@ public class ClientJobPosting {
 
     @OneToMany(mappedBy = "clientJobPosting", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private Set<JobApplication> jobApplications = new HashSet<>();
+    private Set < JobApplication > jobApplications = new HashSet < > ();
 
     public ClientJobPosting() {
         this.datePosted = LocalDate.now();
@@ -58,7 +61,7 @@ public class ClientJobPosting {
     }
 
     public ClientJobPosting(String jobName, String description, ClientProfile clientProfile,
-                            LocalDate datePosted, Boolean isRemote, String location, List<Skill> requiredSkills) {
+                            LocalDate datePosted, Boolean isRemote, String location, List < Skill > requiredSkills) {
         this.jobName = jobName;
         this.description = description;
         this.clientProfile = clientProfile;
@@ -100,11 +103,11 @@ public class ClientJobPosting {
         return clientProfile;
     }
 
-    public List<Skill> getRequiredSkills() {
+    public List < Skill > getRequiredSkills() {
         return requiredSkills;
     }
 
-    public void setRequiredSkills(List<Skill> requiredSkills) {
+    public void setRequiredSkills(List < Skill > requiredSkills) {
         this.requiredSkills = requiredSkills;
     }
 
@@ -124,11 +127,11 @@ public class ClientJobPosting {
         this.location = location;
     }
 
-    public Set<JobApplication> getJobApplications() {
+    public Set < JobApplication > getJobApplications() {
         return jobApplications;
     }
 
-    public void setJobApplications(Set<JobApplication> jobApplications) {
+    public void setJobApplications(Set < JobApplication > jobApplications) {
         this.jobApplications = jobApplications;
     }
 }

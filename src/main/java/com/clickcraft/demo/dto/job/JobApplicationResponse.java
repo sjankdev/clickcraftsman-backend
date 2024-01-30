@@ -1,4 +1,4 @@
-package com.clickcraft.demo.dto;
+package com.clickcraft.demo.dto.job;
 
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.FreelancerProfile;
@@ -11,6 +11,10 @@ public class JobApplicationResponse {
     private String freelancerFirstName;
     private String freelancerLastName;
     private Long freelancerId;
+
+    public JobApplicationResponse() {
+
+    }
 
     public static JobApplicationResponse fromEntity(JobApplication application) {
         JobApplicationResponse response = new JobApplicationResponse();
@@ -26,9 +30,6 @@ public class JobApplicationResponse {
         }
 
         return response;
-    }
-
-    public JobApplicationResponse() {
     }
 
     public Long getId() {

@@ -1,21 +1,18 @@
-package com.clickcraft.demo.dto;
+package com.clickcraft.demo.dto.client;
 
-import com.clickcraft.demo.models.ELocations;
+import com.clickcraft.demo.models.User;
+import com.clickcraft.demo.models.enums.ELocations;
 
-import java.util.Set;
-
-public class PublicProfileDTO {
+public class ClientProfileDTO {
 
     private Long id;
     private String firstName;
     private String lastName;
     private String contactPhone;
     private ELocations location;
-    private String portfolio;
-    private int yearsOfExperience;
-    private Set<String> skills;
 
-    public PublicProfileDTO() {
+    public ClientProfileDTO() {
+
     }
 
     public Long getId() {
@@ -58,27 +55,17 @@ public class PublicProfileDTO {
         this.location = location;
     }
 
-    public String getPortfolio() {
-        return portfolio;
-    }
+    public static ClientProfileDTO fromUser(User user) {
+        ClientProfileDTO clientProfileDTO = new ClientProfileDTO();
 
-    public void setPortfolio(String portfolio) {
-        this.portfolio = portfolio;
-    }
-
-    public int getYearsOfExperience() {
-        return yearsOfExperience;
-    }
-
-    public void setYearsOfExperience(int yearsOfExperience) {
-        this.yearsOfExperience = yearsOfExperience;
-    }
-
-    public Set<String> getSkills() {
-        return skills;
-    }
-
-    public void setSkills(Set<String> skills) {
-        this.skills = skills;
+        if (user != null) {
+            if (user.getClientProfile() != null) {
+                clientProfileDTO.setFirstName(user.getClientProfile().getFirstName());
+                clientProfileDTO.setLastName(user.getClientProfile().getLastName());
+                clientProfileDTO.setContactPhone(user.getClientProfile().getContactPhone());
+                clientProfileDTO.setLocation(user.getClientProfile().getLocation());
+            }
+        }
+        return clientProfileDTO;
     }
 }

@@ -12,19 +12,20 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface JobApplicationRepository extends JpaRepository<JobApplication, Long> {
+public interface JobApplicationRepository extends JpaRepository < JobApplication, Long > {
+
     boolean existsByFreelancerProfileAndClientJobPosting(FreelancerProfile freelancerProfile, ClientJobPosting clientJobPosting);
 
     @Query("SELECT DISTINCT j.clientJobPosting.id FROM JobApplication j WHERE j.freelancerProfile = :freelancerProfile")
-    List<Long> findAppliedJobIdsByFreelancerProfile(FreelancerProfile freelancerProfile);
+    List < Long > findAppliedJobIdsByFreelancerProfile(FreelancerProfile freelancerProfile);
 
     @Query("SELECT ja FROM JobApplication ja " +
             "JOIN ja.clientJobPosting jp " +
             "WHERE jp.clientProfile = :clientProfile")
-    List<JobApplication> findClientJobApplications(ClientProfile clientProfile);
+    List < JobApplication > findClientJobApplications(ClientProfile clientProfile);
 
     @Query("SELECT ja FROM JobApplication ja " +
             "JOIN ja.clientJobPosting jp " +
-            "WHERE jp.id = :jobId")  // Modified query
-    List<JobApplication> findJobApplicationsByJobId(@Param("jobId") Long jobId);
+            "WHERE jp.id = :jobId")
+    List < JobApplication > findJobApplicationsByJobId(@Param("jobId") Long jobId);
 }

@@ -1,13 +1,13 @@
 package com.clickcraft.demo.controllers;
 
-import com.clickcraft.demo.dto.JobApplicationRequest;
-import com.clickcraft.demo.dto.JobApplicationResponse;
-import com.clickcraft.demo.dto.JobPostingRequest;
+import com.clickcraft.demo.dto.job.JobApplicationRequest;
+import com.clickcraft.demo.dto.job.JobApplicationResponse;
+import com.clickcraft.demo.dto.job.JobPostingRequest;
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.JobApplication;
-import com.clickcraft.demo.payload.response.MessageResponse;
+import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.repository.JobApplicationRepository;
 import com.clickcraft.demo.repository.JobPostingRepository;
 import com.clickcraft.demo.service.ClientProfileService;
@@ -37,29 +37,30 @@ public class JobController {
 
     private static final Logger logger = LoggerFactory.getLogger(JobController.class);
 
-    @Autowired
-    private JobPostingRepository jobPostingRepository;
+    private final JobPostingRepository jobPostingRepository;
+
+    private final JobApplicationRepository jobApplicationRepository;
+
+    private final FreelancerProfileService freelancerProfileService;
+
+    private final ClientProfileService clientProfileService;
+
+    private final JobPostingService jobPostingService;
+
+    private final SkillService skillService;
 
     @Autowired
-    private JobApplicationRepository jobApplicationRepository;
-
-    @Autowired
-    private FreelancerProfileService freelancerProfileService;
-
-    @Autowired
-    private ClientProfileService clientProfileService;
-
-    @Autowired
-    private JobPostingService jobPostingService;
-
-    @Autowired
-    private SkillService skillService;
-
-    public JobController() {
+    public JobController(JobPostingRepository jobPostingRepository, JobApplicationRepository jobApplicationRepository, FreelancerProfileService freelancerProfileService, ClientProfileService clientProfileService, JobPostingService jobPostingService, SkillService skillService) {
+        this.jobPostingRepository = jobPostingRepository;
+        this.jobApplicationRepository = jobApplicationRepository;
+        this.freelancerProfileService = freelancerProfileService;
+        this.clientProfileService = clientProfileService;
+        this.jobPostingService = jobPostingService;
+        this.skillService = skillService;
     }
 
     @PostMapping("/apply/{jobId}")
-    public ResponseEntity<?> applyForJob(@PathVariable Long jobId, @RequestBody JobApplicationRequest applicationRequest, Authentication authentication) {
+    public ResponseEntity < ? > applyForJob(@PathVariable Long jobId, @RequestBody JobApplicationRequest applicationRequest, Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.badRequest().body(new MessageResponse("User not authenticated."));
         }
@@ -101,7 +102,7 @@ public class JobController {
     }
 
     @GetMapping("/applied-jobs")
-    public ResponseEntity<List<Long>> getAppliedJobs(Authentication authentication) {
+    public ResponseEntity < List < Long >> getAppliedJobs(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
@@ -113,13 +114,13 @@ public class JobController {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
 
-        List<Long> appliedJobIds = jobApplicationRepository.findAppliedJobIdsByFreelancerProfile(freelancerProfile);
+        List < Long > appliedJobIds = jobApplicationRepository.findAppliedJobIdsByFreelancerProfile(freelancerProfile);
 
         return ResponseEntity.ok(appliedJobIds);
     }
 
     @GetMapping("/client-received-applications")
-    public ResponseEntity<List<JobApplicationResponse>> getClientJobApplications(Authentication authentication) {
+    public ResponseEntity < List < JobApplicationResponse >> getClientJobApplications(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
@@ -132,9 +133,9 @@ public class JobController {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
 
-        List<JobApplication> clientJobApplications = jobApplicationRepository.findClientJobApplications(clientProfile);
+        List < JobApplication > clientJobApplications = jobApplicationRepository.findClientJobApplications(clientProfile);
 
-        List<JobApplicationResponse> responseList = clientJobApplications.stream()
+        List < JobApplicationResponse > responseList = clientJobApplications.stream()
                 .map(jobApplication -> {
                     JobApplicationResponse response = JobApplicationResponse.fromEntity(jobApplication);
                     response.setFreelancerFirstName(jobApplication.getFreelancerProfile().getFirstName());
@@ -147,15 +148,15 @@ public class JobController {
     }
 
     @GetMapping("/job-applications/{jobId}")
-    public ResponseEntity<List<JobApplicationResponse>> getJobApplicationsForJob(@PathVariable Long jobId) {
+    public ResponseEntity < List < JobApplicationResponse >> getJobApplicationsForJob(@PathVariable Long jobId) {
         try {
             logger.info("Fetching job applications for jobId: {}", jobId);
 
-            List<JobApplication> jobApplications = jobApplicationRepository.findJobApplicationsByJobId(jobId);
+            List < JobApplication > jobApplications = jobApplicationRepository.findJobApplicationsByJobId(jobId);
 
             logger.info("Fetched {} job applications for jobId: {}", jobApplications.size(), jobId);
 
-            List<JobApplicationResponse> responseList = jobApplications.stream()
+            List < JobApplicationResponse > responseList = jobApplications.stream()
                     .map(jobApplication -> {
                         JobApplicationResponse response = JobApplicationResponse.fromEntity(jobApplication);
                         FreelancerProfile freelancerProfile = jobApplication.getFreelancerProfile();
@@ -180,7 +181,7 @@ public class JobController {
     }
 
     @PostMapping("/post")
-    public ResponseEntity<?> postJob(@RequestBody JobPostingRequest jobPostingRequest) {
+    public ResponseEntity < ? > postJob(@RequestBody JobPostingRequest jobPostingRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -205,12 +206,12 @@ public class JobController {
     }
 
     @GetMapping("/getAllJobs")
-    public List <ClientJobPosting> getAllJobs() {
+    public List < ClientJobPosting > getAllJobs() {
         return jobPostingService.getAllJobPostings();
     }
 
     @GetMapping("/client-job-postings")
-    public ResponseEntity<List<ClientJobPosting>> getClientJobPostings() {
+    public ResponseEntity < List < ClientJobPosting >> getClientJobPostings() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -225,7 +226,7 @@ public class JobController {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
 
-        List<ClientJobPosting> clientJobPostings = jobPostingService.getClientJobPostings(clientProfile);
+        List < ClientJobPosting > clientJobPostings = jobPostingService.getClientJobPostings(clientProfile);
 
         return ResponseEntity.ok(clientJobPostings);
     }

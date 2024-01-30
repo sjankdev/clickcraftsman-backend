@@ -1,6 +1,7 @@
 package com.clickcraft.demo.models;
 
-import com.clickcraft.demo.payload.request.SignupRequest;
+import com.clickcraft.demo.models.enums.ELocations;
+import com.clickcraft.demo.security.payload.request.SignupRequest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

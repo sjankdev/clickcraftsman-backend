@@ -1,28 +1,17 @@
 package com.clickcraft.demo.service;
 
-import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.ClientJobPosting;
-import com.clickcraft.demo.repository.ClientProfileRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.clickcraft.demo.models.ClientProfile;
+import com.clickcraft.demo.models.User;
 
-@Service
-public class ClientProfileService {
+public interface ClientProfileService {
 
-    private final ClientProfileRepository clientProfileRepository;
+    User getClientByEmail(String email);
 
-    @Autowired
-    public ClientProfileService(ClientProfileRepository clientProfileRepository) {
-        this.clientProfileRepository = clientProfileRepository;
-    }
+    void saveClient(User user);
 
-    @Transactional
-    public void postJob(ClientProfile clientProfile, ClientJobPosting jobPosting) {
-        clientProfile.addJobPosting(jobPosting);
-    }
+    void postJob(ClientProfile clientProfile, ClientJobPosting jobPosting);
 
-    public ClientProfile getClientProfileByEmail(String email) {
-        return clientProfileRepository.findByUserEmail(email);
-    }
+    ClientProfile getClientProfileByEmail(String email);
+
 }

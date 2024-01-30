@@ -1,19 +1,17 @@
-package com.clickcraft.demo.dto;
+package com.clickcraft.demo.dto.client;
 
-import com.clickcraft.demo.models.ELocations;
+import com.clickcraft.demo.models.enums.ELocations;
 
 import java.util.Set;
 
-public class UserProfileUpdateRequest {
+public class ClientProfileUpdateRequest {
     private String firstName;
     private String lastName;
     private String contactPhone;
     private ELocations location;
-    private String portfolio;
-    private int yearsOfExperience;
-    private Set<String> skills;
 
-    public UserProfileUpdateRequest() {
+    public ClientProfileUpdateRequest() {
+
     }
 
     public String getFirstName() {
@@ -46,29 +44,5 @@ public class UserProfileUpdateRequest {
 
     public void setLocation(ELocations location) {
         this.location = location;
-    }
-
-    public String getPortfolio() {
-        return portfolio;
-    }
-
-    public void setPortfolio(String portfolio) {
-        this.portfolio = portfolio;
-    }
-
-    public int getYearsOfExperience() {
-        return yearsOfExperience;
-    }
-
-    public void setYearsOfExperience(int yearsOfExperience) {
-        this.yearsOfExperience = yearsOfExperience;
-    }
-
-    public Set<String> getSkills() {
-        return skills;
-    }
-
-    public void setSkills(Set<String> skills) {
-        this.skills = skills;
     }
 }

@@ -1,6 +1,7 @@
 package com.clickcraft.demo.models;
 
-import com.clickcraft.demo.payload.request.SignupRequest;
+import com.clickcraft.demo.models.enums.ELocations;
+import com.clickcraft.demo.security.payload.request.SignupRequest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -41,13 +42,12 @@ public class FreelancerProfile {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "freelancer_profile_skills", joinColumns = @JoinColumn(name = "freelancer_profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    private Set<Skill> skills = new HashSet<>();
+    private Set < Skill > skills = new HashSet < > ();
 
     @OneToMany(mappedBy = "freelancerProfile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<JobApplication> jobApplications = new HashSet<>();
+    private Set < JobApplication > jobApplications = new HashSet < > ();
 
-    public FreelancerProfile() {
-    }
+    public FreelancerProfile() {}
 
     public void addSkill(Skill skill) {
         this.skills.add(skill);
@@ -125,19 +125,19 @@ public class FreelancerProfile {
         this.user = user;
     }
 
-    public Set<Skill> getSkills() {
+    public Set < Skill > getSkills() {
         return skills;
     }
 
-    public void setSkills(Set<Skill> skills) {
+    public void setSkills(Set < Skill > skills) {
         this.skills = skills;
     }
 
-    public Set<JobApplication> getJobApplications() {
+    public Set < JobApplication > getJobApplications() {
         return jobApplications;
     }
 
-    public void setJobApplications(Set<JobApplication> jobApplications) {
+    public void setJobApplications(Set < JobApplication > jobApplications) {
         this.jobApplications = jobApplications;
     }
 
