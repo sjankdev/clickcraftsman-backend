@@ -39,7 +39,7 @@ public class FreelancerController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity < MessageResponse > updateClientProfile(@RequestBody FreelancerProfileUpdateRequest freelancerProfileUpdateRequest) {
+    public ResponseEntity < MessageResponse > updateFreelancerProfile(@RequestBody FreelancerProfileUpdateRequest freelancerProfileUpdateRequest) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             User user = freelancerProfileService.getFreelancerByEmail(userDetails.getEmail());
@@ -48,10 +48,10 @@ public class FreelancerController {
 
             freelancerProfileService.saveFreelancer(user);
 
-            logger.info("User profile updated successfully for user: {}", userDetails.getEmail());
-            return ResponseEntity.ok(new MessageResponse("User profile updated successfully!"));
+            logger.info("Freelancer profile updated successfully for user: {}", userDetails.getEmail());
+            return ResponseEntity.ok(new MessageResponse("Freelancer profile updated successfully!"));
         } catch (Exception e) {
-            logger.error("Error updating user profile", e);
+            logger.error("Error updating Freelancer profile", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -66,12 +66,11 @@ public class FreelancerController {
             user.getFreelancerProfile().setYearsOfExperience(freelancerProfileUpdateRequest.getYearsOfExperience());
             user.getFreelancerProfile().setPortfolio(freelancerProfileUpdateRequest.getPortfolio());
             Set < Skill > skills = freelancerProfileUpdateRequest.getSkills().stream().map(skillName -> {
-                Skill skill = skillRepository.findBySkillName(skillName).orElseGet(() -> {
+                return skillRepository.findBySkillName(skillName).orElseGet(() -> {
                     Skill newSkill = new Skill(skillName);
                     skillRepository.save(newSkill);
                     return newSkill;
                 });
-                return skill;
             }).collect(Collectors.toSet());
 
             user.getFreelancerProfile().setSkills(skills);
