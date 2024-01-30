@@ -1,4 +1,4 @@
-package com.clickcraft.demo.payload.response;
+package com.clickcraft.demo.security.payload.response;
 
 public class MessageResponse {
   private String message;

@@ -1,6 +1,6 @@
 package com.clickcraft.demo.controllers;
 
-import com.clickcraft.demo.dto.PublicProfileDTO;
+import com.clickcraft.demo.dto.FreelancerProfileDTO;
 import com.clickcraft.demo.service.FreelancerProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,9 +18,9 @@ public class FreelancerController {
     private FreelancerProfileService freelancerProfileService;
 
     @GetMapping("/getAllFreelancers")
-    public ResponseEntity<List<PublicProfileDTO>> getAllPublicProfiles() {
+    public ResponseEntity<List<FreelancerProfileDTO>> getAllPublicProfiles() {
         try {
-            List<PublicProfileDTO> publicProfiles = freelancerProfileService.getAllPublicProfiles();
+            List<FreelancerProfileDTO> publicProfiles = freelancerProfileService.getAllPublicProfiles();
             return new ResponseEntity<>(publicProfiles, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
@@ -29,11 +29,11 @@ public class FreelancerController {
     }
 
     @GetMapping("/{freelancerId}")
-    public ResponseEntity<PublicProfileDTO> getPublicProfileById(@PathVariable String freelancerId) {
+    public ResponseEntity<FreelancerProfileDTO> getPublicProfileById(@PathVariable String freelancerId) {
         try {
             Long id = Long.valueOf(freelancerId);
 
-            PublicProfileDTO publicProfile = freelancerProfileService.getPublicProfileById(id);
+            FreelancerProfileDTO publicProfile = freelancerProfileService.getPublicProfileById(id);
             return new ResponseEntity<>(publicProfile, HttpStatus.OK);
         } catch (NumberFormatException e) {
             e.printStackTrace();

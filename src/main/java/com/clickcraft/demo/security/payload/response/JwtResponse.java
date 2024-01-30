@@ -1,4 +1,4 @@
-package com.clickcraft.demo.payload.response;
+package com.clickcraft.demo.security.payload.response;
 
 import java.util.List;
 

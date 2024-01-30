@@ -1,6 +1,6 @@
 package com.clickcraft.demo.controllers;
 
-import com.clickcraft.demo.models.ELocations;
+import com.clickcraft.demo.models.enums.ELocations;
 import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.service.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,5 +1,6 @@
 package com.clickcraft.demo.models;
 
+import com.clickcraft.demo.models.enums.ERole;
 import jakarta.persistence.*;
 
 @Entity

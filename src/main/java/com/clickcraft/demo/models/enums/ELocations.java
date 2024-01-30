@@ -1,4 +1,4 @@
-package com.clickcraft.demo.models;
+package com.clickcraft.demo.models.enums;
 
 public enum ELocations {
     Beograd,

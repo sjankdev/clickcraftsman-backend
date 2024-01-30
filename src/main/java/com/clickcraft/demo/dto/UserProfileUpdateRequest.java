@@ -1,6 +1,6 @@
 package com.clickcraft.demo.dto;
 
-import com.clickcraft.demo.models.ELocations;
+import com.clickcraft.demo.models.enums.ELocations;
 
 import java.util.Set;
 

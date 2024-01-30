@@ -1,11 +1,8 @@
 package com.clickcraft.demo.service;
 
-import com.clickcraft.demo.dto.PublicProfileDTO;
-import com.clickcraft.demo.models.ClientJobPosting;
-import com.clickcraft.demo.models.ClientProfile;
+import com.clickcraft.demo.dto.FreelancerProfileDTO;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.Skill;
-import com.clickcraft.demo.repository.ClientProfileRepository;
 import com.clickcraft.demo.repository.FreelancerProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -26,11 +23,11 @@ public class FreelancerProfileService {
         return freelancerProfileRepository.findByUserEmail(email);
     }
 
-    public List<PublicProfileDTO> getAllPublicProfiles() {
+    public List<FreelancerProfileDTO> getAllPublicProfiles() {
         try {
             List<FreelancerProfile> freelancerProfiles = freelancerProfileRepository.findAll();
             return freelancerProfiles.stream()
-                    .map(this::convertToPublicProfileDTO)
+                    .map(this::convertTofreelancerProfileDTO)
                     .collect(Collectors.toList());
         } catch (Exception e) {
             e.printStackTrace();
@@ -38,28 +35,28 @@ public class FreelancerProfileService {
         }
     }
 
-    public PublicProfileDTO getPublicProfileById(Long freelancerId) {
+    public FreelancerProfileDTO getPublicProfileById(Long freelancerId) {
         try {
             FreelancerProfile freelancerProfile = freelancerProfileRepository.findById(freelancerId)
                     .orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
-            return convertToPublicProfileDTO(freelancerProfile);
+            return convertTofreelancerProfileDTO(freelancerProfile);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
     }
 
-    private PublicProfileDTO convertToPublicProfileDTO(FreelancerProfile freelancerProfile) {
-        PublicProfileDTO publicProfileDTO = new PublicProfileDTO();
-        publicProfileDTO.setId(freelancerProfile.getId());
-        publicProfileDTO.setFirstName(freelancerProfile.getFirstName());
-        publicProfileDTO.setLastName(freelancerProfile.getLastName());
-        publicProfileDTO.setContactPhone(freelancerProfile.getContactPhone());
-        publicProfileDTO.setLocation(freelancerProfile.getLocation());
-        publicProfileDTO.setPortfolio(freelancerProfile.getPortfolio());
-        publicProfileDTO.setYearsOfExperience(freelancerProfile.getYearsOfExperience());
-        publicProfileDTO.setSkills(freelancerProfile.getSkills().stream().map(Skill::getSkillName).collect(Collectors.toSet()));
-        return publicProfileDTO;
+    private FreelancerProfileDTO convertTofreelancerProfileDTO(FreelancerProfile freelancerProfile) {
+        FreelancerProfileDTO freelancerProfileDTO = new FreelancerProfileDTO();
+        freelancerProfileDTO.setId(freelancerProfile.getId());
+        freelancerProfileDTO.setFirstName(freelancerProfile.getFirstName());
+        freelancerProfileDTO.setLastName(freelancerProfile.getLastName());
+        freelancerProfileDTO.setContactPhone(freelancerProfile.getContactPhone());
+        freelancerProfileDTO.setLocation(freelancerProfile.getLocation());
+        freelancerProfileDTO.setPortfolio(freelancerProfile.getPortfolio());
+        freelancerProfileDTO.setYearsOfExperience(freelancerProfile.getYearsOfExperience());
+        freelancerProfileDTO.setSkills(freelancerProfile.getSkills().stream().map(Skill::getSkillName).collect(Collectors.toSet()));
+        return freelancerProfileDTO;
     }
 
 }

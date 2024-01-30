@@ -1,4 +1,4 @@
-package com.clickcraft.demo.models;
+package com.clickcraft.demo.models.enums;
 
 public enum ERole {
   ROLE_CLIENT,

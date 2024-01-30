@@ -1,4 +1,4 @@
-package com.clickcraft.demo.payload.request;
+package com.clickcraft.demo.security.payload.request;
 
 import jakarta.validation.constraints.NotBlank;
 

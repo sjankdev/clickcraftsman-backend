@@ -1,10 +1,10 @@
 package com.clickcraft.demo.controllers;
 
-import com.clickcraft.demo.dto.UserProfileDTO;
+import com.clickcraft.demo.dto.FreelancerProfileDTO;
 import com.clickcraft.demo.dto.UserProfileUpdateRequest;
 import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.models.User;
-import com.clickcraft.demo.payload.response.MessageResponse;
+import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.repository.SkillRepository;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
 import com.clickcraft.demo.service.UserService;
@@ -34,7 +34,7 @@ public class UserController {
     SkillRepository skillRepository;
 
     @GetMapping("/profile")
-    public ResponseEntity<UserProfileDTO> getUserProfile() {
+    public ResponseEntity<FreelancerProfileDTO> getUserProfile() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -42,10 +42,10 @@ public class UserController {
                 logger.info("Received a request to fetch user profile. Logged-in User: {} (Email: {})", userDetails.getUsername(), userDetails.getEmail());
 
                 User user = userService.getUserByEmail(userDetails.getEmail());
-                UserProfileDTO userProfileDTO = UserProfileDTO.fromUser(user);
+                FreelancerProfileDTO freelancerProfileDTO = FreelancerProfileDTO.fromUser(user);
 
-                logger.info("User Profile Data: {}", userProfileDTO);
-                return ResponseEntity.ok(userProfileDTO);
+                logger.info("User Profile Data: {}", freelancerProfileDTO);
+                return ResponseEntity.ok(freelancerProfileDTO);
             }
 
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

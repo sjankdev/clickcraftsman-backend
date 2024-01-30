@@ -7,7 +7,7 @@ import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.JobApplication;
-import com.clickcraft.demo.payload.response.MessageResponse;
+import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.repository.JobApplicationRepository;
 import com.clickcraft.demo.repository.JobPostingRepository;
 import com.clickcraft.demo.service.ClientProfileService;

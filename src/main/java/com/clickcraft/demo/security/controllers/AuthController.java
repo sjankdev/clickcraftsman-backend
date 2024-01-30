@@ -6,10 +6,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.clickcraft.demo.models.*;
-import com.clickcraft.demo.payload.request.LoginRequest;
-import com.clickcraft.demo.payload.request.SignupRequest;
-import com.clickcraft.demo.payload.response.JwtResponse;
-import com.clickcraft.demo.payload.response.MessageResponse;
+import com.clickcraft.demo.models.enums.ERole;
+import com.clickcraft.demo.security.payload.request.LoginRequest;
+import com.clickcraft.demo.security.payload.request.SignupRequest;
+import com.clickcraft.demo.security.payload.response.JwtResponse;
+import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.security.repository.RoleRepository;
 import com.clickcraft.demo.repository.SkillRepository;
 import com.clickcraft.demo.security.repository.UserRepository;
