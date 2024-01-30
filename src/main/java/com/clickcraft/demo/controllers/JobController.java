@@ -1,8 +1,8 @@
 package com.clickcraft.demo.controllers;
 
-import com.clickcraft.demo.dto.JobApplicationRequest;
-import com.clickcraft.demo.dto.JobApplicationResponse;
-import com.clickcraft.demo.dto.JobPostingRequest;
+import com.clickcraft.demo.dto.job.JobApplicationRequest;
+import com.clickcraft.demo.dto.job.JobApplicationResponse;
+import com.clickcraft.demo.dto.job.JobPostingRequest;
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.FreelancerProfile;

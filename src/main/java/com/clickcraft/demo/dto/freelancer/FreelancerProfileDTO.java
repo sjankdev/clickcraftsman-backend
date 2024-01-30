@@ -1,4 +1,4 @@
-package com.clickcraft.demo.dto;
+package com.clickcraft.demo.dto.freelancer;
 
 import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.models.User;

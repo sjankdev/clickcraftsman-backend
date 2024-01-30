@@ -1,10 +1,10 @@
-package com.clickcraft.demo.dto;
+package com.clickcraft.demo.dto.freelancer;
 
 import com.clickcraft.demo.models.enums.ELocations;
 
 import java.util.Set;
 
-public class UserProfileUpdateRequest {
+public class FreelancerProfileUpdateRequest {
     private String firstName;
     private String lastName;
     private String contactPhone;
@@ -13,7 +13,7 @@ public class UserProfileUpdateRequest {
     private int yearsOfExperience;
     private Set<String> skills;
 
-    public UserProfileUpdateRequest() {
+    public FreelancerProfileUpdateRequest() {
     }
 
     public String getFirstName() {

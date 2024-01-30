@@ -1,4 +1,4 @@
-package com.clickcraft.demo.dto;
+package com.clickcraft.demo.dto.job;
 
 import java.util.List;
 
