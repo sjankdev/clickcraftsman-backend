@@ -2,29 +2,13 @@ package com.clickcraft.demo.service;
 
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
-import com.clickcraft.demo.repository.JobPostingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class JobPostingService {
+public interface JobPostingService {
+    ClientJobPosting saveJobPosting(ClientJobPosting jobPosting);
 
-    @Autowired
-    private JobPostingRepository jobPostingRepository;
+    List<ClientJobPosting> getAllJobPostings();
 
-    public ClientJobPosting saveJobPosting(ClientJobPosting jobPosting) {
-        return jobPostingRepository.save(jobPosting);
-    }
-
-    public List<ClientJobPosting> getAllJobPostings() {
-        return jobPostingRepository.findAll();
-    }
-
-    public List<ClientJobPosting> getClientJobPostings(ClientProfile clientProfile) {
-        return jobPostingRepository.findByClientProfile(clientProfile);
-    }
-
-
+    List<ClientJobPosting> getClientJobPostings(ClientProfile clientProfile);
 }
