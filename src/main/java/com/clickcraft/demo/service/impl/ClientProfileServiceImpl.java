@@ -14,11 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ClientProfileServiceImpl implements ClientProfileService {
 
-    @Autowired
-    private ClientProfileRepository clientProfileRepository;
+    private final ClientProfileRepository clientProfileRepository;
+
+    private final UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    public ClientProfileServiceImpl(ClientProfileRepository clientProfileRepository, UserRepository userRepository) {
+        this.clientProfileRepository = clientProfileRepository;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public User getClientByEmail(String email) {

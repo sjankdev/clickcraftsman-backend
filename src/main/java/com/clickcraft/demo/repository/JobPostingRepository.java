@@ -12,5 +12,4 @@ public interface JobPostingRepository extends JpaRepository < ClientJobPosting, 
 
     List<ClientJobPosting> findByClientProfile(ClientProfile clientProfile);
 
-
 }

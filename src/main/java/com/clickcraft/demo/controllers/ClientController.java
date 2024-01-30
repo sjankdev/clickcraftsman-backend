@@ -22,11 +22,15 @@ public class ClientController {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientController.class);
 
+    private final ClientProfileService clientProfileService;
+
     @Autowired
-    private ClientProfileService clientProfileService;
+    public ClientController(ClientProfileService clientProfileService) {
+        this.clientProfileService = clientProfileService;
+    }
 
     @GetMapping("/profile")
-    public ResponseEntity<ClientProfileDTO> getClientProfile() {
+    public ResponseEntity < ClientProfileDTO > getClientProfile() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -48,7 +52,7 @@ public class ClientController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<MessageResponse> updateClientProfile(@RequestBody ClientProfileUpdateRequest clientProfileUpdateRequest) {
+    public ResponseEntity < MessageResponse > updateClientProfile(@RequestBody ClientProfileUpdateRequest clientProfileUpdateRequest) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             User user = clientProfileService.getClientByEmail(userDetails.getEmail());

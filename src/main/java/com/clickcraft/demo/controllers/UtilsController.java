@@ -19,22 +19,22 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/utils")
 public class UtilsController {
 
+    private final SkillService skillService;
+
     @Autowired
-    private SkillService skillService;
+    public UtilsController(SkillService skillService) {
+        this.skillService = skillService;
+    }
 
     @GetMapping("/getAllSkills")
-    public List<Skill> getAllSkills() {
+    public List < Skill > getAllSkills() {
         return skillService.getAllSkills();
     }
 
     @GetMapping("/getAllLocations")
-    public ResponseEntity< List < String >> getAllLocations() {
-        List < String > locations = Arrays.stream(ELocations.values())
-                .map(Enum::name)
-                .collect(Collectors.toList());
+    public ResponseEntity < List < String >> getAllLocations() {
+        List < String > locations = Arrays.stream(ELocations.values()).map(Enum::name).collect(Collectors.toList());
 
         return ResponseEntity.ok(locations);
     }
 }
-
-

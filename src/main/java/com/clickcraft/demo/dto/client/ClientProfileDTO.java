@@ -12,6 +12,7 @@ public class ClientProfileDTO {
     private ELocations location;
 
     public ClientProfileDTO() {
+
     }
 
     public Long getId() {

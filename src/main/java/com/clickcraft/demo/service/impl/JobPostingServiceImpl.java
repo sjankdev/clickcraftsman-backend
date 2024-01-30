@@ -12,8 +12,12 @@ import java.util.List;
 @Service
 public class JobPostingServiceImpl implements JobPostingService {
 
+    private final JobPostingRepository jobPostingRepository;
+
     @Autowired
-    private JobPostingRepository jobPostingRepository;
+    public JobPostingServiceImpl(JobPostingRepository jobPostingRepository) {
+        this.jobPostingRepository = jobPostingRepository;
+    }
 
     @Override
     public ClientJobPosting saveJobPosting(ClientJobPosting jobPosting) {

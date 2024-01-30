@@ -7,6 +7,7 @@ import com.clickcraft.demo.models.User;
 import java.util.List;
 
 public interface FreelancerProfileService {
+
     User getFreelancerByEmail(String email);
 
     void saveFreelancer(User user);
@@ -16,4 +17,5 @@ public interface FreelancerProfileService {
     List<FreelancerProfileDTO> getAllPublicProfiles();
 
     FreelancerProfileDTO getPublicProfileById(Long freelancerId);
+
 }

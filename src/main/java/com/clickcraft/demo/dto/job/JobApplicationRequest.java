@@ -9,6 +9,9 @@ public class JobApplicationRequest {
     @Size(max = 1000)
     private String messageToClient;
 
+    public JobApplicationRequest() {
+    }
+
     public String getMessageToClient() {
         return messageToClient;
     }

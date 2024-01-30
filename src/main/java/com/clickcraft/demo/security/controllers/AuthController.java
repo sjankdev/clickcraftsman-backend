@@ -41,29 +41,32 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-    @Autowired
-    AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+
+    private final UserRepository userRepository;
+
+    private final RoleRepository roleRepository;
+
+    private final PasswordEncoder encoder;
+
+    private final JwtUtils jwtUtils;
+
+    private final SkillRepository skillRepository;
 
     @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
-    PasswordEncoder encoder;
-
-    @Autowired
-    JwtUtils jwtUtils;
-
-    @Autowired
-    SkillRepository skillRepository;
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils, SkillRepository skillRepository) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.encoder = encoder;
+        this.jwtUtils = jwtUtils;
+        this.skillRepository = skillRepository;
+    }
 
     @PostMapping("/signin")
     public ResponseEntity < ? > authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
@@ -121,12 +124,11 @@ public class AuthController {
                 Set < String > selectedSkills = signUpRequest.getSkills();
                 if (selectedSkills != null && !selectedSkills.isEmpty()) {
                     for (String selectedSkillName: selectedSkills) {
-                        Skill skill = skillRepository.findBySkillName(selectedSkillName)
-                                .orElseGet(() -> {
-                                    Skill newSkill = new Skill();
-                                    newSkill.setSkillName(selectedSkillName);
-                                    return skillRepository.save(newSkill);
-                                });
+                        Skill skill = skillRepository.findBySkillName(selectedSkillName).orElseGet(() -> {
+                            Skill newSkill = new Skill();
+                            newSkill.setSkillName(selectedSkillName);
+                            return skillRepository.save(newSkill);
+                        });
 
                         freelancerProfile.getSkills().add(skill);
                     }

@@ -5,6 +5,7 @@ import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.User;
 
 public interface ClientProfileService {
+
     User getClientByEmail(String email);
 
     void saveClient(User user);
@@ -12,4 +13,5 @@ public interface ClientProfileService {
     void postJob(ClientProfile clientProfile, ClientJobPosting jobPosting);
 
     ClientProfile getClientProfileByEmail(String email);
+
 }

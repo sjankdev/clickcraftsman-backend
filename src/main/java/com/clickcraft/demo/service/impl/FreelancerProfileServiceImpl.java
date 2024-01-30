@@ -19,11 +19,15 @@ import java.util.stream.Collectors;
 @Service
 public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
-    @Autowired
-    private FreelancerProfileRepository freelancerProfileRepository;
+    private final FreelancerProfileRepository freelancerProfileRepository;
+
+    private final UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    public FreelancerProfileServiceImpl(FreelancerProfileRepository freelancerProfileRepository, UserRepository userRepository) {
+        this.freelancerProfileRepository = freelancerProfileRepository;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public User getFreelancerByEmail(String email) {

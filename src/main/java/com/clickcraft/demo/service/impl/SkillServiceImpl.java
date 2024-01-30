@@ -13,8 +13,12 @@ import java.util.stream.Collectors;
 @Service
 public class SkillServiceImpl implements SkillService {
 
+    private final SkillRepository skillRepository;
+
     @Autowired
-    private SkillRepository skillRepository;
+    public SkillServiceImpl(SkillRepository skillRepository) {
+        this.skillRepository = skillRepository;
+    }
 
     @Override
     public List<Skill> getSkillsByIds(List<Long> skillIds) {

@@ -28,14 +28,18 @@ public class FreelancerController {
 
     private static final Logger logger = LoggerFactory.getLogger(FreelancerController.class);
 
-    @Autowired
-    private FreelancerProfileService freelancerProfileService;
+    private final FreelancerProfileService freelancerProfileService;
+
+    private final SkillRepository skillRepository;
 
     @Autowired
-    SkillRepository skillRepository;
+    public FreelancerController(FreelancerProfileService freelancerProfileService, SkillRepository skillRepository) {
+        this.freelancerProfileService = freelancerProfileService;
+        this.skillRepository = skillRepository;
+    }
 
     @PostMapping("/update")
-    public ResponseEntity<MessageResponse> updateClientProfile(@RequestBody FreelancerProfileUpdateRequest freelancerProfileUpdateRequest) {
+    public ResponseEntity < MessageResponse > updateClientProfile(@RequestBody FreelancerProfileUpdateRequest freelancerProfileUpdateRequest) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             User user = freelancerProfileService.getFreelancerByEmail(userDetails.getEmail());
@@ -61,24 +65,21 @@ public class FreelancerController {
             user.getFreelancerProfile().setLocation(freelancerProfileUpdateRequest.getLocation());
             user.getFreelancerProfile().setYearsOfExperience(freelancerProfileUpdateRequest.getYearsOfExperience());
             user.getFreelancerProfile().setPortfolio(freelancerProfileUpdateRequest.getPortfolio());
-            Set<Skill> skills = freelancerProfileUpdateRequest.getSkills().stream()
-                    .map(skillName -> {
-                        Skill skill = skillRepository.findBySkillName(skillName)
-                                .orElseGet(() -> {
-                                    Skill newSkill = new Skill(skillName);
-                                    skillRepository.save(newSkill);
-                                    return newSkill;
-                                });
-                        return skill;
-                    })
-                    .collect(Collectors.toSet());
+            Set < Skill > skills = freelancerProfileUpdateRequest.getSkills().stream().map(skillName -> {
+                Skill skill = skillRepository.findBySkillName(skillName).orElseGet(() -> {
+                    Skill newSkill = new Skill(skillName);
+                    skillRepository.save(newSkill);
+                    return newSkill;
+                });
+                return skill;
+            }).collect(Collectors.toSet());
 
             user.getFreelancerProfile().setSkills(skills);
         }
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<FreelancerProfileDTO> getFreelancerProfile() {
+    public ResponseEntity < FreelancerProfileDTO > getFreelancerProfile() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -100,29 +101,29 @@ public class FreelancerController {
     }
 
     @GetMapping("/getAllFreelancers")
-    public ResponseEntity<List<FreelancerProfileDTO>> getAllPublicProfiles() {
+    public ResponseEntity < List < FreelancerProfileDTO >> getAllPublicProfiles() {
         try {
-            List<FreelancerProfileDTO> publicProfiles = freelancerProfileService.getAllPublicProfiles();
-            return new ResponseEntity<>(publicProfiles, HttpStatus.OK);
+            List < FreelancerProfileDTO > publicProfiles = freelancerProfileService.getAllPublicProfiles();
+            return new ResponseEntity < > (publicProfiles, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity < > (HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/{freelancerId}")
-    public ResponseEntity<FreelancerProfileDTO> getPublicProfileById(@PathVariable String freelancerId) {
+    public ResponseEntity < FreelancerProfileDTO > getPublicProfileById(@PathVariable String freelancerId) {
         try {
             Long id = Long.valueOf(freelancerId);
 
             FreelancerProfileDTO publicProfile = freelancerProfileService.getPublicProfileById(id);
-            return new ResponseEntity<>(publicProfile, HttpStatus.OK);
+            return new ResponseEntity < > (publicProfile, HttpStatus.OK);
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity < > (HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity < > (HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

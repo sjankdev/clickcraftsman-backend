@@ -9,7 +9,9 @@ public class ClientProfileUpdateRequest {
     private String lastName;
     private String contactPhone;
     private ELocations location;
+
     public ClientProfileUpdateRequest() {
+
     }
 
     public String getFirstName() {

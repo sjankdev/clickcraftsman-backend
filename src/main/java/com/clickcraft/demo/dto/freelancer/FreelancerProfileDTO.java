@@ -16,9 +16,10 @@ public class FreelancerProfileDTO {
     private ELocations location;
     private String portfolio;
     private int yearsOfExperience;
-    private Set<String> skills;
+    private Set < String > skills;
 
     public FreelancerProfileDTO() {
+
     }
 
     public Long getId() {
@@ -77,11 +78,11 @@ public class FreelancerProfileDTO {
         this.yearsOfExperience = yearsOfExperience;
     }
 
-    public Set<String> getSkills() {
+    public Set < String > getSkills() {
         return skills;
     }
 
-    public void setSkills(Set<String> skills) {
+    public void setSkills(Set < String > skills) {
         this.skills = skills;
     }
 
