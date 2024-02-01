@@ -1,5 +1,6 @@
 package com.clickcraft.demo.security.controllers;
 
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -80,15 +81,16 @@ public class AuthController {
     }
 
 
-        @PostMapping(value = "/signup", consumes = {"multipart/form-data", "application/json"})
-        public ResponseEntity<?> registerUser(@RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture,
-                @RequestPart("signUpRequest") SignupRequest signUpRequest) {
-            try {
+    @PostMapping(value = "/signup", consumes = {"multipart/form-data", "application/json"})
+    public ResponseEntity<?> registerUser(@RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture,
+                                          @RequestPart("signUpRequest") SignupRequest signUpRequest) {
+        try {
 
                 if (userRepository.existsByEmail(signUpRequest.getEmail())) {
                     return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
                 }
 
+                logger.info("Creating user entity...");
                 User user = new User(signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
 
                 Set < String > strRoles = signUpRequest.getRole();
@@ -148,17 +150,27 @@ public class AuthController {
                     logger.info("No profile picture received");
                 }
 
-                if (profilePicture != null && !profilePicture.isEmpty()) {
-                    Photo photo = new Photo();
-                    photo.setData(profilePicture.getBytes());
-                    photo.setUser(user);
-                    user.setPhoto(photo);
+                logger.info("Before setting photo in User entity: {}", user.getPhoto());
+
+            if (profilePicture != null) {
+                logger.info("Received profile picture: {}", profilePicture.getOriginalFilename());
+
+                byte[] profilePictureData = profilePicture.getBytes();
+                String encodedProfilePicture = Base64.getEncoder().encodeToString(profilePictureData);
+
+                byte[] decodedProfilePicture = Base64.getDecoder().decode(encodedProfilePicture);
+
+                user.setProfilePicture(decodedProfilePicture);
+                } else {
+                    logger.info("No profile picture received");
                 }
+                logger.info("After setting photo in User entity: {}", user.getPhoto());
 
                 userRepository.save(user);
 
                 return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
             } catch (Exception e) {
+                logger.error("Error registering user: {}", e.getMessage(), e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Internal Server Error"));
             }
         }
