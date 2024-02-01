@@ -34,6 +34,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -77,74 +79,87 @@ public class AuthController {
         return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getEmail(), roles));
     }
 
-    @Transactional
-    @PostMapping("/signup")
-    public ResponseEntity < ? > registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-        try {
 
-            if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-                return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
-            }
+        @PostMapping(value = "/signup", consumes = {"multipart/form-data", "application/json"})
+        public ResponseEntity<?> registerUser(@RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture,
+                @RequestPart("signUpRequest") SignupRequest signUpRequest) {
+            try {
 
-            User user = new User(signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
-
-            Set < String > strRoles = signUpRequest.getRole();
-            Set < Role > roles = new HashSet < > ();
-
-            if (strRoles == null) {
-                Role userRole = roleRepository.findByName(ERole.ROLE_CLIENT).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                roles.add(userRole);
-            } else {
-                strRoles.forEach(role -> {
-                    switch (role) {
-                        case "admin":
-                            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(adminRole);
-                            break;
-                        case "mod":
-                            Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(modRole);
-                            break;
-                        case "freelancer":
-                            Role freelancerRole = roleRepository.findByName(ERole.ROLE_FREELANCER).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(freelancerRole);
-                            break;
-                        default:
-                            Role clientRole = roleRepository.findByName(ERole.ROLE_CLIENT).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(clientRole);
-                    }
-                });
-            }
-
-            user.setRoles(roles);
-
-            if (strRoles != null && strRoles.contains("freelancer")) {
-                FreelancerProfile freelancerProfile = FreelancerProfile.createFromSignupRequestFreelancer(signUpRequest, user);
-
-                Set < String > selectedSkills = signUpRequest.getSkills();
-                if (selectedSkills != null && !selectedSkills.isEmpty()) {
-                    for (String selectedSkillName: selectedSkills) {
-                        Skill skill = skillRepository.findBySkillName(selectedSkillName).orElseGet(() -> {
-                            Skill newSkill = new Skill();
-                            newSkill.setSkillName(selectedSkillName);
-                            return skillRepository.save(newSkill);
-                        });
-
-                        freelancerProfile.getSkills().add(skill);
-                    }
+                if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+                    return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
                 }
-                user.setFreelancerProfile(freelancerProfile);
-            } else {
-                ClientProfile clientProfile = ClientProfile.createFromSignupRequestClient(signUpRequest, user);
-                user.setClientProfile(clientProfile);
+
+                User user = new User(signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
+
+                Set < String > strRoles = signUpRequest.getRole();
+                Set < Role > roles = new HashSet < > ();
+
+                if (strRoles == null) {
+                    Role userRole = roleRepository.findByName(ERole.ROLE_CLIENT).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(userRole);
+                } else {
+                    strRoles.forEach(role -> {
+                        switch (role) {
+                            case "admin":
+                                Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                roles.add(adminRole);
+                                break;
+                            case "mod":
+                                Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                roles.add(modRole);
+                                break;
+                            case "freelancer":
+                                Role freelancerRole = roleRepository.findByName(ERole.ROLE_FREELANCER).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                roles.add(freelancerRole);
+                                break;
+                            default:
+                                Role clientRole = roleRepository.findByName(ERole.ROLE_CLIENT).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                roles.add(clientRole);
+                        }
+                    });
+                }
+
+                user.setRoles(roles);
+
+                if (strRoles != null && strRoles.contains("freelancer")) {
+                    FreelancerProfile freelancerProfile = FreelancerProfile.createFromSignupRequestFreelancer(signUpRequest, user);
+
+                    Set < String > selectedSkills = signUpRequest.getSkills();
+                    if (selectedSkills != null && !selectedSkills.isEmpty()) {
+                        for (String selectedSkillName: selectedSkills) {
+                            Skill skill = skillRepository.findBySkillName(selectedSkillName).orElseGet(() -> {
+                                Skill newSkill = new Skill();
+                                newSkill.setSkillName(selectedSkillName);
+                                return skillRepository.save(newSkill);
+                            });
+
+                            freelancerProfile.getSkills().add(skill);
+                        }
+                    }
+                    user.setFreelancerProfile(freelancerProfile);
+                } else {
+                    ClientProfile clientProfile = ClientProfile.createFromSignupRequestClient(signUpRequest, user);
+                    user.setClientProfile(clientProfile);
+                }
+
+                if (profilePicture != null) {
+                    logger.info("Received profile picture: {}", profilePicture.getOriginalFilename());
+                } else {
+                    logger.info("No profile picture received");
+                }
+
+                if (profilePicture != null && !profilePicture.isEmpty()) {
+                    Photo photo = new Photo();
+                    photo.setData(profilePicture.getBytes());
+                    photo.setUser(user);
+                    user.setPhoto(photo);
+                }
+
+                userRepository.save(user);
+
+                return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Internal Server Error"));
             }
-
-            userRepository.save(user);
-
-            return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Internal Server Error"));
         }
     }
-
-}

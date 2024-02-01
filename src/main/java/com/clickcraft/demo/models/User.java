@@ -28,6 +28,12 @@ public class User {
     @Email
     private String email;
 
+    @Lob
+    private byte[] profilePicture;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Photo photo;
+
     @NotBlank
     @Size(max = 120)
     private String password;
@@ -71,6 +77,22 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public byte[] getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(byte[] profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
+    public Photo getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(Photo photo) {
+        this.photo = photo;
     }
 
     public String getPassword() {
