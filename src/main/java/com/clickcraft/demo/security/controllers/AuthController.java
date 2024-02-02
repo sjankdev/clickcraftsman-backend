@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.clickcraft.demo.models.*;
 import com.clickcraft.demo.models.enums.ERole;
+import com.clickcraft.demo.repository.PhotoRepository;
 import com.clickcraft.demo.security.payload.request.LoginRequest;
 import com.clickcraft.demo.security.payload.request.SignupRequest;
 import com.clickcraft.demo.security.payload.response.JwtResponse;
@@ -56,14 +57,17 @@ public class AuthController {
 
     private final SkillRepository skillRepository;
 
+    private final PhotoRepository photoRepository;
+
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils, SkillRepository skillRepository) {
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils, SkillRepository skillRepository, PhotoRepository photoRepository) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.encoder = encoder;
         this.jwtUtils = jwtUtils;
         this.skillRepository = skillRepository;
+        this.photoRepository = photoRepository;
     }
 
     @PostMapping("/signin")
@@ -85,93 +89,87 @@ public class AuthController {
     public ResponseEntity<?> registerUser(@RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture,
                                           @RequestPart("signUpRequest") SignupRequest signUpRequest) {
         try {
+            if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+            }
 
-                if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-                    return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
-                }
+            logger.info("Creating user entity...");
+            User user = new User(signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
 
-                logger.info("Creating user entity...");
-                User user = new User(signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
+            Set<String> strRoles = signUpRequest.getRole();
+            Set<Role> roles = new HashSet<>();
 
-                Set < String > strRoles = signUpRequest.getRole();
-                Set < Role > roles = new HashSet < > ();
-
-                if (strRoles == null) {
-                    Role userRole = roleRepository.findByName(ERole.ROLE_CLIENT).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                    roles.add(userRole);
-                } else {
-                    strRoles.forEach(role -> {
-                        switch (role) {
-                            case "admin":
-                                Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                                roles.add(adminRole);
-                                break;
-                            case "mod":
-                                Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                                roles.add(modRole);
-                                break;
-                            case "freelancer":
-                                Role freelancerRole = roleRepository.findByName(ERole.ROLE_FREELANCER).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                                roles.add(freelancerRole);
-                                break;
-                            default:
-                                Role clientRole = roleRepository.findByName(ERole.ROLE_CLIENT).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                                roles.add(clientRole);
-                        }
-                    });
-                }
-
-                user.setRoles(roles);
-
-                if (strRoles != null && strRoles.contains("freelancer")) {
-                    FreelancerProfile freelancerProfile = FreelancerProfile.createFromSignupRequestFreelancer(signUpRequest, user);
-
-                    Set < String > selectedSkills = signUpRequest.getSkills();
-                    if (selectedSkills != null && !selectedSkills.isEmpty()) {
-                        for (String selectedSkillName: selectedSkills) {
-                            Skill skill = skillRepository.findBySkillName(selectedSkillName).orElseGet(() -> {
-                                Skill newSkill = new Skill();
-                                newSkill.setSkillName(selectedSkillName);
-                                return skillRepository.save(newSkill);
-                            });
-
-                            freelancerProfile.getSkills().add(skill);
-                        }
+            if (strRoles == null) {
+                Role userRole = roleRepository.findByName(ERole.ROLE_CLIENT).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                roles.add(userRole);
+            } else {
+                strRoles.forEach(role -> {
+                    switch (role) {
+                        case "admin":
+                            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(adminRole);
+                            break;
+                        case "mod":
+                            Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(modRole);
+                            break;
+                        case "freelancer":
+                            Role freelancerRole = roleRepository.findByName(ERole.ROLE_FREELANCER).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(freelancerRole);
+                            break;
+                        default:
+                            Role clientRole = roleRepository.findByName(ERole.ROLE_CLIENT).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(clientRole);
                     }
-                    user.setFreelancerProfile(freelancerProfile);
-                } else {
-                    ClientProfile clientProfile = ClientProfile.createFromSignupRequestClient(signUpRequest, user);
-                    user.setClientProfile(clientProfile);
-                }
+                });
+            }
 
-                if (profilePicture != null) {
-                    logger.info("Received profile picture: {}", profilePicture.getOriginalFilename());
-                } else {
-                    logger.info("No profile picture received");
-                }
+            user.setRoles(roles);
 
-                logger.info("Before setting photo in User entity: {}", user.getPhoto());
+            if (strRoles != null && strRoles.contains("freelancer")) {
+                FreelancerProfile freelancerProfile = FreelancerProfile.createFromSignupRequestFreelancer(signUpRequest, user);
+
+                Set<String> selectedSkills = signUpRequest.getSkills();
+                if (selectedSkills != null && !selectedSkills.isEmpty()) {
+                    for (String selectedSkillName : selectedSkills) {
+                        Skill skill = skillRepository.findBySkillName(selectedSkillName).orElseGet(() -> {
+                            Skill newSkill = new Skill();
+                            newSkill.setSkillName(selectedSkillName);
+                            return skillRepository.save(newSkill);
+                        });
+
+                        freelancerProfile.getSkills().add(skill);
+                    }
+                }
+                user.setFreelancerProfile(freelancerProfile);
+            } else {
+                ClientProfile clientProfile = ClientProfile.createFromSignupRequestClient(signUpRequest, user);
+                user.setClientProfile(clientProfile);
+            }
 
             if (profilePicture != null) {
                 logger.info("Received profile picture: {}", profilePicture.getOriginalFilename());
 
-                byte[] profilePictureData = profilePicture.getBytes();
-                String encodedProfilePicture = Base64.getEncoder().encodeToString(profilePictureData);
+                Photo photo = new Photo();
+                photo.setData(profilePicture.getBytes());
 
-                byte[] decodedProfilePicture = Base64.getDecoder().decode(encodedProfilePicture);
+                user = userRepository.save(user);
+                photo.setUser(user);
 
-                user.setProfilePicture(decodedProfilePicture);
-                } else {
-                    logger.info("No profile picture received");
-                }
-                logger.info("After setting photo in User entity: {}", user.getPhoto());
-
-                userRepository.save(user);
-
-                return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-            } catch (Exception e) {
-                logger.error("Error registering user: {}", e.getMessage(), e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Internal Server Error"));
+                photo = photoRepository.save(photo);
+                user.setProfilePictureId(photo.getId());
+            } else {
+                logger.info("No profile picture received");
             }
+
+            userRepository.save(user);
+
+            return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        } catch (Exception e) {
+            logger.error("Error registering user: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Internal Server Error"));
         }
     }
+
+
+}

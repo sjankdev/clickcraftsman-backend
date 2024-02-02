@@ -9,9 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email")
-})
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User {
 
@@ -28,8 +26,8 @@ public class User {
     @Email
     private String email;
 
-    @Lob
-    private byte[] profilePicture;
+    @Column(name = "profile_picture_id")
+    private Long profilePictureId;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Photo photo;
@@ -40,7 +38,7 @@ public class User {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set < Role > roles = new HashSet < > ();
+    private Set<Role> roles = new HashSet<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private ClientProfile clientProfile;
@@ -48,7 +46,8 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private FreelancerProfile freelancerProfile;
 
-    public User() {}
+    public User() {
+    }
 
     public User(String email, String password) {
         this.email = email;
@@ -79,12 +78,12 @@ public class User {
         this.email = email;
     }
 
-    public byte[] getProfilePicture() {
-        return profilePicture;
+    public Long getProfilePictureId() {
+        return profilePictureId;
     }
 
-    public void setProfilePicture(byte[] profilePicture) {
-        this.profilePicture = profilePicture;
+    public void setProfilePictureId(Long profilePictureId) {
+        this.profilePictureId = profilePictureId;
     }
 
     public Photo getPhoto() {
@@ -103,11 +102,11 @@ public class User {
         this.password = password;
     }
 
-    public Set < Role > getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set < Role > roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 
