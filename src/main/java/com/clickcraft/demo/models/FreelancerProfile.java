@@ -47,6 +47,10 @@ public class FreelancerProfile {
     @OneToMany(mappedBy = "freelancerProfile", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set < JobApplication > jobApplications = new HashSet < > ();
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "photo_id")
+    private Photo photo;
+
     public FreelancerProfile() {}
 
     public void addSkill(Skill skill) {
