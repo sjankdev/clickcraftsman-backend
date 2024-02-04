@@ -2,7 +2,6 @@ package com.clickcraft.demo.controllers;
 
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileUpdateRequest;
-import com.clickcraft.demo.models.Photo;
 import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.repository.SkillRepository;
@@ -12,9 +11,7 @@ import com.clickcraft.demo.service.FreelancerProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -98,34 +95,6 @@ public class FreelancerController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
             logger.error("Error fetching Freelancer profile", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GetMapping("/api/user/photo")
-    public ResponseEntity<byte[]> getUserPhoto() {
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-            if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
-                logger.info("Received a request to fetch user photo. Logged-in User: {} (Email: {})", userDetails.getUsername(), userDetails.getEmail());
-
-                User user = freelancerProfileService.getFreelancerByEmail(userDetails.getEmail());
-                Photo photo = user.getPhoto();
-
-                if (photo != null && photo.getData() != null) {
-                    HttpHeaders headers = new HttpHeaders();
-                    headers.setContentType(MediaType.IMAGE_JPEG);
-                    headers.setContentLength(photo.getData().length);
-                    return new ResponseEntity<>(photo.getData(), headers, HttpStatus.OK);
-                } else {
-                    return ResponseEntity.notFound().build();
-                }
-            }
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (Exception e) {
-            logger.error("Error fetching user photo", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
