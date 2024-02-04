@@ -86,8 +86,11 @@ public class User {
         this.profilePictureId = profilePictureId;
     }
 
-    public Photo getPhoto() {
-        return photo;
+    public byte[] getProfilePictureData() {
+        if (photo != null) {
+            return photo.getData();
+        }
+        return null;
     }
 
     public void setPhoto(Photo photo) {

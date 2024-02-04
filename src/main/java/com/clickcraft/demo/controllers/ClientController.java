@@ -30,7 +30,7 @@ public class ClientController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity < ClientProfileDTO > getClientProfile() {
+    public ResponseEntity<ClientProfileDTO> getClientProfile() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -38,6 +38,13 @@ public class ClientController {
                 logger.info("Received a request to fetch client profile. Logged-in Client: {} (Email: {})", userDetails.getUsername(), userDetails.getEmail());
 
                 User user = clientProfileService.getClientByEmail(userDetails.getEmail());
+
+                if (user.getProfilePictureData() != null) {
+                    logger.info("Profile picture data retrieved for client: {}", userDetails.getEmail());
+                } else {
+                    logger.warn("Profile picture data not found for client: {}", userDetails.getEmail());
+                }
+
                 ClientProfileDTO clientProfileDTO = ClientProfileDTO.fromUser(user);
 
                 logger.info("Client Profile Data: {}", clientProfileDTO);
@@ -52,7 +59,7 @@ public class ClientController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity < MessageResponse > updateClientProfile(@RequestBody ClientProfileUpdateRequest clientProfileUpdateRequest) {
+    public ResponseEntity<MessageResponse> updateClientProfile(@RequestBody ClientProfileUpdateRequest clientProfileUpdateRequest) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             User user = clientProfileService.getClientByEmail(userDetails.getEmail());

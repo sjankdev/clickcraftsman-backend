@@ -86,6 +86,13 @@ public class FreelancerController {
                 logger.info("Received a request to fetch freelancer profile. Logged-in Freelancer: {} (Email: {})", userDetails.getUsername(), userDetails.getEmail());
 
                 User user = freelancerProfileService.getFreelancerByEmail(userDetails.getEmail());
+
+                if (user.getProfilePictureData() != null) {
+                    logger.info("Profile picture data retrieved for client: {}", userDetails.getEmail());
+                } else {
+                    logger.warn("Profile picture data not found for client: {}", userDetails.getEmail());
+                }
+
                 FreelancerProfileDTO freelancerProfileDTO = FreelancerProfileDTO.fromUser(user);
 
                 logger.info("Freelancer Profile Data: {}", freelancerProfileDTO);
