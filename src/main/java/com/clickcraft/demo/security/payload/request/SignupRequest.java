@@ -3,6 +3,7 @@ package com.clickcraft.demo.security.payload.request;
 import java.util.Set;
 
 import jakarta.validation.constraints.*;
+import org.springframework.web.multipart.MultipartFile;
 
 public class SignupRequest {
 
@@ -39,6 +40,8 @@ public class SignupRequest {
 
     private Set < String > skills;
 
+    private MultipartFile profilePicture;
+
     public String getEmail() {
         return email;
     }
@@ -73,6 +76,14 @@ public class SignupRequest {
 
     public void setSkills(Set < String > skills) {
         this.skills = skills;
+    }
+
+    public MultipartFile getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(MultipartFile profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public String getPortfolio() {

@@ -1,5 +1,6 @@
 package com.clickcraft.demo.security.controllers;
 
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -7,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.clickcraft.demo.models.*;
 import com.clickcraft.demo.models.enums.ERole;
+import com.clickcraft.demo.repository.PhotoRepository;
 import com.clickcraft.demo.security.payload.request.LoginRequest;
 import com.clickcraft.demo.security.payload.request.SignupRequest;
 import com.clickcraft.demo.security.payload.response.JwtResponse;
@@ -34,6 +36,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -53,14 +57,17 @@ public class AuthController {
 
     private final SkillRepository skillRepository;
 
+    private final PhotoRepository photoRepository;
+
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils, SkillRepository skillRepository) {
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils, SkillRepository skillRepository, PhotoRepository photoRepository) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.encoder = encoder;
         this.jwtUtils = jwtUtils;
         this.skillRepository = skillRepository;
+        this.photoRepository = photoRepository;
     }
 
     @PostMapping("/signin")
@@ -77,19 +84,20 @@ public class AuthController {
         return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getEmail(), roles));
     }
 
-    @Transactional
-    @PostMapping("/signup")
-    public ResponseEntity < ? > registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-        try {
 
+    @PostMapping(value = "/signup", consumes = {"multipart/form-data", "application/json"})
+    public ResponseEntity<?> registerUser(@RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture,
+                                          @RequestPart("signUpRequest") SignupRequest signUpRequest) {
+        try {
             if (userRepository.existsByEmail(signUpRequest.getEmail())) {
                 return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
             }
 
+            logger.info("Creating user entity...");
             User user = new User(signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
 
-            Set < String > strRoles = signUpRequest.getRole();
-            Set < Role > roles = new HashSet < > ();
+            Set<String> strRoles = signUpRequest.getRole();
+            Set<Role> roles = new HashSet<>();
 
             if (strRoles == null) {
                 Role userRole = roleRepository.findByName(ERole.ROLE_CLIENT).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
@@ -121,9 +129,9 @@ public class AuthController {
             if (strRoles != null && strRoles.contains("freelancer")) {
                 FreelancerProfile freelancerProfile = FreelancerProfile.createFromSignupRequestFreelancer(signUpRequest, user);
 
-                Set < String > selectedSkills = signUpRequest.getSkills();
+                Set<String> selectedSkills = signUpRequest.getSkills();
                 if (selectedSkills != null && !selectedSkills.isEmpty()) {
-                    for (String selectedSkillName: selectedSkills) {
+                    for (String selectedSkillName : selectedSkills) {
                         Skill skill = skillRepository.findBySkillName(selectedSkillName).orElseGet(() -> {
                             Skill newSkill = new Skill();
                             newSkill.setSkillName(selectedSkillName);
@@ -139,12 +147,29 @@ public class AuthController {
                 user.setClientProfile(clientProfile);
             }
 
+            if (profilePicture != null) {
+                logger.info("Received profile picture: {}", profilePicture.getOriginalFilename());
+
+                Photo photo = new Photo();
+                photo.setData(profilePicture.getBytes());
+
+                user = userRepository.save(user);
+                photo.setUser(user);
+
+                photo = photoRepository.save(photo);
+                user.setProfilePictureId(photo.getId());
+            } else {
+                logger.info("No profile picture received");
+            }
+
             userRepository.save(user);
 
             return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
         } catch (Exception e) {
+            logger.error("Error registering user: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Internal Server Error"));
         }
     }
+
 
 }
