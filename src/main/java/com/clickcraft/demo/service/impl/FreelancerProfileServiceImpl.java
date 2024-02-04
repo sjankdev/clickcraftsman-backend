@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,6 +71,21 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    @Override
+    public List<String> getProfilePictures(List<Long> freelancerIds) {
+        List<String> profilePictures = new ArrayList<>();
+        for (Long freelancerId : freelancerIds) {
+            User user = userRepository.findById(freelancerId).orElse(null);
+            if (user != null) {
+                byte[] photoData = user.getProfilePictureData();
+                profilePictures.add(photoData != null ? Base64.getEncoder().encodeToString(photoData) : null);
+            } else {
+                profilePictures.add(null);
+            }
+        }
+        return profilePictures;
     }
 
     private FreelancerProfileDTO convertToFreelancerProfileDTO(FreelancerProfile freelancerProfile) {

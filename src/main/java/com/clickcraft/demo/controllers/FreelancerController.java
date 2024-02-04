@@ -117,6 +117,17 @@ public class FreelancerController {
         }
     }
 
+    @GetMapping("/getProfilePictures")
+    public ResponseEntity<List<String>> getProfilePictures(@RequestParam List<Long> freelancerIds) {
+        try {
+            List<String> profilePictures = freelancerProfileService.getProfilePictures(freelancerIds);
+            return ResponseEntity.ok(profilePictures);
+        } catch (Exception e) {
+            logger.error("Error fetching profile pictures", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @GetMapping("/{freelancerId}")
     public ResponseEntity < FreelancerProfileDTO > getPublicProfileById(@PathVariable String freelancerId) {
         try {
