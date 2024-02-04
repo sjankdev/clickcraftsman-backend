@@ -10,7 +10,7 @@ public class ClientProfileDTO {
     private String lastName;
     private String contactPhone;
     private ELocations location;
-
+    private byte[] profilePictureData;
     public ClientProfileDTO() {
 
     }
@@ -55,6 +55,14 @@ public class ClientProfileDTO {
         this.location = location;
     }
 
+    public byte[] getProfilePictureData() {
+        return profilePictureData;
+    }
+
+    public void setProfilePictureData(byte[] profilePictureData) {
+        this.profilePictureData = profilePictureData;
+    }
+
     public static ClientProfileDTO fromUser(User user) {
         ClientProfileDTO clientProfileDTO = new ClientProfileDTO();
 
@@ -64,6 +72,7 @@ public class ClientProfileDTO {
                 clientProfileDTO.setLastName(user.getClientProfile().getLastName());
                 clientProfileDTO.setContactPhone(user.getClientProfile().getContactPhone());
                 clientProfileDTO.setLocation(user.getClientProfile().getLocation());
+                clientProfileDTO.setProfilePictureData(user.getProfilePictureData());
             }
         }
         return clientProfileDTO;

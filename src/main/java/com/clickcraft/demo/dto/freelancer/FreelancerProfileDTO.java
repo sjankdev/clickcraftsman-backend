@@ -17,6 +17,7 @@ public class FreelancerProfileDTO {
     private String portfolio;
     private int yearsOfExperience;
     private Set < String > skills;
+    private byte[] profilePictureData;
 
     public FreelancerProfileDTO() {
 
@@ -86,16 +87,19 @@ public class FreelancerProfileDTO {
         this.skills = skills;
     }
 
+    public byte[] getProfilePictureData() {
+        return profilePictureData;
+    }
+
+    public void setProfilePictureData(byte[] profilePictureData) {
+        this.profilePictureData = profilePictureData;
+    }
+
     public static FreelancerProfileDTO fromUser(User user) {
         FreelancerProfileDTO freelancerProfileDTO = new FreelancerProfileDTO();
 
         if (user != null) {
-            if (user.getClientProfile() != null) {
-                freelancerProfileDTO.setFirstName(user.getClientProfile().getFirstName());
-                freelancerProfileDTO.setLastName(user.getClientProfile().getLastName());
-                freelancerProfileDTO.setContactPhone(user.getClientProfile().getContactPhone());
-                freelancerProfileDTO.setLocation(user.getClientProfile().getLocation());
-            } else if (user.getFreelancerProfile() != null) {
+            if (user.getFreelancerProfile() != null) {
                 freelancerProfileDTO.setFirstName(user.getFreelancerProfile().getFirstName());
                 freelancerProfileDTO.setLastName(user.getFreelancerProfile().getLastName());
                 freelancerProfileDTO.setContactPhone(user.getFreelancerProfile().getContactPhone());
@@ -103,6 +107,7 @@ public class FreelancerProfileDTO {
                 freelancerProfileDTO.setPortfolio(user.getFreelancerProfile().getPortfolio());
                 freelancerProfileDTO.setYearsOfExperience(user.getFreelancerProfile().getYearsOfExperience());
                 freelancerProfileDTO.setSkills(user.getFreelancerProfile().getSkills().stream().map(Skill::getSkillName).collect(Collectors.toSet()));
+                freelancerProfileDTO.setProfilePictureData(user.getProfilePictureData());
             }
         }
         return freelancerProfileDTO;
