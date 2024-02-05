@@ -7,6 +7,7 @@ import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.JobApplication;
+import com.clickcraft.demo.models.enums.ApplicationStatus;
 import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.repository.JobApplicationRepository;
 import com.clickcraft.demo.repository.JobPostingRepository;
@@ -119,8 +120,9 @@ public class JobController {
         return ResponseEntity.ok(appliedJobIds);
     }
 
-    @GetMapping("/client-received-applications")
-    public ResponseEntity < List < JobApplicationResponse >> getClientJobApplications(Authentication authentication) {
+    @GetMapping("/client-received-applications/{status}")
+    public ResponseEntity<List<JobApplicationResponse>> getClientJobApplicationsByStatus(Authentication authentication, @PathVariable ApplicationStatus status) {
+
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
@@ -231,4 +233,20 @@ public class JobController {
         return ResponseEntity.ok(clientJobPostings);
     }
 
+    @PostMapping("/send-offer/{applicationId}")
+    public ResponseEntity<?> sendOffer(@PathVariable Long applicationId) {
+        try {
+            JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
+                    .orElseThrow(() -> new RuntimeException("Job application not found for applicationId: " + applicationId));
+
+            jobApplication.setStatus(ApplicationStatus.ACCEPTED);
+            jobApplicationRepository.save(jobApplication);
+
+            return ResponseEntity.ok(new MessageResponse("Offer sent successfully!"));
+
+        } catch (Exception e) {
+            logger.error("Error sending offer", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

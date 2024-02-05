@@ -1,5 +1,6 @@
 package com.clickcraft.demo.models;
 
+import com.clickcraft.demo.models.enums.ApplicationStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -38,6 +39,10 @@ public class JobApplication {
     @JoinColumn(name = "client_job_posting_id")
     private ClientJobPosting clientJobPosting;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private ApplicationStatus status;
+
     public JobApplication() {}
 
     public FreelancerProfile getFreelancerProfile() {
@@ -70,5 +75,13 @@ public class JobApplication {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public ApplicationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ApplicationStatus status) {
+        this.status = status;
     }
 }
