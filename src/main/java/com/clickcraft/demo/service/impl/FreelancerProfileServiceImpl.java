@@ -90,13 +90,12 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
     @Override
     public byte[] getProfilePictureData(Long freelancerId) {
-        User user = userRepository.findById(freelancerId).orElse(null);
-        if (user != null) {
-            return user.getProfilePictureData();
-        }
-        return null;
-    }
+        FreelancerProfile freelancerProfile = freelancerProfileRepository.findById(freelancerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
 
+        User user = freelancerProfile.getUser();
+        return user != null ? user.getProfilePictureData() : null;
+    }
 
     private FreelancerProfileDTO convertToFreelancerProfileDTO(FreelancerProfile freelancerProfile) {
         FreelancerProfileDTO freelancerProfileDTO = new FreelancerProfileDTO();
