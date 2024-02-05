@@ -7,6 +7,7 @@ import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.JobApplication;
+import com.clickcraft.demo.models.enums.ApplicationStatus;
 import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.repository.JobApplicationRepository;
 import com.clickcraft.demo.repository.JobPostingRepository;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -229,6 +232,29 @@ public class JobController {
         List < ClientJobPosting > clientJobPostings = jobPostingService.getClientJobPostings(clientProfile);
 
         return ResponseEntity.ok(clientJobPostings);
+    }
+
+    @PostMapping("/send-offer/{applicationId}")
+    public ResponseEntity<?> sendOffer(@PathVariable Long applicationId) {
+        try {
+            JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
+                    .orElseThrow(() -> new RuntimeException("Job application not found for applicationId: " + applicationId));
+
+            jobApplication.setStatus(ApplicationStatus.ACCEPTED);
+            jobApplicationRepository.save(jobApplication);
+
+            return ResponseEntity.ok(new MessageResponse("Offer sent successfully!"));
+
+        } catch (Exception e) {
+            logger.error("Error sending offer", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/application-status/{jobId}")
+    public ResponseEntity<Map<Long, ApplicationStatus>> getApplicationStatus(@AuthenticationPrincipal UserDetails userDetails) {
+        Map<Long, ApplicationStatus> applicationStatusMap = jobPostingService.getApplicationStatusForFreelancer(userDetails.getUsername());
+        return ResponseEntity.ok(applicationStatusMap);
     }
 
 }

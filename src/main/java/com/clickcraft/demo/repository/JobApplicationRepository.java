@@ -28,4 +28,7 @@ public interface JobApplicationRepository extends JpaRepository < JobApplication
             "JOIN ja.clientJobPosting jp " +
             "WHERE jp.id = :jobId")
     List < JobApplication > findJobApplicationsByJobId(@Param("jobId") Long jobId);
+
+    List<JobApplication> findByFreelancerProfile(FreelancerProfile freelancerProfile);
+
 }
