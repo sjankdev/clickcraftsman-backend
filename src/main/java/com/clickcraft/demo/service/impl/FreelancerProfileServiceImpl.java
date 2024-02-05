@@ -88,6 +88,16 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         return profilePictures;
     }
 
+    @Override
+    public byte[] getProfilePictureData(Long freelancerId) {
+        User user = userRepository.findById(freelancerId).orElse(null);
+        if (user != null) {
+            return user.getProfilePictureData();
+        }
+        return null;
+    }
+
+
     private FreelancerProfileDTO convertToFreelancerProfileDTO(FreelancerProfile freelancerProfile) {
         FreelancerProfileDTO freelancerProfileDTO = new FreelancerProfileDTO();
         freelancerProfileDTO.setId(freelancerProfile.getId());
@@ -98,6 +108,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         freelancerProfileDTO.setPortfolio(freelancerProfile.getPortfolio());
         freelancerProfileDTO.setYearsOfExperience(freelancerProfile.getYearsOfExperience());
         freelancerProfileDTO.setSkills(freelancerProfile.getSkills().stream().map(Skill::getSkillName).collect(Collectors.toSet()));
+        freelancerProfileDTO.setProfilePictureData(freelancerProfile.getUser().getProfilePictureData());
         return freelancerProfileDTO;
     }
 }

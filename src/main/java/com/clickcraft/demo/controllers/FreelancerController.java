@@ -129,18 +129,22 @@ public class FreelancerController {
     }
 
     @GetMapping("/{freelancerId}")
-    public ResponseEntity < FreelancerProfileDTO > getPublicProfileById(@PathVariable String freelancerId) {
+    public ResponseEntity<FreelancerProfileDTO> getPublicProfileById(@PathVariable String freelancerId) {
         try {
             Long id = Long.valueOf(freelancerId);
 
             FreelancerProfileDTO publicProfile = freelancerProfileService.getPublicProfileById(id);
-            return new ResponseEntity < > (publicProfile, HttpStatus.OK);
+
+            byte[] profilePictureData = freelancerProfileService.getProfilePictureData(id);
+            publicProfile.setProfilePictureData(profilePictureData);
+
+            return new ResponseEntity<>(publicProfile, HttpStatus.OK);
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            return new ResponseEntity < > (HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity < > (HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
