@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -120,9 +122,8 @@ public class JobController {
         return ResponseEntity.ok(appliedJobIds);
     }
 
-    @GetMapping("/client-received-applications/{status}")
-    public ResponseEntity<List<JobApplicationResponse>> getClientJobApplicationsByStatus(Authentication authentication, @PathVariable ApplicationStatus status) {
-
+    @GetMapping("/client-received-applications")
+    public ResponseEntity < List < JobApplicationResponse >> getClientJobApplications(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
@@ -249,4 +250,11 @@ public class JobController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/application-status/{jobId}")
+    public ResponseEntity<Map<Long, ApplicationStatus>> getApplicationStatus(@AuthenticationPrincipal UserDetails userDetails) {
+        Map<Long, ApplicationStatus> applicationStatusMap = jobPostingService.getApplicationStatusForFreelancer(userDetails.getUsername());
+        return ResponseEntity.ok(applicationStatusMap);
+    }
+
 }
