@@ -1,9 +1,11 @@
 package com.clickcraft.demo.dto.freelancer;
 
+import com.clickcraft.demo.dto.job.JobOfferDTO;
 import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.models.enums.ELocations;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,9 +20,9 @@ public class FreelancerProfileDTO {
     private int yearsOfExperience;
     private Set < String > skills;
     private byte[] profilePictureData;
+    private List<JobOfferDTO> receivedJobOffers;
 
     public FreelancerProfileDTO() {
-
     }
 
     public Long getId() {
@@ -93,6 +95,14 @@ public class FreelancerProfileDTO {
 
     public void setProfilePictureData(byte[] profilePictureData) {
         this.profilePictureData = profilePictureData;
+    }
+
+    public List<JobOfferDTO> getReceivedJobOffers() {
+        return receivedJobOffers;
+    }
+
+    public void setReceivedJobOffers(List<JobOfferDTO> receivedJobOffers) {
+        this.receivedJobOffers = receivedJobOffers;
     }
 
     public static FreelancerProfileDTO fromUser(User user) {

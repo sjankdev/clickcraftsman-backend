@@ -1,12 +1,17 @@
 package com.clickcraft.demo.service.impl;
 
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
+import com.clickcraft.demo.dto.job.JobOfferDTO;
 import com.clickcraft.demo.models.FreelancerProfile;
+import com.clickcraft.demo.models.JobOffer;
 import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.repository.FreelancerProfileRepository;
+import com.clickcraft.demo.repository.JobOfferRepository;
 import com.clickcraft.demo.security.repository.UserRepository;
 import com.clickcraft.demo.service.FreelancerProfileService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,14 +26,19 @@ import java.util.stream.Collectors;
 @Service
 public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
+    private static final Logger logger = LoggerFactory.getLogger(FreelancerProfileServiceImpl.class);
+
     private final FreelancerProfileRepository freelancerProfileRepository;
 
     private final UserRepository userRepository;
 
+    private final JobOfferRepository jobOfferRepository;
+
     @Autowired
-    public FreelancerProfileServiceImpl(FreelancerProfileRepository freelancerProfileRepository, UserRepository userRepository) {
+    public FreelancerProfileServiceImpl(FreelancerProfileRepository freelancerProfileRepository, UserRepository userRepository, JobOfferRepository jobOfferRepository) {
         this.freelancerProfileRepository = freelancerProfileRepository;
         this.userRepository = userRepository;
+        this.jobOfferRepository = jobOfferRepository;
     }
 
     @Override
@@ -95,6 +105,28 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
         User user = freelancerProfile.getUser();
         return user != null ? user.getProfilePictureData() : null;
+    }
+
+    @Override
+    public List<JobOfferDTO> getReceivedJobOffers(Long userId) {
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+            if (user.getFreelancerProfile() == null) {
+                throw new ResourceNotFoundException("Freelancer Profile not found for user with id: " + userId);
+            }
+            FreelancerProfile freelancer = user.getFreelancerProfile();
+
+            List<JobOffer> jobOffers = jobOfferRepository.findByFreelancerId(freelancer.getId());
+
+            return jobOffers.stream()
+                    .map(JobOfferDTO::fromJobOffer)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            logger.error("Error fetching received job offers", e);
+            throw new RuntimeException("Error fetching received job offers", e);
+        }
     }
 
     private FreelancerProfileDTO convertToFreelancerProfileDTO(FreelancerProfile freelancerProfile) {

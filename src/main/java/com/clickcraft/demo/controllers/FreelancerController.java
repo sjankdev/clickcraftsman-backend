@@ -2,6 +2,7 @@ package com.clickcraft.demo.controllers;
 
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileUpdateRequest;
+import com.clickcraft.demo.dto.job.JobOfferDTO;
 import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.repository.SkillRepository;
@@ -145,6 +146,19 @@ public class FreelancerController {
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @GetMapping("/receivedJobOffers")
+    public ResponseEntity<List<JobOfferDTO>> getReceivedJobOffers() {
+        try {
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User user = freelancerProfileService.getFreelancerByEmail(userDetails.getEmail());
+            List<JobOfferDTO> receivedJobOffers = freelancerProfileService.getReceivedJobOffers(user.getId());
+            System.out.println("Received job offers: " + receivedJobOffers);
+            return ResponseEntity.ok(receivedJobOffers);
+        } catch (Exception e) {
+            logger.error("Error fetching received job offers", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
