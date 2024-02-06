@@ -14,6 +14,10 @@ public class JobOffer {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "freelancer_id")
+    private FreelancerProfile freelancer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_application_id")
     private JobApplication jobApplication;
 
@@ -34,6 +38,14 @@ public class JobOffer {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public FreelancerProfile getFreelancer() {
+        return freelancer;
+    }
+
+    public void setFreelancer(FreelancerProfile freelancer) {
+        this.freelancer = freelancer;
     }
 
     public JobApplication getJobApplication() {

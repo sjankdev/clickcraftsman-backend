@@ -86,6 +86,9 @@ public class ClientController {
             JobOffer jobOffer = new JobOffer();
             jobOffer.setJobApplication(jobApplication);
             jobOffer.setMessageToFreelancer(messageToFreelancer);
+
+            jobOffer.setFreelancer(jobApplication.getFreelancerProfile());
+
             jobOfferRepository.save(jobOffer);
 
             jobApplication.setStatus(ApplicationStatus.ACCEPTED);
