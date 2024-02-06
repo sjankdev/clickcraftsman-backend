@@ -2,7 +2,12 @@ package com.clickcraft.demo.controllers;
 
 import com.clickcraft.demo.dto.client.ClientProfileDTO;
 import com.clickcraft.demo.dto.client.ClientProfileUpdateRequest;
+import com.clickcraft.demo.models.JobApplication;
+import com.clickcraft.demo.models.JobOffer;
 import com.clickcraft.demo.models.User;
+import com.clickcraft.demo.models.enums.ApplicationStatus;
+import com.clickcraft.demo.repository.JobApplicationRepository;
+import com.clickcraft.demo.repository.JobOfferRepository;
 import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
 import com.clickcraft.demo.service.ClientProfileService;
@@ -15,6 +20,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/client")
@@ -24,9 +31,15 @@ public class ClientController {
 
     private final ClientProfileService clientProfileService;
 
+    private final JobApplicationRepository jobApplicationRepository;
+
+    private final JobOfferRepository jobOfferRepository;
+
     @Autowired
-    public ClientController(ClientProfileService clientProfileService) {
+    public ClientController(ClientProfileService clientProfileService, JobApplicationRepository jobApplicationRepository, JobOfferRepository jobOfferRepository) {
         this.clientProfileService = clientProfileService;
+        this.jobApplicationRepository = jobApplicationRepository;
+        this.jobOfferRepository = jobOfferRepository;
     }
 
     @GetMapping("/profile")
@@ -54,6 +67,34 @@ public class ClientController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
             logger.error("Error fetching client profile", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/send-offer/{applicationId}")
+    public ResponseEntity<?> sendOffer(@PathVariable Long applicationId, @RequestBody Map<String, String> offerDetails) {
+        try {
+            JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
+                    .orElseThrow(() -> new RuntimeException("Job application not found for applicationId: " + applicationId));
+
+            if (jobApplication.getJobOffer() != null) {
+                return ResponseEntity.badRequest().body(new MessageResponse("An offer has already been sent for this application."));
+            }
+
+            String messageToFreelancer = offerDetails.get("messageToFreelancer");
+
+            JobOffer jobOffer = new JobOffer();
+            jobOffer.setJobApplication(jobApplication);
+            jobOffer.setMessageToFreelancer(messageToFreelancer);
+            jobOfferRepository.save(jobOffer);
+
+            jobApplication.setStatus(ApplicationStatus.ACCEPTED);
+            jobApplicationRepository.save(jobApplication);
+
+            return ResponseEntity.ok(new MessageResponse("Offer sent successfully!"));
+
+        } catch (Exception e) {
+            logger.error("Error sending offer", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

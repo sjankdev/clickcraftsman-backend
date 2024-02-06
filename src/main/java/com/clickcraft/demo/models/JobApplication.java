@@ -43,6 +43,9 @@ public class JobApplication {
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
 
+    @OneToOne(mappedBy = "jobApplication", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private JobOffer jobOffer;
+
     public JobApplication() {}
 
     public FreelancerProfile getFreelancerProfile() {
@@ -83,5 +86,13 @@ public class JobApplication {
 
     public void setStatus(ApplicationStatus status) {
         this.status = status;
+    }
+
+    public JobOffer getJobOffer() {
+        return jobOffer;
+    }
+
+    public void setJobOffer(JobOffer jobOffer) {
+        this.jobOffer = jobOffer;
     }
 }
