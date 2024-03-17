@@ -3,6 +3,7 @@ package com.clickcraft.demo.controllers;
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileUpdateRequest;
 import com.clickcraft.demo.dto.job.JobOfferDTO;
+import com.clickcraft.demo.models.JobOffer;
 import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.repository.SkillRepository;
@@ -40,7 +41,7 @@ public class FreelancerController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity < MessageResponse > updateFreelancerProfile(@RequestBody FreelancerProfileUpdateRequest freelancerProfileUpdateRequest) {
+    public ResponseEntity<MessageResponse> updateFreelancerProfile(@RequestBody FreelancerProfileUpdateRequest freelancerProfileUpdateRequest) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             User user = freelancerProfileService.getFreelancerByEmail(userDetails.getEmail());
@@ -66,7 +67,7 @@ public class FreelancerController {
             user.getFreelancerProfile().setLocation(freelancerProfileUpdateRequest.getLocation());
             user.getFreelancerProfile().setYearsOfExperience(freelancerProfileUpdateRequest.getYearsOfExperience());
             user.getFreelancerProfile().setPortfolio(freelancerProfileUpdateRequest.getPortfolio());
-            Set < Skill > skills = freelancerProfileUpdateRequest.getSkills().stream().map(skillName -> {
+            Set<Skill> skills = freelancerProfileUpdateRequest.getSkills().stream().map(skillName -> {
                 return skillRepository.findBySkillName(skillName).orElseGet(() -> {
                     Skill newSkill = new Skill(skillName);
                     skillRepository.save(newSkill);
@@ -79,7 +80,7 @@ public class FreelancerController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity < FreelancerProfileDTO > getFreelancerProfile() {
+    public ResponseEntity<FreelancerProfileDTO> getFreelancerProfile() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -108,13 +109,13 @@ public class FreelancerController {
     }
 
     @GetMapping("/getAllFreelancers")
-    public ResponseEntity < List < FreelancerProfileDTO >> getAllPublicProfiles() {
+    public ResponseEntity<List<FreelancerProfileDTO>> getAllPublicProfiles() {
         try {
-            List < FreelancerProfileDTO > publicProfiles = freelancerProfileService.getAllPublicProfiles();
-            return new ResponseEntity < > (publicProfiles, HttpStatus.OK);
+            List<FreelancerProfileDTO> publicProfiles = freelancerProfileService.getAllPublicProfiles();
+            return new ResponseEntity<>(publicProfiles, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity < > (HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -148,12 +149,16 @@ public class FreelancerController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping("/receivedJobOffers")
     public ResponseEntity<List<JobOfferDTO>> getReceivedJobOffers() {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             User user = freelancerProfileService.getFreelancerByEmail(userDetails.getEmail());
             List<JobOfferDTO> receivedJobOffers = freelancerProfileService.getReceivedJobOffers(user.getId());
+            for (JobOfferDTO jobOffer : receivedJobOffers) {
+                logger.info("Message to Freelancer for job {}: {}", jobOffer.getId(), jobOffer.getMessageToFreelancer());
+            }
             System.out.println("Received job offers: " + receivedJobOffers);
             return ResponseEntity.ok(receivedJobOffers);
         } catch (Exception e) {
