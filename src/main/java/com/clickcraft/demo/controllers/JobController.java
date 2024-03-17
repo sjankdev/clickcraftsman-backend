@@ -63,7 +63,7 @@ public class JobController {
     }
 
     @PostMapping("/apply/{jobId}")
-    public ResponseEntity < ? > applyForJob(@PathVariable Long jobId, @RequestBody JobApplicationRequest applicationRequest, Authentication authentication) {
+    public ResponseEntity<?> applyForJob(@PathVariable Long jobId, @RequestBody JobApplicationRequest applicationRequest, Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.badRequest().body(new MessageResponse("User not authenticated."));
         }
@@ -92,6 +92,7 @@ public class JobController {
         jobApplication.setClientJobPosting(jobPosting);
         jobApplication.setFreelancerProfile(freelancerProfile);
         jobApplication.setMessageToClient(messageToClient);
+        jobApplication.setStatus(ApplicationStatus.PENDING);
 
         JobApplication savedJobApplication = jobApplicationRepository.save(jobApplication);
 
@@ -105,7 +106,7 @@ public class JobController {
     }
 
     @GetMapping("/applied-jobs")
-    public ResponseEntity < List < Long >> getAppliedJobs(Authentication authentication) {
+    public ResponseEntity<List<Long>> getAppliedJobs(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
@@ -117,13 +118,13 @@ public class JobController {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
 
-        List < Long > appliedJobIds = jobApplicationRepository.findAppliedJobIdsByFreelancerProfile(freelancerProfile);
+        List<Long> appliedJobIds = jobApplicationRepository.findAppliedJobIdsByFreelancerProfile(freelancerProfile);
 
         return ResponseEntity.ok(appliedJobIds);
     }
 
     @GetMapping("/client-received-applications")
-    public ResponseEntity < List < JobApplicationResponse >> getClientJobApplications(Authentication authentication) {
+    public ResponseEntity<List<JobApplicationResponse>> getClientJobApplications(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
@@ -136,9 +137,9 @@ public class JobController {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
 
-        List < JobApplication > clientJobApplications = jobApplicationRepository.findClientJobApplications(clientProfile);
+        List<JobApplication> clientJobApplications = jobApplicationRepository.findClientJobApplications(clientProfile);
 
-        List < JobApplicationResponse > responseList = clientJobApplications.stream()
+        List<JobApplicationResponse> responseList = clientJobApplications.stream()
                 .map(jobApplication -> {
                     JobApplicationResponse response = JobApplicationResponse.fromEntity(jobApplication);
                     response.setFreelancerFirstName(jobApplication.getFreelancerProfile().getFirstName());
@@ -151,15 +152,15 @@ public class JobController {
     }
 
     @GetMapping("/job-applications/{jobId}")
-    public ResponseEntity < List < JobApplicationResponse >> getJobApplicationsForJob(@PathVariable Long jobId) {
+    public ResponseEntity<List<JobApplicationResponse>> getJobApplicationsForJob(@PathVariable Long jobId) {
         try {
             logger.info("Fetching job applications for jobId: {}", jobId);
 
-            List < JobApplication > jobApplications = jobApplicationRepository.findJobApplicationsByJobId(jobId);
+            List<JobApplication> jobApplications = jobApplicationRepository.findJobApplicationsByJobId(jobId);
 
             logger.info("Fetched {} job applications for jobId: {}", jobApplications.size(), jobId);
 
-            List < JobApplicationResponse > responseList = jobApplications.stream()
+            List<JobApplicationResponse> responseList = jobApplications.stream()
                     .map(jobApplication -> {
                         JobApplicationResponse response = JobApplicationResponse.fromEntity(jobApplication);
                         FreelancerProfile freelancerProfile = jobApplication.getFreelancerProfile();
@@ -184,7 +185,7 @@ public class JobController {
     }
 
     @PostMapping("/post")
-    public ResponseEntity < ? > postJob(@RequestBody JobPostingRequest jobPostingRequest) {
+    public ResponseEntity<?> postJob(@RequestBody JobPostingRequest jobPostingRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -209,12 +210,12 @@ public class JobController {
     }
 
     @GetMapping("/getAllJobs")
-    public List < ClientJobPosting > getAllJobs() {
+    public List<ClientJobPosting> getAllJobs() {
         return jobPostingService.getAllJobPostings();
     }
 
     @GetMapping("/client-job-postings")
-    public ResponseEntity < List < ClientJobPosting >> getClientJobPostings() {
+    public ResponseEntity<List<ClientJobPosting>> getClientJobPostings() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -229,7 +230,7 @@ public class JobController {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
 
-        List < ClientJobPosting > clientJobPostings = jobPostingService.getClientJobPostings(clientProfile);
+        List<ClientJobPosting> clientJobPostings = jobPostingService.getClientJobPostings(clientProfile);
 
         return ResponseEntity.ok(clientJobPostings);
     }
@@ -257,4 +258,19 @@ public class JobController {
         return ResponseEntity.ok(applicationStatusMap);
     }
 
+    @PostMapping("/decline-application/{applicationId}")
+    public ResponseEntity<?> declineApplication(@PathVariable Long applicationId) {
+        try {
+            JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
+                    .orElseThrow(() -> new RuntimeException("Job application not found for applicationId: " + applicationId));
+
+            jobApplication.setStatus(ApplicationStatus.REJECTED);
+            jobApplicationRepository.save(jobApplication);
+
+            return ResponseEntity.ok(new MessageResponse("Application declined successfully!"));
+        } catch (Exception e) {
+            logger.error("Error declining application", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
