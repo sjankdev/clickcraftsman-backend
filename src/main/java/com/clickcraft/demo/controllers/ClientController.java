@@ -4,7 +4,6 @@ import com.clickcraft.demo.dto.client.ClientProfileDTO;
 import com.clickcraft.demo.dto.client.ClientProfileUpdateRequest;
 import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.repository.JobApplicationRepository;
-import com.clickcraft.demo.repository.JobOfferRepository;
 import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
 import com.clickcraft.demo.service.ClientProfileService;
@@ -26,15 +25,9 @@ public class ClientController {
 
     private final ClientProfileService clientProfileService;
 
-    private final JobApplicationRepository jobApplicationRepository;
-
-    private final JobOfferRepository jobOfferRepository;
-
     @Autowired
-    public ClientController(ClientProfileService clientProfileService, JobApplicationRepository jobApplicationRepository, JobOfferRepository jobOfferRepository) {
+    public ClientController(ClientProfileService clientProfileService) {
         this.clientProfileService = clientProfileService;
-        this.jobApplicationRepository = jobApplicationRepository;
-        this.jobOfferRepository = jobOfferRepository;
     }
 
     @GetMapping("/profile")

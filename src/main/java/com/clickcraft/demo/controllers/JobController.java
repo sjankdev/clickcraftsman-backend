@@ -232,21 +232,4 @@ public class JobController {
 
         return ResponseEntity.ok(clientJobPostings);
     }
-
- /*   @PostMapping("/send-offer/{applicationId}")
-    public ResponseEntity<?> sendOffer(@PathVariable Long applicationId) {
-        try {
-            JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
-                    .orElseThrow(() -> new RuntimeException("Job application not found for applicationId: " + applicationId));
-
-            jobApplicationRepository.save(jobApplication);
-
-            return ResponseEntity.ok(new MessageResponse("Offer sent successfully!"));
-
-        } catch (Exception e) {
-            logger.error("Error sending offer", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }*/
-
 }

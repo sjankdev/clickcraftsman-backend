@@ -1,7 +1,6 @@
 package com.clickcraft.demo.service;
 
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
-import com.clickcraft.demo.dto.job.JobOfferDTO;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.User;
 
@@ -23,5 +22,4 @@ public interface FreelancerProfileService {
 
     byte[] getProfilePictureData(Long freelancerId);
 
-    public List<JobOfferDTO> getReceivedJobOffers(Long freelancerId);
     }

@@ -38,9 +38,6 @@ public class JobApplication {
     @JoinColumn(name = "client_job_posting_id")
     private ClientJobPosting clientJobPosting;
 
-    @OneToOne(mappedBy = "jobApplication", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private JobOffer jobOffer;
-
     public JobApplication() {}
 
     public FreelancerProfile getFreelancerProfile() {
@@ -75,11 +72,4 @@ public class JobApplication {
         this.id = id;
     }
 
-    public JobOffer getJobOffer() {
-        return jobOffer;
-    }
-
-    public void setJobOffer(JobOffer jobOffer) {
-        this.jobOffer = jobOffer;
-    }
 }
