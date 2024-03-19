@@ -7,7 +7,6 @@ import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.JobApplication;
-import com.clickcraft.demo.models.enums.ApplicationStatus;
 import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.repository.JobApplicationRepository;
 import com.clickcraft.demo.repository.JobPostingRepository;
@@ -92,7 +91,6 @@ public class JobController {
         jobApplication.setClientJobPosting(jobPosting);
         jobApplication.setFreelancerProfile(freelancerProfile);
         jobApplication.setMessageToClient(messageToClient);
-        jobApplication.setStatus(ApplicationStatus.PENDING);
 
         JobApplication savedJobApplication = jobApplicationRepository.save(jobApplication);
 
@@ -235,13 +233,12 @@ public class JobController {
         return ResponseEntity.ok(clientJobPostings);
     }
 
-    @PostMapping("/send-offer/{applicationId}")
+ /*   @PostMapping("/send-offer/{applicationId}")
     public ResponseEntity<?> sendOffer(@PathVariable Long applicationId) {
         try {
             JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
                     .orElseThrow(() -> new RuntimeException("Job application not found for applicationId: " + applicationId));
 
-            jobApplication.setStatus(ApplicationStatus.ACCEPTED);
             jobApplicationRepository.save(jobApplication);
 
             return ResponseEntity.ok(new MessageResponse("Offer sent successfully!"));
@@ -250,27 +247,6 @@ public class JobController {
             logger.error("Error sending offer", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
+    }*/
 
-    @GetMapping("/application-status/{jobId}")
-    public ResponseEntity<Map<Long, ApplicationStatus>> getApplicationStatus(@AuthenticationPrincipal UserDetails userDetails) {
-        Map<Long, ApplicationStatus> applicationStatusMap = jobPostingService.getApplicationStatusForFreelancer(userDetails.getUsername());
-        return ResponseEntity.ok(applicationStatusMap);
-    }
-
-    @PostMapping("/decline-application/{applicationId}")
-    public ResponseEntity<?> declineApplication(@PathVariable Long applicationId) {
-        try {
-            JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
-                    .orElseThrow(() -> new RuntimeException("Job application not found for applicationId: " + applicationId));
-
-            jobApplication.setStatus(ApplicationStatus.REJECTED);
-            jobApplicationRepository.save(jobApplication);
-
-            return ResponseEntity.ok(new MessageResponse("Application declined successfully!"));
-        } catch (Exception e) {
-            logger.error("Error declining application", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
 }
