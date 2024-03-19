@@ -4,7 +4,6 @@ import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.JobApplication;
-import com.clickcraft.demo.models.enums.ApplicationStatus;
 import com.clickcraft.demo.repository.FreelancerProfileRepository;
 import com.clickcraft.demo.repository.JobApplicationRepository;
 import com.clickcraft.demo.repository.JobPostingRepository;
@@ -46,20 +45,6 @@ public class JobPostingServiceImpl implements JobPostingService {
     @Override
     public List<ClientJobPosting> getClientJobPostings(ClientProfile clientProfile) {
         return jobPostingRepository.findByClientProfile(clientProfile);
-    }
-
-    @Override
-    public Map<Long, ApplicationStatus> getApplicationStatusForFreelancer(String freelancerEmail) {
-        Optional<FreelancerProfile> optionalFreelancerProfile = Optional.ofNullable(freelancerProfileRepository.findByUserEmail(freelancerEmail));
-        FreelancerProfile freelancerProfile = optionalFreelancerProfile.orElseThrow(() -> new RuntimeException("Freelancer not found"));
-
-        Map<Long, ApplicationStatus> applicationStatusMap = new HashMap<>();
-        List<JobApplication> jobApplications = jobApplicationRepository.findByFreelancerProfile(freelancerProfile);
-
-        for (JobApplication jobApplication : jobApplications) {
-            applicationStatusMap.put(jobApplication.getClientJobPosting().getId(), jobApplication.getStatus());
-        }
-        return applicationStatusMap;
     }
 
 }
