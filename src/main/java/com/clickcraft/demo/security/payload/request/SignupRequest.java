@@ -3,8 +3,12 @@ package com.clickcraft.demo.security.payload.request;
 import java.util.Set;
 
 import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+@Getter
+@Setter
 public class SignupRequest {
 
     @NotBlank
@@ -42,55 +46,18 @@ public class SignupRequest {
 
     private MultipartFile profilePicture;
 
-    public String getEmail() {
-        return email;
-    }
+    private String companyName;
 
-    public String getPassword() {
-        return password;
-    }
+    private String companyLocation;
 
-    public Set < String > getRole() {
-        return role;
-    }
+    private String companySize;
 
-    public String getFirstName() {
-        return firstName;
-    }
+    private String companyIndustry;
 
-    public String getLastName() {
-        return lastName;
-    }
+    private String linkedin;
 
-    public String getContactPhone() {
-        return contactPhone;
-    }
+    private String website;
 
-    public String getLocation() {
-        return location;
-    }
+    private String instagram;
 
-    public Set < String > getSkills() {
-        return skills;
-    }
-
-    public void setSkills(Set < String > skills) {
-        this.skills = skills;
-    }
-
-    public MultipartFile getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(MultipartFile profilePicture) {
-        this.profilePicture = profilePicture;
-    }
-
-    public String getPortfolio() {
-        return portfolio;
-    }
-
-    public int getYearsOfExperience() {
-        return yearsOfExperience;
-    }
 }

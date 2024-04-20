@@ -5,10 +5,14 @@ import com.clickcraft.demo.security.payload.request.SignupRequest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "client_profiles")
 public class ClientProfile {
@@ -32,6 +36,20 @@ public class ClientProfile {
     @Enumerated(EnumType.STRING)
     private ELocations location;
 
+    private String companyName;
+
+    private String companyLocation;
+
+    private String companySize;
+
+    private String companyIndustry;
+
+    private String linkedin;
+
+    private String website;
+
+    private String instagram;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -40,54 +58,6 @@ public class ClientProfile {
     private Set < ClientJobPosting > jobPostings = new HashSet < > ();
 
     public ClientProfile() {}
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getContactPhone() {
-        return contactPhone;
-    }
-
-    public void setContactPhone(String contactPhone) {
-        this.contactPhone = contactPhone;
-    }
-
-    public ELocations getLocation() {
-        return location;
-    }
-
-    public void setLocation(ELocations location) {
-        this.location = location;
-    }
-
-    public void setJobPostings(Set < ClientJobPosting > jobPostings) {
-        this.jobPostings = jobPostings;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Set < ClientJobPosting > getJobPostings() {
-        return jobPostings;
-    }
 
     public void addJobPosting(ClientJobPosting jobPosting) {
         jobPostings.add(jobPosting);
@@ -98,6 +68,13 @@ public class ClientProfile {
         clientProfile.setFirstName(signUpRequest.getFirstName());
         clientProfile.setLastName(signUpRequest.getLastName());
         clientProfile.setContactPhone(signUpRequest.getContactPhone());
+        clientProfile.setCompanyName(signUpRequest.getCompanyName());
+        clientProfile.setCompanySize(signUpRequest.getCompanySize());
+        clientProfile.setCompanyIndustry(signUpRequest.getCompanyIndustry());
+        clientProfile.setCompanyLocation(signUpRequest.getCompanyLocation());
+        clientProfile.setWebsite(signUpRequest.getWebsite());
+        clientProfile.setInstagram(signUpRequest.getInstagram());
+        clientProfile.setLinkedin(signUpRequest.getLinkedin());
         clientProfile.setLocation(ELocations.valueOf(signUpRequest.getLocation()));
         clientProfile.setUser(user);
         user.setClientProfile(clientProfile);

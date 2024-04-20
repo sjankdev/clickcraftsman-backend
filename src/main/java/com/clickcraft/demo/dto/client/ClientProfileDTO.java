@@ -2,66 +2,42 @@ package com.clickcraft.demo.dto.client;
 
 import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.models.enums.ELocations;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ClientProfileDTO {
 
     private Long id;
+
     private String firstName;
+
     private String lastName;
+
     private String contactPhone;
+
     private ELocations location;
+
     private byte[] profilePictureData;
-    public ClientProfileDTO() {
 
-    }
+    private String companyName;
 
-    public Long getId() {
-        return id;
-    }
+    private String companyLocation;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private String companySize;
 
-    public String getFirstName() {
-        return firstName;
-    }
+    private String companyIndustry;
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+    private String linkedin;
 
-    public String getLastName() {
-        return lastName;
-    }
+    private String website;
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getContactPhone() {
-        return contactPhone;
-    }
-
-    public void setContactPhone(String contactPhone) {
-        this.contactPhone = contactPhone;
-    }
-
-    public ELocations getLocation() {
-        return location;
-    }
-
-    public void setLocation(ELocations location) {
-        this.location = location;
-    }
-
-    public byte[] getProfilePictureData() {
-        return profilePictureData;
-    }
-
-    public void setProfilePictureData(byte[] profilePictureData) {
-        this.profilePictureData = profilePictureData;
-    }
+    private String instagram;
 
     public static ClientProfileDTO fromUser(User user) {
         ClientProfileDTO clientProfileDTO = new ClientProfileDTO();
@@ -72,6 +48,13 @@ public class ClientProfileDTO {
                 clientProfileDTO.setLastName(user.getClientProfile().getLastName());
                 clientProfileDTO.setContactPhone(user.getClientProfile().getContactPhone());
                 clientProfileDTO.setLocation(user.getClientProfile().getLocation());
+                clientProfileDTO.setCompanyName(user.getClientProfile().getCompanyName());
+                clientProfileDTO.setCompanyLocation(user.getClientProfile().getCompanyLocation());
+                clientProfileDTO.setCompanyIndustry(user.getClientProfile().getCompanyIndustry());
+                clientProfileDTO.setCompanySize(user.getClientProfile().getCompanySize());
+                clientProfileDTO.setInstagram(user.getClientProfile().getInstagram());
+                clientProfileDTO.setWebsite(user.getClientProfile().getWebsite());
+                clientProfileDTO.setLinkedin(user.getClientProfile().getLinkedin());
                 clientProfileDTO.setProfilePictureData(user.getProfilePictureData());
             }
         }
