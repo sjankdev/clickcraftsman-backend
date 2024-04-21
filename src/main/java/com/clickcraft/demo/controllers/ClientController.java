@@ -83,6 +83,13 @@ public class ClientController {
             user.getClientProfile().setLastName(clientProfileUpdateRequest.getLastName());
             user.getClientProfile().setContactPhone(clientProfileUpdateRequest.getContactPhone());
             user.getClientProfile().setLocation(clientProfileUpdateRequest.getLocation());
+            user.getClientProfile().setCompanyName(clientProfileUpdateRequest.getCompanyName());
+            user.getClientProfile().setCompanyIndustry(clientProfileUpdateRequest.getCompanyIndustry());
+            user.getClientProfile().setCompanySize(clientProfileUpdateRequest.getCompanySize());
+            user.getClientProfile().setCompanyLocation(clientProfileUpdateRequest.getCompanyLocation());
+            user.getClientProfile().setWebsite(clientProfileUpdateRequest.getWebsite());
+            user.getClientProfile().setInstagram(clientProfileUpdateRequest.getInstagram());
+            user.getClientProfile().setLinkedin(clientProfileUpdateRequest.getLinkedin());
         }
     }
 }
