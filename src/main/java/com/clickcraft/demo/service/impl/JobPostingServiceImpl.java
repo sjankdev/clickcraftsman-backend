@@ -47,4 +47,10 @@ public class JobPostingServiceImpl implements JobPostingService {
         return jobPostingRepository.findByClientProfile(clientProfile);
     }
 
+    @Override
+    public int countJobPostingsByClientProfile(ClientProfile clientProfile) {
+        List<ClientJobPosting> jobPostings = jobPostingRepository.findByClientProfile(clientProfile);
+        return jobPostings.size();
+    }
+
 }

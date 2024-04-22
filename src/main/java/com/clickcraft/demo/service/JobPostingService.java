@@ -14,4 +14,6 @@ public interface JobPostingService {
 
     List<ClientJobPosting> getClientJobPostings(ClientProfile clientProfile);
 
+    int countJobPostingsByClientProfile(ClientProfile clientProfile);
+
 }
