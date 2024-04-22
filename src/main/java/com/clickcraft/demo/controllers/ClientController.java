@@ -2,11 +2,12 @@ package com.clickcraft.demo.controllers;
 
 import com.clickcraft.demo.dto.client.ClientProfileDTO;
 import com.clickcraft.demo.dto.client.ClientProfileUpdateRequest;
+import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.User;
-import com.clickcraft.demo.repository.JobApplicationRepository;
 import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
 import com.clickcraft.demo.service.ClientProfileService;
+import com.clickcraft.demo.service.JobPostingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,12 @@ public class ClientController {
     private static final Logger logger = LoggerFactory.getLogger(ClientController.class);
 
     private final ClientProfileService clientProfileService;
+    private final JobPostingService jobPostingService;
 
     @Autowired
-    public ClientController(ClientProfileService clientProfileService) {
+    public ClientController(ClientProfileService clientProfileService, JobPostingService jobPostingService) {
         this.clientProfileService = clientProfileService;
+        this.jobPostingService = jobPostingService;
     }
 
     @GetMapping("/profile")
@@ -75,6 +78,27 @@ public class ClientController {
             logger.error("Error updating client profile", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/client-job-postings/count")
+    public ResponseEntity<Integer> countClientJobPostings() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.badRequest().body(0);
+        }
+
+        String userEmail = authentication.getName();
+
+        ClientProfile clientProfile = clientProfileService.getClientProfileByEmail(userEmail);
+
+        if (clientProfile == null) {
+            return ResponseEntity.badRequest().body(0);
+        }
+
+        int jobPostingCount = jobPostingService.countJobPostingsByClientProfile(clientProfile);
+
+        return ResponseEntity.ok(jobPostingCount);
     }
 
     private void updateClientProfileData(User user, ClientProfileUpdateRequest clientProfileUpdateRequest) {
