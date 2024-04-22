@@ -16,4 +16,6 @@ public interface JobPostingService {
 
     int countJobPostingsByClientProfile(ClientProfile clientProfile);
 
+    void deleteJobPosting(Long id);
+
 }

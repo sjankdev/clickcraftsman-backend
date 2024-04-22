@@ -53,4 +53,9 @@ public class JobPostingServiceImpl implements JobPostingService {
         return jobPostings.size();
     }
 
+    @Override
+    public void deleteJobPosting(Long id) {
+        jobPostingRepository.deleteById(id);
+    }
+
 }
