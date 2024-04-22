@@ -232,4 +232,10 @@ public class JobController {
 
         return ResponseEntity.ok(clientJobPostings);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteJobPosting(@PathVariable("id") Long id) {
+        jobPostingService.deleteJobPosting(id);
+        return ResponseEntity.ok().build();
+    }
 }
