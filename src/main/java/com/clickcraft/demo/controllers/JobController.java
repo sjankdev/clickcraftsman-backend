@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -238,4 +239,18 @@ public class JobController {
         jobPostingService.deleteJobPosting(id);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/archive/{id}")
+    public ResponseEntity<?> archiveJob(@PathVariable Long id) {
+        Optional<ClientJobPosting> optionalJobPosting = jobPostingRepository.findById(id);
+        if (optionalJobPosting.isPresent()) {
+            ClientJobPosting jobPosting = optionalJobPosting.get();
+            jobPosting.setArchived(true);
+            jobPostingRepository.save(jobPosting);
+            return ResponseEntity.ok(new MessageResponse("Job archived successfully."));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

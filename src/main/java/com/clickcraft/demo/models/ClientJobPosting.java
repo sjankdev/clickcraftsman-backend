@@ -51,6 +51,9 @@ public class ClientJobPosting {
     @Column(name = "location")
     private String location;
 
+    @Column(name = "is_archived")
+    private Boolean archived;
+
     @OneToMany(mappedBy = "clientJobPosting", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set < JobApplication > jobApplications = new HashSet < > ();
@@ -133,5 +136,13 @@ public class ClientJobPosting {
 
     public void setJobApplications(Set < JobApplication > jobApplications) {
         this.jobApplications = jobApplications;
+    }
+
+    public Boolean getArchived() {
+        return archived;
+    }
+
+    public void setArchived(Boolean archived) {
+        this.archived = archived;
     }
 }
