@@ -8,6 +8,10 @@ public class JobPostingRequest {
     private List < String > requiredSkillIds;
     private Boolean isRemote;
     private String location;
+    private String priceType;
+    private Double priceRangeFrom;
+    private Double priceRangeTo;
+    private Double budget;
 
     public JobPostingRequest() {
     }
@@ -50,5 +54,45 @@ public class JobPostingRequest {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public Boolean getRemote() {
+        return isRemote;
+    }
+
+    public void setRemote(Boolean remote) {
+        isRemote = remote;
+    }
+
+    public String getPriceType() {
+        return priceType;
+    }
+
+    public void setPriceType(String priceType) {
+        this.priceType = priceType;
+    }
+
+    public Double getPriceRangeFrom() {
+        return priceRangeFrom;
+    }
+
+    public void setPriceRangeFrom(Double priceRangeFrom) {
+        this.priceRangeFrom = priceRangeFrom;
+    }
+
+    public Double getPriceRangeTo() {
+        return priceRangeTo;
+    }
+
+    public void setPriceRangeTo(Double priceRangeTo) {
+        this.priceRangeTo = priceRangeTo;
+    }
+
+    public Double getBudget() {
+        return budget;
+    }
+
+    public void setBudget(Double budget) {
+        this.budget = budget;
     }
 }

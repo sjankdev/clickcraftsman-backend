@@ -199,7 +199,20 @@ public class JobController {
             return ResponseEntity.badRequest().body(new MessageResponse("Client profile not found."));
         }
 
-        ClientJobPosting jobPosting = new ClientJobPosting(jobPostingRequest.getJobName(), jobPostingRequest.getDescription(), clientProfile, LocalDate.now(), jobPostingRequest.getIsRemote(), jobPostingRequest.getLocation(), skillService.getSkillsByNames(jobPostingRequest.getRequiredSkillIds()));
+        ClientJobPosting jobPosting = new ClientJobPosting(
+                jobPostingRequest.getJobName(),
+                jobPostingRequest.getDescription(),
+                clientProfile,
+                LocalDate.now(),
+                jobPostingRequest.getIsRemote(),
+                jobPostingRequest.getLocation(),
+                skillService.getSkillsByNames(jobPostingRequest.getRequiredSkillIds())
+        );
+
+        jobPosting.setPriceType(jobPostingRequest.getPriceType());
+        jobPosting.setPriceRangeFrom(jobPostingRequest.getPriceRangeFrom());
+        jobPosting.setPriceRangeTo(jobPostingRequest.getPriceRangeTo());
+        jobPosting.setBudget(jobPostingRequest.getBudget());
 
         clientProfile.addJobPosting(jobPosting);
 
