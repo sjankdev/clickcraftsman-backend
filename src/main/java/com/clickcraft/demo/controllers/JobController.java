@@ -253,4 +253,17 @@ public class JobController {
         }
     }
 
+    @PutMapping("/unarchive/{id}")
+    public ResponseEntity<?> unarchiveJob(@PathVariable Long id) {
+        Optional<ClientJobPosting> optionalJobPosting = jobPostingRepository.findById(id);
+        if (optionalJobPosting.isPresent()) {
+            ClientJobPosting jobPosting = optionalJobPosting.get();
+            jobPosting.setArchived(false); // Mark as unarchived
+            jobPostingRepository.save(jobPosting);
+            return ResponseEntity.ok(new MessageResponse("Job unarchived successfully."));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
