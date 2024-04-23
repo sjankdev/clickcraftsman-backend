@@ -48,9 +48,15 @@ public class JobPostingServiceImpl implements JobPostingService {
     }
 
     @Override
-    public int countJobPostingsByClientProfile(ClientProfile clientProfile) {
-        List<ClientJobPosting> jobPostings = jobPostingRepository.findByClientProfile(clientProfile);
-        return jobPostings.size();
+    public int countLiveJobPostingsByClientProfile(ClientProfile clientProfile) {
+        List<ClientJobPosting> liveJobPostings = jobPostingRepository.findByClientProfileAndArchived(clientProfile, false);
+        return liveJobPostings.size();
+    }
+
+    @Override
+    public int countArchivedJobPostingsByClientProfile(ClientProfile clientProfile) {
+        List<ClientJobPosting> archivedJobPostings = jobPostingRepository.findByClientProfileAndArchived(clientProfile, true);
+        return archivedJobPostings.size();
     }
 
     @Override

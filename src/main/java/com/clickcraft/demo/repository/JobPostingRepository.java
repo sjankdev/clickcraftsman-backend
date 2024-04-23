@@ -11,5 +11,5 @@ import java.util.List;
 public interface JobPostingRepository extends JpaRepository < ClientJobPosting, Long > {
 
     List<ClientJobPosting> findByClientProfile(ClientProfile clientProfile);
-
+    List<ClientJobPosting> findByClientProfileAndArchived(ClientProfile clientProfile, boolean archived);
 }

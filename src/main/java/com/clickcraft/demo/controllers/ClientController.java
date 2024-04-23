@@ -80,8 +80,8 @@ public class ClientController {
         }
     }
 
-    @GetMapping("/client-job-postings/count")
-    public ResponseEntity<Integer> countClientJobPostings() {
+    @GetMapping("/client-job-postings/live-count")
+    public ResponseEntity<Integer> countLiveClientJobPostings() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -96,9 +96,30 @@ public class ClientController {
             return ResponseEntity.badRequest().body(0);
         }
 
-        int jobPostingCount = jobPostingService.countJobPostingsByClientProfile(clientProfile);
+        int liveJobPostingCount = jobPostingService.countLiveJobPostingsByClientProfile(clientProfile);
 
-        return ResponseEntity.ok(jobPostingCount);
+        return ResponseEntity.ok(liveJobPostingCount);
+    }
+
+    @GetMapping("/client-job-postings/archived-count")
+    public ResponseEntity<Integer> countArchivedClientJobPostings() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.badRequest().body(0);
+        }
+
+        String userEmail = authentication.getName();
+
+        ClientProfile clientProfile = clientProfileService.getClientProfileByEmail(userEmail);
+
+        if (clientProfile == null) {
+            return ResponseEntity.badRequest().body(0);
+        }
+
+        int archivedJobPostingCount = jobPostingService.countArchivedJobPostingsByClientProfile(clientProfile);
+
+        return ResponseEntity.ok(archivedJobPostingCount);
     }
 
     private void updateClientProfileData(User user, ClientProfileUpdateRequest clientProfileUpdateRequest) {
