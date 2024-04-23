@@ -1,14 +1,16 @@
 package com.clickcraft.demo.dto.job;
 
+import com.clickcraft.demo.models.enums.PriceType;
+
 import java.util.List;
 
 public class JobPostingRequest {
     private String jobName;
     private String description;
-    private List < String > requiredSkillIds;
+    private List<String> requiredSkillIds;
     private Boolean isRemote;
     private String location;
-    private String priceType;
+    private PriceType priceType;
     private Double priceRangeFrom;
     private Double priceRangeTo;
     private Double budget;
@@ -32,11 +34,11 @@ public class JobPostingRequest {
         this.description = description;
     }
 
-    public List < String > getRequiredSkillIds() {
+    public List<String> getRequiredSkillIds() {
         return requiredSkillIds;
     }
 
-    public void setRequiredSkillIds(List < String > requiredSkillIds) {
+    public void setRequiredSkillIds(List<String> requiredSkillIds) {
         this.requiredSkillIds = requiredSkillIds;
     }
 
@@ -64,11 +66,11 @@ public class JobPostingRequest {
         isRemote = remote;
     }
 
-    public String getPriceType() {
+    public PriceType getPriceType() {
         return priceType;
     }
 
-    public void setPriceType(String priceType) {
+    public void setPriceType(PriceType priceType) {
         this.priceType = priceType;
     }
 

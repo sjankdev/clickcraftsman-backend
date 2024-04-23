@@ -1,5 +1,6 @@
 package com.clickcraft.demo.models;
 
+import com.clickcraft.demo.models.enums.PriceType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -55,7 +56,8 @@ public class ClientJobPosting {
     private Boolean archived = false;
 
     @Column(name = "price_type")
-    private String priceType;
+    @Enumerated(EnumType.STRING)
+    private PriceType priceType;
 
     @Column(name = "price_range_from")
     private Double priceRangeFrom;
@@ -158,11 +160,11 @@ public class ClientJobPosting {
         this.archived = archived;
     }
 
-    public String getPriceType() {
+    public PriceType getPriceType() {
         return priceType;
     }
 
-    public void setPriceType(String priceType) {
+    public void setPriceType(PriceType priceType) {
         this.priceType = priceType;
     }
 
