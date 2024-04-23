@@ -18,8 +18,8 @@ public interface FreelancerProfileService {
 
     FreelancerProfileDTO getPublicProfileById(Long freelancerId);
 
-    public List<String> getProfilePictures(List<Long> freelancerIds);
+    List<String> getProfilePictures(List<Long> freelancerIds);
 
     byte[] getProfilePictureData(Long freelancerId);
 
-    }
+}

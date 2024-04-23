@@ -26,19 +26,12 @@ public class ClientProfileServiceImpl implements ClientProfileService {
 
     @Override
     public User getClientByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Client not found with email: " + email));
+        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Client not found with email: " + email));
     }
 
     @Override
     public void saveClient(User user) {
         userRepository.save(user);
-    }
-
-    @Override
-    @Transactional
-    public void postJob(ClientProfile clientProfile, ClientJobPosting jobPosting) {
-        clientProfile.addJobPosting(jobPosting);
     }
 
     @Override

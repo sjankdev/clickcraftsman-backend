@@ -8,18 +8,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "client_job_postings")
-@JsonIgnoreProperties({
-        "hibernateLazyInitializer",
-        "handler"
-})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ClientJobPosting {
 
     @Id
@@ -44,7 +45,7 @@ public class ClientJobPosting {
 
     @ManyToMany
     @JoinTable(name = "job_posting_skills", joinColumns = @JoinColumn(name = "job_posting_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    private List < Skill > requiredSkills;
+    private List<Skill> requiredSkills;
 
     @Column(name = "is_remote")
     @JsonProperty("isRemote")
@@ -75,15 +76,14 @@ public class ClientJobPosting {
 
     @OneToMany(mappedBy = "clientJobPosting", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private Set < JobApplication > jobApplications = new HashSet < > ();
+    private Set<JobApplication> jobApplications = new HashSet<>();
 
     public ClientJobPosting() {
         this.datePosted = LocalDate.now();
         this.clientProfile = null;
     }
 
-    public ClientJobPosting(String jobName, String description, ClientProfile clientProfile,
-                            LocalDate datePosted, Boolean isRemote, String location, List < Skill > requiredSkills) {
+    public ClientJobPosting(String jobName, String description, ClientProfile clientProfile, LocalDate datePosted, Boolean isRemote, String location, List<Skill> requiredSkills) {
         this.jobName = jobName;
         this.description = description;
         this.clientProfile = clientProfile;
@@ -91,117 +91,5 @@ public class ClientJobPosting {
         this.remote = isRemote;
         this.location = location;
         this.requiredSkills = requiredSkills;
-    }
-
-    public JobType getJobType() {
-        return jobType;
-    }
-
-    public void setJobType(JobType jobType) {
-        this.jobType = jobType;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getJobName() {
-        return jobName;
-    }
-
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDate getDatePosted() {
-        return datePosted;
-    }
-
-    public ClientProfile getClientProfile() {
-        return clientProfile;
-    }
-
-    public List < Skill > getRequiredSkills() {
-        return requiredSkills;
-    }
-
-    public void setRequiredSkills(List < Skill > requiredSkills) {
-        this.requiredSkills = requiredSkills;
-    }
-
-    public Boolean getRemote() {
-        return remote;
-    }
-
-    public void setRemote(Boolean remote) {
-        this.remote = remote;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public Set < JobApplication > getJobApplications() {
-        return jobApplications;
-    }
-
-    public void setJobApplications(Set < JobApplication > jobApplications) {
-        this.jobApplications = jobApplications;
-    }
-
-    public Boolean getArchived() {
-        return archived;
-    }
-
-    public void setArchived(Boolean archived) {
-        this.archived = archived;
-    }
-
-    public PriceType getPriceType() {
-        return priceType;
-    }
-
-    public void setPriceType(PriceType priceType) {
-        this.priceType = priceType;
-    }
-
-    public Double getPriceRangeFrom() {
-        return priceRangeFrom;
-    }
-
-    public void setPriceRangeFrom(Double priceRangeFrom) {
-        this.priceRangeFrom = priceRangeFrom;
-    }
-
-    public Double getPriceRangeTo() {
-        return priceRangeTo;
-    }
-
-    public void setPriceRangeTo(Double priceRangeTo) {
-        this.priceRangeTo = priceRangeTo;
-    }
-
-    public Double getBudget() {
-        return budget;
-    }
-
-    public void setBudget(Double budget) {
-        this.budget = budget;
     }
 }

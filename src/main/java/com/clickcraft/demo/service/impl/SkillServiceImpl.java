@@ -21,21 +21,6 @@ public class SkillServiceImpl implements SkillService {
     }
 
     @Override
-    public List<Skill> getSkillsByIds(List<Long> skillIds) {
-        if (skillIds == null) {
-            return Collections.emptyList();
-        }
-
-        List<Long> validSkillIds = skillIds.stream().filter(id -> id != null && id > 0).collect(Collectors.toList());
-
-        if (validSkillIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return skillRepository.findAllById(validSkillIds);
-    }
-
-    @Override
     public List<Skill> getSkillsByNames(List<String> skillNames) {
         if (skillNames == null || skillNames.isEmpty()) {
             return Collections.emptyList();

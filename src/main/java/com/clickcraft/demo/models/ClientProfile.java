@@ -37,17 +37,11 @@ public class ClientProfile {
     private ELocations location;
 
     private String companyName;
-
     private String companyLocation;
-
     private String companySize;
-
     private String companyIndustry;
-
     private String linkedin;
-
     private String website;
-
     private String instagram;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -55,9 +49,10 @@ public class ClientProfile {
     private User user;
 
     @OneToMany(mappedBy = "clientProfile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set < ClientJobPosting > jobPostings = new HashSet < > ();
+    private Set<ClientJobPosting> jobPostings = new HashSet<>();
 
-    public ClientProfile() {}
+    public ClientProfile() {
+    }
 
     public void addJobPosting(ClientJobPosting jobPosting) {
         jobPostings.add(jobPosting);
@@ -80,5 +75,4 @@ public class ClientProfile {
         user.setClientProfile(clientProfile);
         return clientProfile;
     }
-
 }

@@ -4,11 +4,10 @@ import com.clickcraft.demo.models.enums.ELocations;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
-
 @Getter
 @Setter
 public class ClientProfileUpdateRequest {
+
     private String firstName;
     private String lastName;
     private String contactPhone;

@@ -20,7 +20,7 @@ public class SignupRequest {
     @Size(min = 6, max = 40)
     private String password;
 
-    private Set < String > role;
+    private Set<String> role;
 
     @NotBlank
     @Size(min = 3, max = 20)
@@ -39,25 +39,15 @@ public class SignupRequest {
     private String location;
 
     private String portfolio;
-
     private int yearsOfExperience;
-
-    private Set < String > skills;
-
+    private Set<String> skills;
     private MultipartFile profilePicture;
-
     private String companyName;
-
     private String companyLocation;
-
     private String companySize;
-
     private String companyIndustry;
-
     private String linkedin;
-
     private String website;
-
     private String instagram;
 
 }

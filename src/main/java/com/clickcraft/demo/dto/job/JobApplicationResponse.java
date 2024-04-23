@@ -3,8 +3,13 @@ package com.clickcraft.demo.dto.job;
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.JobApplication;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class JobApplicationResponse {
+
     private Long id;
     private String messageToClient;
     private ClientJobPosting jobPosting;
@@ -13,7 +18,6 @@ public class JobApplicationResponse {
     private Long freelancerId;
 
     public JobApplicationResponse() {
-
     }
 
     public static JobApplicationResponse fromEntity(JobApplication application) {
@@ -28,55 +32,6 @@ public class JobApplicationResponse {
             response.setFreelancerFirstName(freelancerProfile.getFirstName());
             response.setFreelancerLastName(freelancerProfile.getLastName());
         }
-
         return response;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getFreelancerId() {
-        return freelancerId;
-    }
-
-    public void setFreelancerId(Long freelancerId) {
-        this.freelancerId = freelancerId;
-    }
-
-    public String getMessageToClient() {
-        return messageToClient;
-    }
-
-    public void setMessageToClient(String messageToClient) {
-        this.messageToClient = messageToClient;
-    }
-
-    public ClientJobPosting getJobPosting() {
-        return jobPosting;
-    }
-
-    public void setJobPosting(ClientJobPosting jobPosting) {
-        this.jobPosting = jobPosting;
-    }
-
-    public String getFreelancerFirstName() {
-        return freelancerFirstName;
-    }
-
-    public void setFreelancerFirstName(String freelancerFirstName) {
-        this.freelancerFirstName = freelancerFirstName;
-    }
-
-    public String getFreelancerLastName() {
-        return freelancerLastName;
-    }
-
-    public void setFreelancerLastName(String freelancerLastName) {
-        this.freelancerLastName = freelancerLastName;
     }
 }
