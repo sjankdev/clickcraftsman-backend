@@ -1,5 +1,7 @@
 package com.clickcraft.demo.models;
 
+import com.clickcraft.demo.models.enums.JobType;
+import com.clickcraft.demo.models.enums.PriceType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -54,6 +56,23 @@ public class ClientJobPosting {
     @Column(name = "is_archived")
     private Boolean archived = false;
 
+    @Column(name = "price_type")
+    @Enumerated(EnumType.STRING)
+    private PriceType priceType;
+
+    @Column(name = "price_range_from")
+    private Double priceRangeFrom;
+
+    @Column(name = "price_range_to")
+    private Double priceRangeTo;
+
+    @Column(name = "budget")
+    private Double budget;
+
+    @Column(name = "job_type")
+    @Enumerated(EnumType.STRING)
+    private JobType jobType;
+
     @OneToMany(mappedBy = "clientJobPosting", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set < JobApplication > jobApplications = new HashSet < > ();
@@ -72,6 +91,14 @@ public class ClientJobPosting {
         this.remote = isRemote;
         this.location = location;
         this.requiredSkills = requiredSkills;
+    }
+
+    public JobType getJobType() {
+        return jobType;
+    }
+
+    public void setJobType(JobType jobType) {
+        this.jobType = jobType;
     }
 
     public Long getId() {
@@ -144,5 +171,37 @@ public class ClientJobPosting {
 
     public void setArchived(Boolean archived) {
         this.archived = archived;
+    }
+
+    public PriceType getPriceType() {
+        return priceType;
+    }
+
+    public void setPriceType(PriceType priceType) {
+        this.priceType = priceType;
+    }
+
+    public Double getPriceRangeFrom() {
+        return priceRangeFrom;
+    }
+
+    public void setPriceRangeFrom(Double priceRangeFrom) {
+        this.priceRangeFrom = priceRangeFrom;
+    }
+
+    public Double getPriceRangeTo() {
+        return priceRangeTo;
+    }
+
+    public void setPriceRangeTo(Double priceRangeTo) {
+        this.priceRangeTo = priceRangeTo;
+    }
+
+    public Double getBudget() {
+        return budget;
+    }
+
+    public void setBudget(Double budget) {
+        this.budget = budget;
     }
 }
