@@ -1,5 +1,6 @@
 package com.clickcraft.demo.models;
 
+import com.clickcraft.demo.models.enums.JobType;
 import com.clickcraft.demo.models.enums.PriceType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -68,6 +69,10 @@ public class ClientJobPosting {
     @Column(name = "budget")
     private Double budget;
 
+    @Column(name = "job_type")
+    @Enumerated(EnumType.STRING)
+    private JobType jobType;
+
     @OneToMany(mappedBy = "clientJobPosting", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set < JobApplication > jobApplications = new HashSet < > ();
@@ -86,6 +91,14 @@ public class ClientJobPosting {
         this.remote = isRemote;
         this.location = location;
         this.requiredSkills = requiredSkills;
+    }
+
+    public JobType getJobType() {
+        return jobType;
+    }
+
+    public void setJobType(JobType jobType) {
+        this.jobType = jobType;
     }
 
     public Long getId() {

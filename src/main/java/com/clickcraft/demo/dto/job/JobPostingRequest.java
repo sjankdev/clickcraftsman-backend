@@ -1,5 +1,6 @@
 package com.clickcraft.demo.dto.job;
 
+import com.clickcraft.demo.models.enums.JobType;
 import com.clickcraft.demo.models.enums.PriceType;
 
 import java.util.List;
@@ -14,8 +15,17 @@ public class JobPostingRequest {
     private Double priceRangeFrom;
     private Double priceRangeTo;
     private Double budget;
+    private JobType jobType;
 
     public JobPostingRequest() {
+    }
+
+    public JobType getJobType() {
+        return jobType;
+    }
+
+    public void setJobType(JobType jobType) {
+        this.jobType = jobType;
     }
 
     public String getJobName() {

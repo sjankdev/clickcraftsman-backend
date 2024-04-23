@@ -213,6 +213,7 @@ public class JobController {
         jobPosting.setPriceRangeFrom(jobPostingRequest.getPriceRangeFrom());
         jobPosting.setPriceRangeTo(jobPostingRequest.getPriceRangeTo());
         jobPosting.setBudget(jobPostingRequest.getBudget());
+        jobPosting.setJobType(jobPostingRequest.getJobType());
 
         clientProfile.addJobPosting(jobPosting);
 
