@@ -14,7 +14,9 @@ public interface JobPostingService {
 
     List<ClientJobPosting> getClientJobPostings(ClientProfile clientProfile);
 
-    int countJobPostingsByClientProfile(ClientProfile clientProfile);
+    int countLiveJobPostingsByClientProfile(ClientProfile clientProfile);
+
+    int countArchivedJobPostingsByClientProfile(ClientProfile clientProfile);
 
     void deleteJobPosting(Long id);
 
