@@ -52,7 +52,7 @@ public class ClientJobPosting {
     private String location;
 
     @Column(name = "is_archived")
-    private Boolean archived;
+    private Boolean archived = false;
 
     @OneToMany(mappedBy = "clientJobPosting", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
