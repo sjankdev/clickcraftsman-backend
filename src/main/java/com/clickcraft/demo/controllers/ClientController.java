@@ -70,8 +70,7 @@ public class ClientController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
-            updateClientProfileData(user, clientProfileUpdateRequest);
-            clientProfileService.saveClient(user);
+            clientProfileService.updateClientProfile(user.getClientProfile(), clientProfileUpdateRequest);
 
             logger.info("Client profile updated successfully for client: {}", userDetails.getEmail());
             return ResponseEntity.ok(new MessageResponse("User profile updated successfully!"));
@@ -122,22 +121,5 @@ public class ClientController {
     private String getUserEmail() {
         UserDetailsImpl userDetails = getUserDetails();
         return userDetails != null ? userDetails.getEmail() : null;
-    }
-
-    private void updateClientProfileData(User user, ClientProfileUpdateRequest clientProfileUpdateRequest) {
-        ClientProfile clientProfile = user.getClientProfile();
-        if (clientProfile != null) {
-            clientProfile.setFirstName(clientProfileUpdateRequest.getFirstName());
-            clientProfile.setLastName(clientProfileUpdateRequest.getLastName());
-            clientProfile.setContactPhone(clientProfileUpdateRequest.getContactPhone());
-            clientProfile.setLocation(clientProfileUpdateRequest.getLocation());
-            clientProfile.setCompanyName(clientProfileUpdateRequest.getCompanyName());
-            clientProfile.setCompanyIndustry(clientProfileUpdateRequest.getCompanyIndustry());
-            clientProfile.setCompanySize(clientProfileUpdateRequest.getCompanySize());
-            clientProfile.setCompanyLocation(clientProfileUpdateRequest.getCompanyLocation());
-            clientProfile.setWebsite(clientProfileUpdateRequest.getWebsite());
-            clientProfile.setInstagram(clientProfileUpdateRequest.getInstagram());
-            clientProfile.setLinkedin(clientProfileUpdateRequest.getLinkedin());
-        }
     }
 }
