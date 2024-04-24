@@ -87,11 +87,13 @@ public class JobController {
         }
 
         String messageToClient = applicationRequest.getMessageToClient();
+        Double desiredPay = applicationRequest.getDesiredPay();
 
         JobApplication jobApplication = new JobApplication();
         jobApplication.setClientJobPosting(jobPosting);
         jobApplication.setFreelancerProfile(freelancerProfile);
         jobApplication.setMessageToClient(messageToClient);
+        jobApplication.setDesiredPay(desiredPay);
 
         JobApplication savedJobApplication = jobApplicationRepository.save(jobApplication);
 
