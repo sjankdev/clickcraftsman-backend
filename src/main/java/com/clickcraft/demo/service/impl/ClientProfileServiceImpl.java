@@ -35,6 +35,7 @@ public class ClientProfileServiceImpl implements ClientProfileService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void updateClientProfile(ClientProfile clientProfile, ClientProfileUpdateRequest clientProfileUpdateRequest) {
         clientProfile.setFirstName(clientProfileUpdateRequest.getFirstName());
         clientProfile.setLastName(clientProfileUpdateRequest.getLastName());
