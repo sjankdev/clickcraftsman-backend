@@ -8,6 +8,7 @@ import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
 import com.clickcraft.demo.service.ClientProfileService;
 import com.clickcraft.demo.service.JobPostingService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ public class ClientController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<MessageResponse> updateClientProfile(@RequestBody ClientProfileUpdateRequest clientProfileUpdateRequest) {
+    public ResponseEntity<MessageResponse> updateClientProfile(@Valid @RequestBody ClientProfileUpdateRequest clientProfileUpdateRequest) {
         try {
             UserDetailsImpl userDetails = getUserDetails();
             if (userDetails == null) {
