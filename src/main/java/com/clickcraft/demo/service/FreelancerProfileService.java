@@ -1,6 +1,7 @@
 package com.clickcraft.demo.service;
 
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
+import com.clickcraft.demo.dto.freelancer.FreelancerProfileUpdateRequest;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.User;
 
@@ -11,6 +12,8 @@ public interface FreelancerProfileService {
     User getFreelancerByEmail(String email);
 
     void saveFreelancer(User user);
+
+    void updateFreelancerProfileData(User user, FreelancerProfileUpdateRequest freelancerProfileUpdateRequest);
 
     FreelancerProfile getFreelancerProfileByEmail(String email);
 

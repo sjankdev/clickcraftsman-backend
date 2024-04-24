@@ -1,10 +1,12 @@
 package com.clickcraft.demo.service.impl;
 
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
+import com.clickcraft.demo.dto.freelancer.FreelancerProfileUpdateRequest;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.repository.FreelancerProfileRepository;
+import com.clickcraft.demo.repository.SkillRepository;
 import com.clickcraft.demo.security.repository.UserRepository;
 import com.clickcraft.demo.service.FreelancerProfileService;
 import org.slf4j.Logger;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,11 +31,13 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     private final FreelancerProfileRepository freelancerProfileRepository;
 
     private final UserRepository userRepository;
+    private final SkillRepository skillRepository;
 
     @Autowired
-    public FreelancerProfileServiceImpl(FreelancerProfileRepository freelancerProfileRepository, UserRepository userRepository) {
+    public FreelancerProfileServiceImpl(FreelancerProfileRepository freelancerProfileRepository, UserRepository userRepository, SkillRepository skillRepository) {
         this.freelancerProfileRepository = freelancerProfileRepository;
         this.userRepository = userRepository;
+        this.skillRepository = skillRepository;
     }
 
     @Override
@@ -43,6 +48,28 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     @Override
     public void saveFreelancer(User user) {
         userRepository.save(user);
+    }
+
+    @Override
+    public void updateFreelancerProfileData(User user, FreelancerProfileUpdateRequest freelancerProfileUpdateRequest) {
+        if (user.getFreelancerProfile() != null) {
+            FreelancerProfile freelancerProfile = user.getFreelancerProfile();
+            freelancerProfile.setFirstName(freelancerProfileUpdateRequest.getFirstName());
+            freelancerProfile.setLastName(freelancerProfileUpdateRequest.getLastName());
+            freelancerProfile.setContactPhone(freelancerProfileUpdateRequest.getContactPhone());
+            freelancerProfile.setLocation(freelancerProfileUpdateRequest.getLocation());
+            freelancerProfile.setYearsOfExperience(freelancerProfileUpdateRequest.getYearsOfExperience());
+            freelancerProfile.setPortfolio(freelancerProfileUpdateRequest.getPortfolio());
+            Set<Skill> skills = freelancerProfileUpdateRequest.getSkills().stream().map(skillName -> {
+                return skillRepository.findBySkillName(skillName).orElseGet(() -> {
+                    Skill newSkill = new Skill(skillName);
+                    skillRepository.save(newSkill);
+                    return newSkill;
+                });
+            }).collect(Collectors.toSet());
+
+            freelancerProfile.setSkills(skills);
+        }
     }
 
     @Override

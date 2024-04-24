@@ -44,7 +44,7 @@ public class FreelancerController {
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             User user = freelancerProfileService.getFreelancerByEmail(userDetails.getEmail());
 
-            updateFreelancerProfileData(user, freelancerProfileUpdateRequest);
+            freelancerProfileService.updateFreelancerProfileData(user, freelancerProfileUpdateRequest);
 
             freelancerProfileService.saveFreelancer(user);
 
@@ -53,27 +53,6 @@ public class FreelancerController {
         } catch (Exception e) {
             logger.error("Error updating Freelancer profile", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    private void updateFreelancerProfileData(User user, FreelancerProfileUpdateRequest freelancerProfileUpdateRequest) {
-        if (user.getFreelancerProfile() != null) {
-            user.getFreelancerProfile().setFirstName(freelancerProfileUpdateRequest.getFirstName());
-            user.getFreelancerProfile().setLastName(freelancerProfileUpdateRequest.getLastName());
-            user.getFreelancerProfile().setContactPhone(freelancerProfileUpdateRequest.getContactPhone());
-            user.getFreelancerProfile().setLocation(freelancerProfileUpdateRequest.getLocation());
-            user.getFreelancerProfile().setLocation(freelancerProfileUpdateRequest.getLocation());
-            user.getFreelancerProfile().setYearsOfExperience(freelancerProfileUpdateRequest.getYearsOfExperience());
-            user.getFreelancerProfile().setPortfolio(freelancerProfileUpdateRequest.getPortfolio());
-            Set<Skill> skills = freelancerProfileUpdateRequest.getSkills().stream().map(skillName -> {
-                return skillRepository.findBySkillName(skillName).orElseGet(() -> {
-                    Skill newSkill = new Skill(skillName);
-                    skillRepository.save(newSkill);
-                    return newSkill;
-                });
-            }).collect(Collectors.toSet());
-
-            user.getFreelancerProfile().setSkills(skills);
         }
     }
 
