@@ -2,7 +2,11 @@ package com.clickcraft.demo.dto.job;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class JobApplicationRequest {
 
     @NotBlank
@@ -10,13 +14,5 @@ public class JobApplicationRequest {
     private String messageToClient;
 
     public JobApplicationRequest() {
-    }
-
-    public String getMessageToClient() {
-        return messageToClient;
-    }
-
-    public void setMessageToClient(String messageToClient) {
-        this.messageToClient = messageToClient;
     }
 }

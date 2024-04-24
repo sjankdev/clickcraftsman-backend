@@ -8,6 +8,7 @@ import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
 import com.clickcraft.demo.service.ClientProfileService;
 import com.clickcraft.demo.service.JobPostingService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,26 +37,21 @@ public class ClientController {
     @GetMapping("/profile")
     public ResponseEntity<ClientProfileDTO> getClientProfile() {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-            if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
-                logger.info("Received a request to fetch client profile. Logged-in Client: {} (Email: {})", userDetails.getUsername(), userDetails.getEmail());
-
-                User user = clientProfileService.getClientByEmail(userDetails.getEmail());
-
-                if (user.getProfilePictureData() != null) {
-                    logger.info("Profile picture data retrieved for client: {}", userDetails.getEmail());
-                } else {
-                    logger.warn("Profile picture data not found for client: {}", userDetails.getEmail());
-                }
-
-                ClientProfileDTO clientProfileDTO = ClientProfileDTO.fromUser(user);
-
-                logger.info("Client Profile Data: {}", clientProfileDTO);
-                return ResponseEntity.ok(clientProfileDTO);
+            UserDetailsImpl userDetails = getUserDetails();
+            if (userDetails == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
 
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            logger.info("Received a request to fetch client profile. Logged-in Client: {} (Email: {})", userDetails.getUsername(), userDetails.getEmail());
+            User user = clientProfileService.getClientByEmail(userDetails.getEmail());
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            ClientProfileDTO clientProfileDTO = ClientProfileDTO.fromUser(user);
+
+            logger.info("Client Profile Data: {}", clientProfileDTO);
+            return ResponseEntity.ok(clientProfileDTO);
         } catch (Exception e) {
             logger.error("Error fetching client profile", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -63,14 +59,19 @@ public class ClientController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<MessageResponse> updateClientProfile(@RequestBody ClientProfileUpdateRequest clientProfileUpdateRequest) {
+    public ResponseEntity<MessageResponse> updateClientProfile(@Valid @RequestBody ClientProfileUpdateRequest clientProfileUpdateRequest) {
         try {
-            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserDetailsImpl userDetails = getUserDetails();
+            if (userDetails == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
             User user = clientProfileService.getClientByEmail(userDetails.getEmail());
+            if (user == null || user.getClientProfile() == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
 
-            updateClientProfileData(user, clientProfileUpdateRequest);
-
-            clientProfileService.saveClient(user);
+            clientProfileService.updateClientProfile(user.getClientProfile(), clientProfileUpdateRequest);
 
             logger.info("Client profile updated successfully for client: {}", userDetails.getEmail());
             return ResponseEntity.ok(new MessageResponse("User profile updated successfully!"));
@@ -82,59 +83,44 @@ public class ClientController {
 
     @GetMapping("/client-job-postings/live-count")
     public ResponseEntity<Integer> countLiveClientJobPostings() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
+        String userEmail = getUserEmail();
+        if (userEmail == null) {
             return ResponseEntity.badRequest().body(0);
         }
 
-        String userEmail = authentication.getName();
-
         ClientProfile clientProfile = clientProfileService.getClientProfileByEmail(userEmail);
-
         if (clientProfile == null) {
             return ResponseEntity.badRequest().body(0);
         }
 
         int liveJobPostingCount = jobPostingService.countLiveJobPostingsByClientProfile(clientProfile);
-
         return ResponseEntity.ok(liveJobPostingCount);
     }
 
     @GetMapping("/client-job-postings/archived-count")
     public ResponseEntity<Integer> countArchivedClientJobPostings() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
+        String userEmail = getUserEmail();
+        if (userEmail == null) {
             return ResponseEntity.badRequest().body(0);
         }
 
-        String userEmail = authentication.getName();
-
         ClientProfile clientProfile = clientProfileService.getClientProfileByEmail(userEmail);
-
         if (clientProfile == null) {
             return ResponseEntity.badRequest().body(0);
         }
 
         int archivedJobPostingCount = jobPostingService.countArchivedJobPostingsByClientProfile(clientProfile);
-
         return ResponseEntity.ok(archivedJobPostingCount);
     }
 
-    private void updateClientProfileData(User user, ClientProfileUpdateRequest clientProfileUpdateRequest) {
-        if (user.getClientProfile() != null) {
-            user.getClientProfile().setFirstName(clientProfileUpdateRequest.getFirstName());
-            user.getClientProfile().setLastName(clientProfileUpdateRequest.getLastName());
-            user.getClientProfile().setContactPhone(clientProfileUpdateRequest.getContactPhone());
-            user.getClientProfile().setLocation(clientProfileUpdateRequest.getLocation());
-            user.getClientProfile().setCompanyName(clientProfileUpdateRequest.getCompanyName());
-            user.getClientProfile().setCompanyIndustry(clientProfileUpdateRequest.getCompanyIndustry());
-            user.getClientProfile().setCompanySize(clientProfileUpdateRequest.getCompanySize());
-            user.getClientProfile().setCompanyLocation(clientProfileUpdateRequest.getCompanyLocation());
-            user.getClientProfile().setWebsite(clientProfileUpdateRequest.getWebsite());
-            user.getClientProfile().setInstagram(clientProfileUpdateRequest.getInstagram());
-            user.getClientProfile().setLinkedin(clientProfileUpdateRequest.getLinkedin());
-        }
+    private UserDetailsImpl getUserDetails() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) ?
+                (UserDetailsImpl) authentication.getPrincipal() : null;
+    }
+
+    private String getUserEmail() {
+        UserDetailsImpl userDetails = getUserDetails();
+        return userDetails != null ? userDetails.getEmail() : null;
     }
 }

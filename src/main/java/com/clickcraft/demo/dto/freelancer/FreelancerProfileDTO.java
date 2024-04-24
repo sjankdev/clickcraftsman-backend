@@ -3,11 +3,14 @@ package com.clickcraft.demo.dto.freelancer;
 import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.models.enums.ELocations;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Setter
+@Getter
 public class FreelancerProfileDTO {
 
     private Long id;
@@ -17,82 +20,10 @@ public class FreelancerProfileDTO {
     private ELocations location;
     private String portfolio;
     private int yearsOfExperience;
-    private Set < String > skills;
+    private Set<String> skills;
     private byte[] profilePictureData;
 
     public FreelancerProfileDTO() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getContactPhone() {
-        return contactPhone;
-    }
-
-    public void setContactPhone(String contactPhone) {
-        this.contactPhone = contactPhone;
-    }
-
-    public ELocations getLocation() {
-        return location;
-    }
-
-    public void setLocation(ELocations location) {
-        this.location = location;
-    }
-
-    public String getPortfolio() {
-        return portfolio;
-    }
-
-    public void setPortfolio(String portfolio) {
-        this.portfolio = portfolio;
-    }
-
-    public int getYearsOfExperience() {
-        return yearsOfExperience;
-    }
-
-    public void setYearsOfExperience(int yearsOfExperience) {
-        this.yearsOfExperience = yearsOfExperience;
-    }
-
-    public Set < String > getSkills() {
-        return skills;
-    }
-
-    public void setSkills(Set < String > skills) {
-        this.skills = skills;
-    }
-
-    public byte[] getProfilePictureData() {
-        return profilePictureData;
-    }
-
-    public void setProfilePictureData(byte[] profilePictureData) {
-        this.profilePictureData = profilePictureData;
     }
 
     public static FreelancerProfileDTO fromUser(User user) {

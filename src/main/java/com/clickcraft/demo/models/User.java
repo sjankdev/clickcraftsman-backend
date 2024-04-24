@@ -7,7 +7,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -54,78 +58,10 @@ public class User {
         this.password = password;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Long getProfilePictureId() {
-        return profilePictureId;
-    }
-
-    public void setProfilePictureId(Long profilePictureId) {
-        this.profilePictureId = profilePictureId;
-    }
-
     public byte[] getProfilePictureData() {
         if (photo != null) {
             return photo.getData();
         }
         return null;
-    }
-
-    public void setPhoto(Photo photo) {
-        this.photo = photo;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
-    public ClientProfile getClientProfile() {
-        return clientProfile;
-    }
-
-    public void setClientProfile(ClientProfile clientProfile) {
-        this.clientProfile = clientProfile;
-    }
-
-    public FreelancerProfile getFreelancerProfile() {
-        return freelancerProfile;
-    }
-
-    public void setFreelancerProfile(FreelancerProfile freelancerProfile) {
-        this.freelancerProfile = freelancerProfile;
     }
 }

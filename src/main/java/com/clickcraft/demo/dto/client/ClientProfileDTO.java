@@ -14,29 +14,17 @@ import lombok.Setter;
 public class ClientProfileDTO {
 
     private Long id;
-
     private String firstName;
-
     private String lastName;
-
     private String contactPhone;
-
     private ELocations location;
-
     private byte[] profilePictureData;
-
     private String companyName;
-
     private String companyLocation;
-
     private String companySize;
-
     private String companyIndustry;
-
     private String linkedin;
-
     private String website;
-
     private String instagram;
 
     public static ClientProfileDTO fromUser(User user) {

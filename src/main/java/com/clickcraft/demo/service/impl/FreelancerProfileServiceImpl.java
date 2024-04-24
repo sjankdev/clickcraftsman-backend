@@ -37,8 +37,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
     @Override
     public User getFreelancerByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Freelancer not found with email: " + email));
+        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Freelancer not found with email: " + email));
     }
 
     @Override
@@ -56,9 +55,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     public List<FreelancerProfileDTO> getAllPublicProfiles() {
         try {
             List<FreelancerProfile> freelancerProfiles = freelancerProfileRepository.findAll();
-            return freelancerProfiles.stream()
-                    .map(this::convertToFreelancerProfileDTO)
-                    .collect(Collectors.toList());
+            return freelancerProfiles.stream().map(this::convertToFreelancerProfileDTO).collect(Collectors.toList());
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
@@ -68,8 +65,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     @Override
     public FreelancerProfileDTO getPublicProfileById(Long freelancerId) {
         try {
-            FreelancerProfile freelancerProfile = freelancerProfileRepository.findById(freelancerId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
+            FreelancerProfile freelancerProfile = freelancerProfileRepository.findById(freelancerId).orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
             return convertToFreelancerProfileDTO(freelancerProfile);
         } catch (Exception e) {
             e.printStackTrace();
@@ -94,8 +90,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
     @Override
     public byte[] getProfilePictureData(Long freelancerId) {
-        FreelancerProfile freelancerProfile = freelancerProfileRepository.findById(freelancerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
+        FreelancerProfile freelancerProfile = freelancerProfileRepository.findById(freelancerId).orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
 
         User user = freelancerProfile.getUser();
         return user != null ? user.getProfilePictureData() : null;

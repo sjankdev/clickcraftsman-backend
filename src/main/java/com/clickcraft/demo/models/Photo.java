@@ -1,7 +1,11 @@
-package com.clickcraft.demo.models;// Add imports as needed
+package com.clickcraft.demo.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "photos")
 public class Photo {
@@ -19,29 +23,5 @@ public class Photo {
     private User user;
 
     public Photo() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public byte[] getData() {
-        return data;
-    }
-
-    public void setData(byte[] data) {
-        this.data = data;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }

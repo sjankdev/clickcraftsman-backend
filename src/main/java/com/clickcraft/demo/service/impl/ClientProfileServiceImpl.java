@@ -1,5 +1,6 @@
 package com.clickcraft.demo.service.impl;
 
+import com.clickcraft.demo.dto.client.ClientProfileUpdateRequest;
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.User;
@@ -26,8 +27,7 @@ public class ClientProfileServiceImpl implements ClientProfileService {
 
     @Override
     public User getClientByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Client not found with email: " + email));
+        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Client not found with email: " + email));
     }
 
     @Override
@@ -35,10 +35,18 @@ public class ClientProfileServiceImpl implements ClientProfileService {
         userRepository.save(user);
     }
 
-    @Override
-    @Transactional
-    public void postJob(ClientProfile clientProfile, ClientJobPosting jobPosting) {
-        clientProfile.addJobPosting(jobPosting);
+    public void updateClientProfile(ClientProfile clientProfile, ClientProfileUpdateRequest clientProfileUpdateRequest) {
+        clientProfile.setFirstName(clientProfileUpdateRequest.getFirstName());
+        clientProfile.setLastName(clientProfileUpdateRequest.getLastName());
+        clientProfile.setContactPhone(clientProfileUpdateRequest.getContactPhone());
+        clientProfile.setLocation(clientProfileUpdateRequest.getLocation());
+        clientProfile.setCompanyName(clientProfileUpdateRequest.getCompanyName());
+        clientProfile.setCompanyIndustry(clientProfileUpdateRequest.getCompanyIndustry());
+        clientProfile.setCompanySize(clientProfileUpdateRequest.getCompanySize());
+        clientProfile.setCompanyLocation(clientProfileUpdateRequest.getCompanyLocation());
+        clientProfile.setWebsite(clientProfileUpdateRequest.getWebsite());
+        clientProfile.setInstagram(clientProfileUpdateRequest.getInstagram());
+        clientProfile.setLinkedin(clientProfileUpdateRequest.getLinkedin());
     }
 
     @Override
