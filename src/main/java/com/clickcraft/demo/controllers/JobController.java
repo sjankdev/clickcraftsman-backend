@@ -145,6 +145,8 @@ public class JobController {
                     JobApplicationResponse response = JobApplicationResponse.fromEntity(jobApplication);
                     response.setFreelancerFirstName(jobApplication.getFreelancerProfile().getFirstName());
                     response.setFreelancerLastName(jobApplication.getFreelancerProfile().getLastName());
+                    response.setFreelancerLastName(jobApplication.getFreelancerProfile().getLastName());
+                    response.setDesiredPay(jobApplication.getDesiredPay());
                     return response;
                 })
                 .collect(Collectors.toList());
@@ -170,6 +172,7 @@ public class JobController {
                             response.setFreelancerId(freelancerProfile.getId());
                             response.setFreelancerFirstName(freelancerProfile.getFirstName());
                             response.setFreelancerLastName(freelancerProfile.getLastName());
+                            response.setDesiredPay(jobApplication.getDesiredPay());
                         } else {
                             logger.info("Freelancer profile is null for job application with id: {}", jobApplication.getId());
                         }
