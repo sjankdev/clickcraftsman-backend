@@ -17,7 +17,9 @@ import com.clickcraft.demo.service.SkillService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -158,6 +160,19 @@ public class JobController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(responseList);
+    }
+
+    @GetMapping("/resume/{jobApplicationId}")
+    public ResponseEntity<byte[]> getResume(@PathVariable Long jobApplicationId) {
+        JobApplication jobApplication = jobApplicationRepository.findById(jobApplicationId).orElse(null);
+        if (jobApplication == null || jobApplication.getResume() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "resume.pdf");
+        headers.setContentLength(jobApplication.getResume().length);
+        return new ResponseEntity<>(jobApplication.getResume(), headers, HttpStatus.OK);
     }
 
     @GetMapping("/job-applications/{jobId}")
