@@ -25,7 +25,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -63,7 +65,7 @@ public class JobController {
     }
 
     @PostMapping("/apply/{jobId}")
-    public ResponseEntity<?> applyForJob(@PathVariable Long jobId, @RequestBody JobApplicationRequest applicationRequest, Authentication authentication) {
+    public ResponseEntity<?> applyForJob(@PathVariable Long jobId, @RequestParam("resumeFile") MultipartFile resumeFile, @ModelAttribute JobApplicationRequest applicationRequest, Authentication authentication) throws IOException {
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.badRequest().body(new MessageResponse("User not authenticated."));
         }
@@ -94,6 +96,10 @@ public class JobController {
         jobApplication.setFreelancerProfile(freelancerProfile);
         jobApplication.setMessageToClient(messageToClient);
         jobApplication.setDesiredPay(desiredPay);
+
+        if (resumeFile != null) {
+            jobApplication.setResume(resumeFile.getBytes());
+        }
 
         JobApplication savedJobApplication = jobApplicationRepository.save(jobApplication);
 

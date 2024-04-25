@@ -30,6 +30,10 @@ public class JobApplication {
     @PositiveOrZero
     private Double desiredPay;
 
+    @Lob
+    @Column(name = "resume", nullable = true)
+    private byte[] resume;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "freelancer_profile_id")
     @JsonIgnore
