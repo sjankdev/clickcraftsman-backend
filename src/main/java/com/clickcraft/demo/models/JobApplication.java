@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +25,14 @@ public class JobApplication {
     @NotBlank
     @Size(max = 1000)
     private String messageToClient;
+
+    @NotNull
+    @PositiveOrZero
+    private Double desiredPay;
+
+    @Lob
+    @Column(name = "resume", nullable = true)
+    private byte[] resume;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "freelancer_profile_id")
