@@ -23,7 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +32,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -101,15 +99,15 @@ public class JobController {
 
         if (resumeFile != null) {
             jobApplication.setResume(resumeFile.getBytes());
+
+            String originalFileName = resumeFile.getOriginalFilename();
+            jobApplication.setOriginalFileName(originalFileName);
         }
 
         JobApplication savedJobApplication = jobApplicationRepository.save(jobApplication);
 
         JobApplicationResponse response = JobApplicationResponse.fromEntity(savedJobApplication);
-
         response.setFreelancerId(freelancerProfile.getId());
-
-        jobApplicationRepository.save(jobApplication);
 
         return ResponseEntity.ok("Job application submitted successfully");
     }
@@ -170,7 +168,14 @@ public class JobController {
         }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "resume.pdf");
+
+        String originalFileName = "resume.pdf";
+
+        if (jobApplication.getOriginalFileName() != null) {
+            originalFileName = jobApplication.getOriginalFileName();
+        }
+
+        headers.setContentDispositionFormData("attachment", originalFileName);
         headers.setContentLength(jobApplication.getResume().length);
         return new ResponseEntity<>(jobApplication.getResume(), headers, HttpStatus.OK);
     }

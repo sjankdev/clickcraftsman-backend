@@ -9,6 +9,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -30,9 +31,12 @@ public class JobApplication {
     @PositiveOrZero
     private Double desiredPay;
 
-    @Lob
-    @Column(name = "resume", nullable = true)
+    @Lob @Basic(fetch = FetchType.LAZY)
+    @Column(length = 100000, name = "resume", nullable = true)
     private byte[] resume;
+
+    @Column(name = "original_file_name")
+    private String originalFileName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "freelancer_profile_id")
