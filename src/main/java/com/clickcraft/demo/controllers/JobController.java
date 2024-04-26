@@ -10,10 +10,7 @@ import com.clickcraft.demo.models.JobApplication;
 import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.repository.JobApplicationRepository;
 import com.clickcraft.demo.repository.JobPostingRepository;
-import com.clickcraft.demo.service.ClientProfileService;
-import com.clickcraft.demo.service.FreelancerProfileService;
-import com.clickcraft.demo.service.JobPostingService;
-import com.clickcraft.demo.service.SkillService;
+import com.clickcraft.demo.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -54,61 +52,36 @@ public class JobController {
 
     private final SkillService skillService;
 
+    private final JobApplicationService jobApplicationService;
+
     @Autowired
-    public JobController(JobPostingRepository jobPostingRepository, JobApplicationRepository jobApplicationRepository, FreelancerProfileService freelancerProfileService, ClientProfileService clientProfileService, JobPostingService jobPostingService, SkillService skillService) {
+    public JobController(JobPostingRepository jobPostingRepository, JobApplicationRepository jobApplicationRepository, FreelancerProfileService freelancerProfileService, ClientProfileService clientProfileService, JobPostingService jobPostingService, SkillService skillService, JobApplicationService jobApplicationService) {
         this.jobPostingRepository = jobPostingRepository;
         this.jobApplicationRepository = jobApplicationRepository;
         this.freelancerProfileService = freelancerProfileService;
         this.clientProfileService = clientProfileService;
         this.jobPostingService = jobPostingService;
         this.skillService = skillService;
+        this.jobApplicationService = jobApplicationService;
     }
 
     @PostMapping("/apply/{jobId}")
-    public ResponseEntity<?> applyForJob(@PathVariable Long jobId, @RequestParam("resumeFile") MultipartFile resumeFile, @ModelAttribute JobApplicationRequest applicationRequest, Authentication authentication) throws IOException {
+    public ResponseEntity<String> applyForJob(@PathVariable Long jobId,
+                                              @RequestParam("resumeFile") MultipartFile resumeFile,
+                                              @ModelAttribute JobApplicationRequest applicationRequest,
+                                              Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof AnonymousAuthenticationToken) {
-            return ResponseEntity.badRequest().body(new MessageResponse("User not authenticated."));
+            return ResponseEntity.badRequest().body("User not authenticated.");
         }
 
         String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
 
-        FreelancerProfile freelancerProfile = freelancerProfileService.getFreelancerProfileByEmail(userEmail);
-
-        if (freelancerProfile == null) {
-            System.out.println("Freelancer profile not found for email: " + userEmail);
-            return ResponseEntity.badRequest().body(new MessageResponse("Freelancer profile not found."));
+        JobApplicationResponse response;
+        try {
+            response = jobApplicationService.applyForJob(jobId, userEmail, resumeFile, applicationRequest);
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to process file upload", e);
         }
-
-        ClientJobPosting jobPosting = jobPostingRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job posting not found for jobId: " + jobId));
-
-        boolean hasApplied = jobApplicationRepository.existsByFreelancerProfileAndClientJobPosting(freelancerProfile, jobPosting);
-
-        if (hasApplied) {
-            return ResponseEntity.badRequest().body(new MessageResponse("You have already applied for this job."));
-        }
-
-        String messageToClient = applicationRequest.getMessageToClient();
-        Double desiredPay = applicationRequest.getDesiredPay();
-
-        JobApplication jobApplication = new JobApplication();
-        jobApplication.setClientJobPosting(jobPosting);
-        jobApplication.setFreelancerProfile(freelancerProfile);
-        jobApplication.setMessageToClient(messageToClient);
-        jobApplication.setDesiredPay(desiredPay);
-
-        if (resumeFile != null) {
-            jobApplication.setResume(resumeFile.getBytes());
-
-            String originalFileName = resumeFile.getOriginalFilename();
-            jobApplication.setOriginalFileName(originalFileName);
-        }
-
-        JobApplication savedJobApplication = jobApplicationRepository.save(jobApplication);
-
-        JobApplicationResponse response = JobApplicationResponse.fromEntity(savedJobApplication);
-        response.setFreelancerId(freelancerProfile.getId());
-
         return ResponseEntity.ok("Job application submitted successfully");
     }
 
