@@ -68,21 +68,21 @@ public class JobController {
     @PostMapping("/apply/{jobId}")
     public ResponseEntity<String> applyForJob(@PathVariable Long jobId,
                                               @RequestParam("resumeFile") MultipartFile resumeFile,
-                                              @ModelAttribute JobApplicationRequest applicationRequest,
-                                              Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof AnonymousAuthenticationToken) {
-            return ResponseEntity.badRequest().body("User not authenticated.");
+                                              @ModelAttribute JobApplicationRequest applicationRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (!authentication.isAuthenticated() || authentication.getPrincipal() instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated.");
         }
 
         String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
 
-        JobApplicationResponse response;
         try {
-            response = jobApplicationService.applyForJob(jobId, userEmail, resumeFile, applicationRequest);
+            jobApplicationService.applyForJob(jobId, userEmail, resumeFile, applicationRequest);
+            return ResponseEntity.ok("Job application submitted successfully");
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to process file upload", e);
         }
-        return ResponseEntity.ok("Job application submitted successfully");
     }
 
     @GetMapping("/applied-jobs")
