@@ -74,6 +74,9 @@ public class ClientJobPosting {
     @Enumerated(EnumType.STRING)
     private JobType jobType;
 
+    @Column(name = "resume_required")
+    private Boolean resumeRequired;
+
     @OneToMany(mappedBy = "clientJobPosting", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set<JobApplication> jobApplications = new HashSet<>();

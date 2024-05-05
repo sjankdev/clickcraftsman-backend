@@ -1,7 +1,6 @@
 package com.clickcraft.demo.service.impl;
 
 import com.clickcraft.demo.dto.job.JobApplicationRequest;
-import com.clickcraft.demo.dto.job.JobApplicationResponse;
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.JobApplication;
@@ -11,7 +10,6 @@ import com.clickcraft.demo.service.FreelancerProfileService;
 import com.clickcraft.demo.service.JobApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -34,46 +32,31 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     }
 
     @Override
-    public JobApplicationResponse applyForJob(Long jobId, String userEmail, MultipartFile resumeFile, JobApplicationRequest applicationRequest) throws IOException {
+    public void applyForJob(Long jobId, String userEmail, MultipartFile resumeFile, JobApplicationRequest applicationRequest) throws IOException {
+        Optional<ClientJobPosting> jobPostingOptional = jobPostingRepository.findById(jobId);
+        if (jobPostingOptional.isEmpty()) {
+            throw new IllegalArgumentException("Job posting not found with ID: " + jobId);
+        }
+
+        ClientJobPosting jobPosting = jobPostingOptional.get();
+
         FreelancerProfile freelancerProfile = freelancerProfileService.getFreelancerProfileByEmail(userEmail);
         if (freelancerProfile == null) {
-            throw new RuntimeException("Freelancer profile not found for email: " + userEmail);
-        }
-
-        ClientJobPosting jobPosting = jobPostingRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job posting not found for jobId: " + jobId));
-
-        if (jobApplicationRepository.existsByFreelancerProfileAndClientJobPosting(freelancerProfile, jobPosting)) {
-            throw new RuntimeException("You have already applied for this job.");
-        }
-
-        String messageToClient = applicationRequest.getMessageToClient();
-        Double desiredPay = applicationRequest.getDesiredPay();
-
-        String fileExtension = StringUtils.getFilenameExtension(resumeFile.getOriginalFilename());
-        assert fileExtension != null;
-        if (!isValidFileExtension(fileExtension)) {
-            throw new RuntimeException("Invalid file format. Only " + String.join(", ", ALLOWED_EXTENSIONS) + " files are accepted.");
+            throw new IllegalArgumentException("Freelancer profile not found for email: " + userEmail);
         }
 
         JobApplication jobApplication = new JobApplication();
-        jobApplication.setClientJobPosting(jobPosting);
+        jobApplication.setMessageToClient(applicationRequest.getMessageToClient());
+        jobApplication.setDesiredPay(applicationRequest.getDesiredPay());
         jobApplication.setFreelancerProfile(freelancerProfile);
-        jobApplication.setMessageToClient(messageToClient);
-        jobApplication.setDesiredPay(desiredPay);
+        jobApplication.setClientJobPosting(jobPosting);
 
-        if (!resumeFile.isEmpty()) {
-            String fileName = StringUtils.cleanPath(Objects.requireNonNull(resumeFile.getOriginalFilename()));
-            jobApplication.setOriginalFileName(fileName);
+        if (resumeFile != null && !resumeFile.isEmpty()) {
             jobApplication.setResume(resumeFile.getBytes());
+            jobApplication.setOriginalFileName(resumeFile.getOriginalFilename());
         }
 
-        JobApplication savedJobApplication = jobApplicationRepository.save(jobApplication);
-
-        JobApplicationResponse response = JobApplicationResponse.fromEntity(savedJobApplication);
-        response.setFreelancerId(freelancerProfile.getId());
-
-        return response;
+        jobApplicationRepository.save(jobApplication);
     }
 
     private boolean isValidFileExtension(String fileExtension) {
