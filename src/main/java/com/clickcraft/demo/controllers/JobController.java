@@ -67,7 +67,7 @@ public class JobController {
 
     @PostMapping("/apply/{jobId}")
     public ResponseEntity<String> applyForJob(@PathVariable Long jobId,
-                                              @RequestParam("resumeFile") MultipartFile resumeFile,
+                                              @RequestParam(value = "resumeFile", required = false) MultipartFile resumeFile,
                                               @ModelAttribute JobApplicationRequest applicationRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -219,6 +219,7 @@ public class JobController {
         jobPosting.setPriceRangeTo(jobPostingRequest.getPriceRangeTo());
         jobPosting.setBudget(jobPostingRequest.getBudget());
         jobPosting.setJobType(jobPostingRequest.getJobType());
+        jobPosting.setResumeRequired(jobPostingRequest.getResumeRequired());
 
         clientProfile.addJobPosting(jobPosting);
 

@@ -21,6 +21,7 @@ public class JobPostingRequest {
     private Double priceRangeTo;
     private Double budget;
     private JobType jobType;
+    private Boolean resumeRequired;
 
     public JobPostingRequest() {
     }
