@@ -171,6 +171,7 @@ public class JobController {
                             response.setFreelancerId(freelancerProfile.getId());
                             response.setFreelancerFirstName(freelancerProfile.getFirstName());
                             response.setFreelancerLastName(freelancerProfile.getLastName());
+                            response.setFreelancerEmail(freelancerProfile.getUser().getEmail());
                             response.setDesiredPay(jobApplication.getDesiredPay());
                         } else {
                             logger.info("Freelancer profile is null for job application with id: {}", jobApplication.getId());

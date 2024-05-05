@@ -17,6 +17,7 @@ public class JobApplicationResponse {
     private String freelancerLastName;
     private Long freelancerId;
     private Double desiredPay;
+    private String freelancerEmail;
 
     public JobApplicationResponse() {
     }
@@ -34,6 +35,7 @@ public class JobApplicationResponse {
             response.setFreelancerFirstName(freelancerProfile.getFirstName());
             response.setFreelancerLastName(freelancerProfile.getLastName());
             response.setDesiredPay(application.getDesiredPay());
+            response.setFreelancerEmail(freelancerProfile.getUser().getEmail());
         }
         return response;
     }
