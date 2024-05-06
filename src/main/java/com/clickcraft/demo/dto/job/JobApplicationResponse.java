@@ -18,6 +18,8 @@ public class JobApplicationResponse {
     private Long freelancerId;
     private Double desiredPay;
     private String freelancerEmail;
+    private byte[] resume;
+    private boolean hasResume;
 
     public JobApplicationResponse() {
     }
@@ -28,6 +30,13 @@ public class JobApplicationResponse {
         response.setMessageToClient(application.getMessageToClient());
         response.setDesiredPay(application.getDesiredPay());
         response.setJobPosting(application.getClientJobPosting());
+
+        if (application.getResume() != null) {
+            response.setResume(application.getResume());
+            response.setHasResume(true);
+        } else {
+            response.setHasResume(false);
+        }
 
         FreelancerProfile freelancerProfile = application.getFreelancerProfile();
         if (freelancerProfile != null) {
