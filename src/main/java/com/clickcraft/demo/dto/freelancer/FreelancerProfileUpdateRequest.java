@@ -17,6 +17,7 @@ public class FreelancerProfileUpdateRequest {
     private String portfolio;
     private int yearsOfExperience;
     private Set<String> skills;
+    private String aboutFreelancer;
 
     public FreelancerProfileUpdateRequest() {
     }

@@ -22,6 +22,7 @@ public class FreelancerProfileDTO {
     private int yearsOfExperience;
     private Set<String> skills;
     private byte[] profilePictureData;
+    private String aboutFreelancer;
 
     public FreelancerProfileDTO() {
     }
@@ -39,6 +40,7 @@ public class FreelancerProfileDTO {
                 freelancerProfileDTO.setYearsOfExperience(user.getFreelancerProfile().getYearsOfExperience());
                 freelancerProfileDTO.setSkills(user.getFreelancerProfile().getSkills().stream().map(Skill::getSkillName).collect(Collectors.toSet()));
                 freelancerProfileDTO.setProfilePictureData(user.getProfilePictureData());
+                freelancerProfileDTO.setAboutFreelancer(user.getFreelancerProfile().getAboutFreelancer());
             }
         }
         return freelancerProfileDTO;

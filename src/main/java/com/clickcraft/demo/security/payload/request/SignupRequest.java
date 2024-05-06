@@ -38,6 +38,10 @@ public class SignupRequest {
     @Size(min = 2, max = 40)
     private String location;
 
+    @NotBlank
+    @Size(max = 1000)
+    private String aboutFreelancer;
+
     private String portfolio;
     private int yearsOfExperience;
     private Set<String> skills;
