@@ -238,7 +238,7 @@ public class JobController {
         Optional<ClientJobPosting> optionalJobPosting = jobPostingRepository.findById(id);
         if (optionalJobPosting.isPresent()) {
             ClientJobPosting jobPosting = optionalJobPosting.get();
-            jobPosting.setArchived(false); // Mark as unarchived
+            jobPosting.setArchived(false);
             jobPostingRepository.save(jobPosting);
             return ResponseEntity.ok(new MessageResponse("Job unarchived successfully."));
         } else {
