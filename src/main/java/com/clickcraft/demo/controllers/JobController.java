@@ -11,6 +11,7 @@ import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.repository.JobApplicationRepository;
 import com.clickcraft.demo.repository.JobPostingRepository;
 import com.clickcraft.demo.service.*;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,13 +66,12 @@ public class JobController {
         this.jobApplicationService = jobApplicationService;
     }
 
-    @PostMapping("/apply/{jobId}")
+    @PostMapping(value = "/apply/{jobId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> applyForJob(@PathVariable Long jobId,
-                                              @RequestParam(value = "resumeFile", required = false) MultipartFile resumeFile,
-                                              @ModelAttribute JobApplicationRequest applicationRequest) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (!authentication.isAuthenticated() || authentication.getPrincipal() instanceof AnonymousAuthenticationToken) {
+                                              @RequestPart(value = "resumeFile", required = false) MultipartFile resumeFile,
+                                              @Valid @ModelAttribute JobApplicationRequest applicationRequest,
+                                              Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated.");
         }
 
@@ -80,6 +80,8 @@ public class JobController {
         try {
             jobApplicationService.applyForJob(jobId, userEmail, resumeFile, applicationRequest);
             return ResponseEntity.ok("Job application submitted successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to process file upload", e);
         }
@@ -87,15 +89,15 @@ public class JobController {
 
     @GetMapping("/applied-jobs")
     public ResponseEntity<List<Long>> getAppliedJobs(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof AnonymousAuthenticationToken) {
-            return ResponseEntity.badRequest().body(Collections.emptyList());
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
         }
 
         String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
         FreelancerProfile freelancerProfile = freelancerProfileService.getFreelancerProfileByEmail(userEmail);
 
         if (freelancerProfile == null) {
-            return ResponseEntity.badRequest().body(Collections.emptyList());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
         }
 
         List<Long> appliedJobIds = jobApplicationRepository.findAppliedJobIdsByFreelancerProfile(freelancerProfile);
@@ -106,7 +108,7 @@ public class JobController {
     @GetMapping("/client-received-applications")
     public ResponseEntity<List<JobApplicationResponse>> getClientJobApplications(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.badRequest().body(Collections.emptyList());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
         }
 
         String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
@@ -114,20 +116,13 @@ public class JobController {
         ClientProfile clientProfile = clientProfileService.getClientProfileByEmail(userEmail);
 
         if (clientProfile == null) {
-            return ResponseEntity.badRequest().body(Collections.emptyList());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
         }
 
         List<JobApplication> clientJobApplications = jobApplicationRepository.findClientJobApplications(clientProfile);
 
         List<JobApplicationResponse> responseList = clientJobApplications.stream()
-                .map(jobApplication -> {
-                    JobApplicationResponse response = JobApplicationResponse.fromEntity(jobApplication);
-                    response.setFreelancerFirstName(jobApplication.getFreelancerProfile().getFirstName());
-                    response.setFreelancerLastName(jobApplication.getFreelancerProfile().getLastName());
-                    response.setFreelancerLastName(jobApplication.getFreelancerProfile().getLastName());
-                    response.setDesiredPay(jobApplication.getDesiredPay());
-                    return response;
-                })
+                .map(JobApplicationResponse::fromEntity)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(responseList);
@@ -139,18 +134,16 @@ public class JobController {
         if (jobApplication == null || jobApplication.getResume() == null) {
             return ResponseEntity.notFound().build();
         }
+
+        byte[] resume = jobApplication.getResume();
+        String originalFileName = jobApplication.getOriginalFileName() != null ? jobApplication.getOriginalFileName() : "resume.pdf";
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-
-        String originalFileName = "resume.pdf";
-
-        if (jobApplication.getOriginalFileName() != null) {
-            originalFileName = jobApplication.getOriginalFileName();
-        }
-
         headers.setContentDispositionFormData("attachment", originalFileName);
-        headers.setContentLength(jobApplication.getResume().length);
-        return new ResponseEntity<>(jobApplication.getResume(), headers, HttpStatus.OK);
+        headers.setContentLength(resume.length);
+
+        return ResponseEntity.ok().headers(headers).body(resume);
     }
 
     @GetMapping("/job-applications/{jobId}")
@@ -163,22 +156,7 @@ public class JobController {
             logger.info("Fetched {} job applications for jobId: {}", jobApplications.size(), jobId);
 
             List<JobApplicationResponse> responseList = jobApplications.stream()
-                    .map(jobApplication -> {
-                        JobApplicationResponse response = JobApplicationResponse.fromEntity(jobApplication);
-                        FreelancerProfile freelancerProfile = jobApplication.getFreelancerProfile();
-
-                        if (freelancerProfile != null) {
-                            response.setFreelancerId(freelancerProfile.getId());
-                            response.setFreelancerFirstName(freelancerProfile.getFirstName());
-                            response.setFreelancerLastName(freelancerProfile.getLastName());
-                            response.setFreelancerEmail(freelancerProfile.getUser().getEmail());
-                            response.setDesiredPay(jobApplication.getDesiredPay());
-                        } else {
-                            logger.info("Freelancer profile is null for job application with id: {}", jobApplication.getId());
-                        }
-
-                        return response;
-                    })
+                    .map(JobApplicationResponse::fromEntity)
                     .collect(Collectors.toList());
 
             return ResponseEntity.ok(responseList);
@@ -189,43 +167,25 @@ public class JobController {
     }
 
     @PostMapping("/post")
-    public ResponseEntity<?> postJob(@RequestBody JobPostingRequest jobPostingRequest) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
+    public ResponseEntity<MessageResponse> postJob(@RequestBody @Valid JobPostingRequest jobPostingRequest, Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.badRequest().body(new MessageResponse("User not authenticated."));
         }
 
         String userEmail = authentication.getName();
-
         ClientProfile clientProfile = clientProfileService.getClientProfileByEmail(userEmail);
 
         if (clientProfile == null) {
             return ResponseEntity.badRequest().body(new MessageResponse("Client profile not found."));
         }
 
-        ClientJobPosting jobPosting = new ClientJobPosting(
-                jobPostingRequest.getJobName(),
-                jobPostingRequest.getDescription(),
-                clientProfile,
-                LocalDate.now(),
-                jobPostingRequest.getIsRemote(),
-                jobPostingRequest.getLocation(),
-                skillService.getSkillsByNames(jobPostingRequest.getRequiredSkillIds())
-        );
-
-        jobPosting.setPriceType(jobPostingRequest.getPriceType());
-        jobPosting.setPriceRangeFrom(jobPostingRequest.getPriceRangeFrom());
-        jobPosting.setPriceRangeTo(jobPostingRequest.getPriceRangeTo());
-        jobPosting.setBudget(jobPostingRequest.getBudget());
-        jobPosting.setJobType(jobPostingRequest.getJobType());
-        jobPosting.setResumeRequired(jobPostingRequest.getResumeRequired());
-
-        clientProfile.addJobPosting(jobPosting);
-
-        jobPostingService.saveJobPosting(jobPosting);
-
-        return ResponseEntity.ok(new MessageResponse("Job posted successfully!"));
+        try {
+            ClientJobPosting jobPosting = jobPostingService.createClientJobPosting(jobPostingRequest, clientProfile);
+            jobPostingService.saveJobPosting(jobPosting);
+            return ResponseEntity.ok(new MessageResponse("Job posted successfully!"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Failed to post job. Please try again later."));
+        }
     }
 
     @GetMapping("/getAllJobs")
@@ -278,7 +238,7 @@ public class JobController {
         Optional<ClientJobPosting> optionalJobPosting = jobPostingRepository.findById(id);
         if (optionalJobPosting.isPresent()) {
             ClientJobPosting jobPosting = optionalJobPosting.get();
-            jobPosting.setArchived(false); // Mark as unarchived
+            jobPosting.setArchived(false);
             jobPostingRepository.save(jobPosting);
             return ResponseEntity.ok(new MessageResponse("Job unarchived successfully."));
         } else {

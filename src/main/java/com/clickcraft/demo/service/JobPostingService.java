@@ -1,5 +1,6 @@
 package com.clickcraft.demo.service;
 
+import com.clickcraft.demo.dto.job.JobPostingRequest;
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 
@@ -18,5 +19,7 @@ public interface JobPostingService {
     int countArchivedJobPostingsByClientProfile(ClientProfile clientProfile);
 
     void deleteJobPosting(Long id);
+
+    ClientJobPosting createClientJobPosting(JobPostingRequest jobPostingRequest, ClientProfile clientProfile);
 
 }

@@ -51,26 +51,32 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     }
 
     @Override
-    public void updateFreelancerProfileData(User user, FreelancerProfileUpdateRequest freelancerProfileUpdateRequest) {
-        if (user.getFreelancerProfile() != null) {
-            FreelancerProfile freelancerProfile = user.getFreelancerProfile();
-            freelancerProfile.setFirstName(freelancerProfileUpdateRequest.getFirstName());
-            freelancerProfile.setLastName(freelancerProfileUpdateRequest.getLastName());
-            freelancerProfile.setContactPhone(freelancerProfileUpdateRequest.getContactPhone());
-            freelancerProfile.setLocation(freelancerProfileUpdateRequest.getLocation());
-            freelancerProfile.setYearsOfExperience(freelancerProfileUpdateRequest.getYearsOfExperience());
-            freelancerProfile.setPortfolio(freelancerProfileUpdateRequest.getPortfolio());
-            freelancerProfile.setAboutFreelancer(freelancerProfileUpdateRequest.getAboutFreelancer());
-            Set<Skill> skills = freelancerProfileUpdateRequest.getSkills().stream().map(skillName -> {
-                return skillRepository.findBySkillName(skillName).orElseGet(() -> {
-                    Skill newSkill = new Skill(skillName);
-                    skillRepository.save(newSkill);
-                    return newSkill;
-                });
-            }).collect(Collectors.toSet());
-
-            freelancerProfile.setSkills(skills);
+    public void updateFreelancerProfile(User user, FreelancerProfileUpdateRequest freelancerProfileUpdateRequest) {
+        FreelancerProfile freelancerProfile = user.getFreelancerProfile();
+        if (freelancerProfile == null) {
+            freelancerProfile = new FreelancerProfile();
+            user.setFreelancerProfile(freelancerProfile);
         }
+
+        freelancerProfile.setFirstName(freelancerProfileUpdateRequest.getFirstName());
+        freelancerProfile.setLastName(freelancerProfileUpdateRequest.getLastName());
+        freelancerProfile.setContactPhone(freelancerProfileUpdateRequest.getContactPhone());
+        freelancerProfile.setLocation(freelancerProfileUpdateRequest.getLocation());
+        freelancerProfile.setYearsOfExperience(freelancerProfileUpdateRequest.getYearsOfExperience());
+        freelancerProfile.setPortfolio(freelancerProfileUpdateRequest.getPortfolio());
+        freelancerProfile.setAboutFreelancer(freelancerProfileUpdateRequest.getAboutFreelancer());
+
+        Set<Skill> skills = freelancerProfileUpdateRequest.getSkills().stream()
+                .map(skillName -> skillRepository.findBySkillName(skillName)
+                        .orElseGet(() -> {
+                            Skill newSkill = new Skill(skillName);
+                            skillRepository.save(newSkill);
+                            return newSkill;
+                        }))
+                .collect(Collectors.toSet());
+
+        freelancerProfile.setSkills(skills);
+        userRepository.save(user);
     }
 
     @Override
@@ -81,24 +87,17 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
     @Override
     public List<FreelancerProfileDTO> getAllPublicProfiles() {
-        try {
-            List<FreelancerProfile> freelancerProfiles = freelancerProfileRepository.findAll();
-            return freelancerProfiles.stream().map(this::convertToFreelancerProfileDTO).collect(Collectors.toList());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+        List<FreelancerProfile> freelancerProfiles = freelancerProfileRepository.findAll();
+        return freelancerProfiles.stream()
+                .map(this::convertToFreelancerProfileDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public FreelancerProfileDTO getPublicProfileById(Long freelancerId) {
-        try {
-            FreelancerProfile freelancerProfile = freelancerProfileRepository.findById(freelancerId).orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
-            return convertToFreelancerProfileDTO(freelancerProfile);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+        FreelancerProfile freelancerProfile = freelancerProfileRepository.findById(freelancerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
+        return convertToFreelancerProfileDTO(freelancerProfile);
     }
 
     @Override
@@ -118,7 +117,8 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
     @Override
     public byte[] getProfilePictureData(Long freelancerId) {
-        FreelancerProfile freelancerProfile = freelancerProfileRepository.findById(freelancerId).orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
+        FreelancerProfile freelancerProfile = freelancerProfileRepository.findById(freelancerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
 
         User user = freelancerProfile.getUser();
         return user != null ? user.getProfilePictureData() : null;

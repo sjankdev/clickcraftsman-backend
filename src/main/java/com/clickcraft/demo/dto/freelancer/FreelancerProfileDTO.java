@@ -1,5 +1,6 @@
 package com.clickcraft.demo.dto.freelancer;
 
+import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.models.enums.ELocations;
@@ -30,19 +31,20 @@ public class FreelancerProfileDTO {
     public static FreelancerProfileDTO fromUser(User user) {
         FreelancerProfileDTO freelancerProfileDTO = new FreelancerProfileDTO();
 
-        if (user != null) {
-            if (user.getFreelancerProfile() != null) {
-                freelancerProfileDTO.setFirstName(user.getFreelancerProfile().getFirstName());
-                freelancerProfileDTO.setLastName(user.getFreelancerProfile().getLastName());
-                freelancerProfileDTO.setContactPhone(user.getFreelancerProfile().getContactPhone());
-                freelancerProfileDTO.setLocation(user.getFreelancerProfile().getLocation());
-                freelancerProfileDTO.setPortfolio(user.getFreelancerProfile().getPortfolio());
-                freelancerProfileDTO.setYearsOfExperience(user.getFreelancerProfile().getYearsOfExperience());
-                freelancerProfileDTO.setSkills(user.getFreelancerProfile().getSkills().stream().map(Skill::getSkillName).collect(Collectors.toSet()));
-                freelancerProfileDTO.setProfilePictureData(user.getProfilePictureData());
-                freelancerProfileDTO.setAboutFreelancer(user.getFreelancerProfile().getAboutFreelancer());
-            }
+        if (user != null && user.getFreelancerProfile() != null) {
+            FreelancerProfile freelancerProfile = user.getFreelancerProfile();
+            freelancerProfileDTO.setId(freelancerProfile.getId());
+            freelancerProfileDTO.setFirstName(freelancerProfile.getFirstName());
+            freelancerProfileDTO.setLastName(freelancerProfile.getLastName());
+            freelancerProfileDTO.setContactPhone(freelancerProfile.getContactPhone());
+            freelancerProfileDTO.setLocation(freelancerProfile.getLocation());
+            freelancerProfileDTO.setPortfolio(freelancerProfile.getPortfolio());
+            freelancerProfileDTO.setYearsOfExperience(freelancerProfile.getYearsOfExperience());
+            freelancerProfileDTO.setSkills(freelancerProfile.getSkills().stream().map(Skill::getSkillName).collect(Collectors.toSet()));
+            freelancerProfileDTO.setProfilePictureData(user.getProfilePictureData());
+            freelancerProfileDTO.setAboutFreelancer(freelancerProfile.getAboutFreelancer());
         }
+
         return freelancerProfileDTO;
     }
 }
