@@ -39,6 +39,10 @@ public class FreelancerProfile {
     private String portfolio;
     private int yearsOfExperience;
 
+    @NotBlank
+    @Size(max = 1000)
+    private String aboutFreelancer;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
@@ -65,6 +69,7 @@ public class FreelancerProfile {
         freelancerProfile.setLocation(ELocations.valueOf(signUpRequest.getLocation()));
         freelancerProfile.setPortfolio(signUpRequest.getPortfolio());
         freelancerProfile.setYearsOfExperience(signUpRequest.getYearsOfExperience());
+        freelancerProfile.setAboutFreelancer(signUpRequest.getAboutFreelancer());
         freelancerProfile.setUser(user);
         return freelancerProfile;
     }
