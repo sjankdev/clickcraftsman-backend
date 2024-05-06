@@ -60,6 +60,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
             freelancerProfile.setLocation(freelancerProfileUpdateRequest.getLocation());
             freelancerProfile.setYearsOfExperience(freelancerProfileUpdateRequest.getYearsOfExperience());
             freelancerProfile.setPortfolio(freelancerProfileUpdateRequest.getPortfolio());
+            freelancerProfile.setAboutFreelancer(freelancerProfileUpdateRequest.getAboutFreelancer());
             Set<Skill> skills = freelancerProfileUpdateRequest.getSkills().stream().map(skillName -> {
                 return skillRepository.findBySkillName(skillName).orElseGet(() -> {
                     Skill newSkill = new Skill(skillName);
@@ -134,6 +135,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         freelancerProfileDTO.setYearsOfExperience(freelancerProfile.getYearsOfExperience());
         freelancerProfileDTO.setSkills(freelancerProfile.getSkills().stream().map(Skill::getSkillName).collect(Collectors.toSet()));
         freelancerProfileDTO.setProfilePictureData(freelancerProfile.getUser().getProfilePictureData());
+        freelancerProfileDTO.setAboutFreelancer(freelancerProfile.getAboutFreelancer());
         return freelancerProfileDTO;
     }
 }
