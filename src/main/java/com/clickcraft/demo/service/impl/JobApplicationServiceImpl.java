@@ -10,10 +10,13 @@ import com.clickcraft.demo.service.FreelancerProfileService;
 import com.clickcraft.demo.service.JobApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+
+import static sun.font.CreatedFontTracker.MAX_FILE_SIZE;
 
 @Service
 public class JobApplicationServiceImpl implements JobApplicationService {
@@ -32,13 +35,10 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void applyForJob(Long jobId, String userEmail, MultipartFile resumeFile, JobApplicationRequest applicationRequest) throws IOException {
-        Optional<ClientJobPosting> jobPostingOptional = jobPostingRepository.findById(jobId);
-        if (jobPostingOptional.isEmpty()) {
-            throw new IllegalArgumentException("Job posting not found with ID: " + jobId);
-        }
-
-        ClientJobPosting jobPosting = jobPostingOptional.get();
+        ClientJobPosting jobPosting = jobPostingRepository.findById(jobId)
+                .orElseThrow(() -> new IllegalArgumentException("Job posting not found with ID: " + jobId));
 
         FreelancerProfile freelancerProfile = freelancerProfileService.getFreelancerProfileByEmail(userEmail);
         if (freelancerProfile == null) {
@@ -52,12 +52,17 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         jobApplication.setClientJobPosting(jobPosting);
 
         if (resumeFile != null && !resumeFile.isEmpty()) {
-            jobApplication.setResume(resumeFile.getBytes());
+            byte[] resumeBytes = resumeFile.getBytes();
+            if (resumeBytes.length > MAX_FILE_SIZE) {
+                throw new IllegalArgumentException("File size exceeds the maximum allowed size.");
+            }
+            jobApplication.setResume(resumeBytes);
             jobApplication.setOriginalFileName(resumeFile.getOriginalFilename());
         }
 
         jobApplicationRepository.save(jobApplication);
     }
+
 
     private boolean isValidFileExtension(String fileExtension) {
         return ALLOWED_EXTENSIONS.contains(fileExtension.toLowerCase());

@@ -1,22 +1,28 @@
 package com.clickcraft.demo.service.impl;
 
+import com.clickcraft.demo.dto.job.JobPostingRequest;
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
+import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.repository.JobPostingRepository;
 import com.clickcraft.demo.service.JobPostingService;
+import com.clickcraft.demo.service.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class JobPostingServiceImpl implements JobPostingService {
 
     private final JobPostingRepository jobPostingRepository;
+    private final SkillService skillService;
 
     @Autowired
-    public JobPostingServiceImpl(JobPostingRepository jobPostingRepository) {
+    public JobPostingServiceImpl(JobPostingRepository jobPostingRepository, SkillService skillService) {
         this.jobPostingRepository = jobPostingRepository;
+        this.skillService = skillService;
     }
 
     @Override
@@ -32,6 +38,23 @@ public class JobPostingServiceImpl implements JobPostingService {
     @Override
     public List<ClientJobPosting> getClientJobPostings(ClientProfile clientProfile) {
         return jobPostingRepository.findByClientProfile(clientProfile);
+    }
+
+    @Override
+    public ClientJobPosting createClientJobPosting(JobPostingRequest jobPostingRequest, ClientProfile clientProfile) {
+        List<Skill> requiredSkills = skillService.getSkillsByNames(jobPostingRequest.getRequiredSkillIds());
+
+        ClientJobPosting jobPosting = new ClientJobPosting(jobPostingRequest.getJobName(), jobPostingRequest.getDescription(), clientProfile, LocalDate.now(), jobPostingRequest.getIsRemote(), jobPostingRequest.getLocation(), requiredSkills);
+
+        jobPosting.setPriceType(jobPostingRequest.getPriceType());
+        jobPosting.setPriceRangeFrom(jobPostingRequest.getPriceRangeFrom());
+        jobPosting.setPriceRangeTo(jobPostingRequest.getPriceRangeTo());
+        jobPosting.setBudget(jobPostingRequest.getBudget());
+        jobPosting.setJobType(jobPostingRequest.getJobType());
+        jobPosting.setResumeRequired(jobPostingRequest.getResumeRequired());
+
+        clientProfile.addJobPosting(jobPosting);
+        return jobPosting;
     }
 
     @Override
