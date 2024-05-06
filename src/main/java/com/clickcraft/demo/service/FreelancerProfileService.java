@@ -13,7 +13,7 @@ public interface FreelancerProfileService {
 
     void saveFreelancer(User user);
 
-    void updateFreelancerProfileData(User user, FreelancerProfileUpdateRequest freelancerProfileUpdateRequest);
+    void updateFreelancerProfile(User user, FreelancerProfileUpdateRequest freelancerProfileUpdateRequest);
 
     FreelancerProfile getFreelancerProfileByEmail(String email);
 
