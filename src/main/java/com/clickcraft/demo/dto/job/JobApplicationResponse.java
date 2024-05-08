@@ -3,10 +3,9 @@ package com.clickcraft.demo.dto.job;
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.JobApplication;
+import com.clickcraft.demo.utils.ApplicationTimeFormatter;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -22,7 +21,7 @@ public class JobApplicationResponse {
     private String freelancerEmail;
     private byte[] resume;
     private boolean hasResume;
-    private LocalDateTime applicationTime;
+    private String formattedApplicationTime;
 
     public JobApplicationResponse() {
     }
@@ -33,7 +32,7 @@ public class JobApplicationResponse {
         response.setMessageToClient(application.getMessageToClient());
         response.setDesiredPay(application.getDesiredPay());
         response.setJobPosting(application.getClientJobPosting());
-        response.setApplicationTime(application.getApplicationTime());
+        response.setFormattedApplicationTime(ApplicationTimeFormatter.formatApplicationTime(application.getApplicationTime()));
 
         if (application.getResume() != null) {
             response.setResume(application.getResume());
@@ -48,8 +47,8 @@ public class JobApplicationResponse {
             response.setFreelancerFirstName(freelancerProfile.getFirstName());
             response.setFreelancerLastName(freelancerProfile.getLastName());
             response.setDesiredPay(application.getDesiredPay());
+            response.setFormattedApplicationTime(ApplicationTimeFormatter.formatApplicationTime(application.getApplicationTime()));
             response.setFreelancerEmail(freelancerProfile.getUser().getEmail());
-            response.setApplicationTime(application.getApplicationTime());
         }
         return response;
     }
