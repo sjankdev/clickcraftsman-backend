@@ -6,6 +6,8 @@ import com.clickcraft.demo.models.JobApplication;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Setter
 @Getter
 public class JobApplicationResponse {
@@ -20,6 +22,7 @@ public class JobApplicationResponse {
     private String freelancerEmail;
     private byte[] resume;
     private boolean hasResume;
+    private LocalDateTime applicationTime;
 
     public JobApplicationResponse() {
     }
@@ -30,6 +33,7 @@ public class JobApplicationResponse {
         response.setMessageToClient(application.getMessageToClient());
         response.setDesiredPay(application.getDesiredPay());
         response.setJobPosting(application.getClientJobPosting());
+        response.setApplicationTime(application.getApplicationTime());
 
         if (application.getResume() != null) {
             response.setResume(application.getResume());
@@ -45,6 +49,7 @@ public class JobApplicationResponse {
             response.setFreelancerLastName(freelancerProfile.getLastName());
             response.setDesiredPay(application.getDesiredPay());
             response.setFreelancerEmail(freelancerProfile.getUser().getEmail());
+            response.setApplicationTime(application.getApplicationTime());
         }
         return response;
     }

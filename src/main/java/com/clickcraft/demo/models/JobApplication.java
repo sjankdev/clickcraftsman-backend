@@ -9,7 +9,8 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -38,6 +39,9 @@ public class JobApplication {
     @Column(name = "original_file_name")
     private String originalFileName;
 
+    @Column(name = "application_time")
+    private LocalDateTime applicationTime;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "freelancer_profile_id")
     @JsonIgnore
@@ -48,5 +52,6 @@ public class JobApplication {
     private ClientJobPosting clientJobPosting;
 
     public JobApplication() {
+        this.applicationTime = LocalDateTime.now();
     }
 }
