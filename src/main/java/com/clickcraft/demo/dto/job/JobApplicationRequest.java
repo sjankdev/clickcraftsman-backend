@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+
 @Setter
 @Getter
 public class JobApplicationRequest {
@@ -22,6 +24,9 @@ public class JobApplicationRequest {
 
     private MultipartFile resumeFile;
 
+    private LocalDateTime applicationTime;
+
     public JobApplicationRequest() {
+        this.applicationTime = LocalDateTime.now();
     }
 }

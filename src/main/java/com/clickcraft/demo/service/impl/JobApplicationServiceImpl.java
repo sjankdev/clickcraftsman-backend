@@ -50,6 +50,7 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         jobApplication.setDesiredPay(applicationRequest.getDesiredPay());
         jobApplication.setFreelancerProfile(freelancerProfile);
         jobApplication.setClientJobPosting(jobPosting);
+        jobApplication.setApplicationTime(applicationRequest.getApplicationTime());
 
         if (resumeFile != null && !resumeFile.isEmpty()) {
             byte[] resumeBytes = resumeFile.getBytes();
@@ -62,7 +63,6 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
         jobApplicationRepository.save(jobApplication);
     }
-
 
     private boolean isValidFileExtension(String fileExtension) {
         return ALLOWED_EXTENSIONS.contains(fileExtension.toLowerCase());
