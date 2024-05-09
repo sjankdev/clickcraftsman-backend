@@ -3,6 +3,7 @@ package com.clickcraft.demo.controllers;
 import com.clickcraft.demo.dto.job.JobApplicationRequest;
 import com.clickcraft.demo.dto.job.JobApplicationResponse;
 import com.clickcraft.demo.dto.job.JobPostingRequest;
+import com.clickcraft.demo.dto.job.JobPostingResponse;
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.FreelancerProfile;
@@ -189,7 +190,7 @@ public class JobController {
     }
 
     @GetMapping("/getAllJobs")
-    public List<ClientJobPosting> getAllJobs() {
+    public List<JobPostingResponse> getAllJobs() {
         return jobPostingService.getAllJobPostings();
     }
 

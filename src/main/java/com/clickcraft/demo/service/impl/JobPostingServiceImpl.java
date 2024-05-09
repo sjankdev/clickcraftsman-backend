@@ -1,6 +1,7 @@
 package com.clickcraft.demo.service.impl;
 
 import com.clickcraft.demo.dto.job.JobPostingRequest;
+import com.clickcraft.demo.dto.job.JobPostingResponse;
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.Skill;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class JobPostingServiceImpl implements JobPostingService {
@@ -32,8 +34,11 @@ public class JobPostingServiceImpl implements JobPostingService {
     }
 
     @Override
-    public List<ClientJobPosting> getAllJobPostings() {
-        return jobPostingRepository.findAll();
+    public List<JobPostingResponse> getAllJobPostings() {
+        List<ClientJobPosting> jobPostings = jobPostingRepository.findAll();
+        return jobPostings.stream()
+                .map(JobPostingResponse::fromEntity)
+                .collect(Collectors.toList());
     }
 
     @Override
