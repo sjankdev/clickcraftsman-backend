@@ -1,6 +1,7 @@
 package com.clickcraft.demo.service;
 
 import com.clickcraft.demo.dto.job.JobPostingRequest;
+import com.clickcraft.demo.dto.job.JobPostingResponse;
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 
@@ -10,7 +11,7 @@ public interface JobPostingService {
 
     void saveJobPosting(ClientJobPosting jobPosting);
 
-    List<ClientJobPosting> getAllJobPostings();
+    public List<JobPostingResponse> getAllJobPostings();
 
     List<ClientJobPosting> getClientJobPostings(ClientProfile clientProfile);
 
