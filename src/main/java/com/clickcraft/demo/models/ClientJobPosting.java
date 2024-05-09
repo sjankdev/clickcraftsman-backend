@@ -2,6 +2,7 @@ package com.clickcraft.demo.models;
 
 import com.clickcraft.demo.models.enums.JobType;
 import com.clickcraft.demo.models.enums.PriceType;
+import com.clickcraft.demo.utils.ApplicationTimeFormatter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,7 +12,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +37,7 @@ public class ClientJobPosting {
     private String description;
 
     @Column(name = "date_posted")
-    private final LocalDate datePosted;
+    private final LocalDateTime datePosted;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_profile_id")
@@ -82,11 +83,11 @@ public class ClientJobPosting {
     private Set<JobApplication> jobApplications = new HashSet<>();
 
     public ClientJobPosting() {
-        this.datePosted = LocalDate.now();
+        this.datePosted = LocalDateTime.now();
         this.clientProfile = null;
     }
 
-    public ClientJobPosting(String jobName, String description, ClientProfile clientProfile, LocalDate datePosted, Boolean isRemote, String location, List<Skill> requiredSkills) {
+    public ClientJobPosting(String jobName, String description, ClientProfile clientProfile, LocalDateTime datePosted, Boolean isRemote, String location, List<Skill> requiredSkills) {
         this.jobName = jobName;
         this.description = description;
         this.clientProfile = clientProfile;
@@ -95,4 +96,9 @@ public class ClientJobPosting {
         this.location = location;
         this.requiredSkills = requiredSkills;
     }
+
+    public String getFormattedDatePosted() {
+        return ApplicationTimeFormatter.formatApplicationTime(this.getDatePosted());
+    }
+
 }

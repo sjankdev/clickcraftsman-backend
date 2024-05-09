@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -44,7 +45,7 @@ public class JobPostingServiceImpl implements JobPostingService {
     public ClientJobPosting createClientJobPosting(JobPostingRequest jobPostingRequest, ClientProfile clientProfile) {
         List<Skill> requiredSkills = skillService.getSkillsByNames(jobPostingRequest.getRequiredSkillIds());
 
-        ClientJobPosting jobPosting = new ClientJobPosting(jobPostingRequest.getJobName(), jobPostingRequest.getDescription(), clientProfile, LocalDate.now(), jobPostingRequest.getIsRemote(), jobPostingRequest.getLocation(), requiredSkills);
+        ClientJobPosting jobPosting = new ClientJobPosting(jobPostingRequest.getJobName(), jobPostingRequest.getDescription(), clientProfile, LocalDateTime.now(), jobPostingRequest.getIsRemote(), jobPostingRequest.getLocation(), requiredSkills);
 
         jobPosting.setPriceType(jobPostingRequest.getPriceType());
         jobPosting.setPriceRangeFrom(jobPostingRequest.getPriceRangeFrom());
