@@ -1,11 +1,12 @@
 package com.clickcraft.demo.security.payload.request;
 
-import java.util.Set;
-
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.URL;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -20,6 +21,7 @@ public class SignupRequest {
     @Size(min = 6, max = 40)
     private String password;
 
+    @NotNull
     private Set<String> role;
 
     @NotBlank
@@ -43,15 +45,30 @@ public class SignupRequest {
     private String aboutFreelancer;
 
     private String portfolio;
+
+    @Positive
     private int yearsOfExperience;
+
+    @NotNull
     private Set<String> skills;
+
     private MultipartFile profilePicture;
+
     private String companyName;
+
     private String companyLocation;
+
     private String companySize;
+
     private String companyIndustry;
+
+    @URL
     private String linkedin;
+
+    @URL
     private String website;
+
+    @URL
     private String instagram;
 
 }
