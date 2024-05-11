@@ -2,6 +2,7 @@ package com.clickcraft.demo.models;
 
 import com.clickcraft.demo.models.enums.ELocations;
 import com.clickcraft.demo.security.payload.request.SignupRequest;
+import com.clickcraft.demo.utils.SerbiaMobilePhone;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -30,6 +31,7 @@ public class FreelancerProfile {
     private String lastName;
 
     @NotBlank
+    @SerbiaMobilePhone
     @Size(min = 3, max = 20)
     private String contactPhone;
 

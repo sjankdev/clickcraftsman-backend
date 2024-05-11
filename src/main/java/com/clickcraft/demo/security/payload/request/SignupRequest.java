@@ -1,5 +1,6 @@
 package com.clickcraft.demo.security.payload.request;
 
+import com.clickcraft.demo.utils.SerbiaMobilePhone;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,7 +34,8 @@ public class SignupRequest {
     private String lastName;
 
     @NotBlank
-    @Size(min = 3, max = 20)
+    @SerbiaMobilePhone
+    @Size(min = 12, max = 12, message = "Serbian mobile phone number must be exactly 12 digits long including the country code")
     private String contactPhone;
 
     @NotBlank
