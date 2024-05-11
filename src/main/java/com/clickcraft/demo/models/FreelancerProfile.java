@@ -40,7 +40,7 @@ public class FreelancerProfile {
     private int yearsOfExperience;
 
     @NotBlank
-    @Size(max = 1000)
+    @Size(max = 2000)
     private String aboutFreelancer;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

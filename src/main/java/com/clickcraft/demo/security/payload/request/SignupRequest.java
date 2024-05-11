@@ -41,7 +41,7 @@ public class SignupRequest {
     private String location;
 
     @NotBlank
-    @Size(max = 1000)
+    @Size(max = 2000)
     private String aboutFreelancer;
 
     private String portfolio;
