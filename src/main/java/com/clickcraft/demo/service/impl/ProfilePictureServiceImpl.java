@@ -1,7 +1,10 @@
 package com.clickcraft.demo.service.impl;
 
 import com.clickcraft.demo.service.ProfilePictureService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,24 +12,14 @@ import java.io.InputStream;
 @Service
 public class ProfilePictureServiceImpl implements ProfilePictureService {
 
-    public byte[] getDefaultProfilePicture() {
-        String defaultImagePath = "/default-profile-pictures/default-profile-image.jpg";
+    @Value("classpath:${default.profile.picture.path}")
+    private Resource defaultImageResource;
 
-        try (InputStream inputStream = getClass().getResourceAsStream(defaultImagePath)) {
-            if (inputStream != null) {
-                byte[] imageData = inputStream.readAllBytes();
-                if (imageData.length == 0) {
-                    System.err.println("Warning: Default profile picture file is empty: " + defaultImagePath);
-                }
-                return imageData;
-            } else {
-                System.err.println("Error: Default profile picture not found: " + defaultImagePath);
-                return null;
-            }
+    public byte[] getDefaultProfilePicture() {
+        try (InputStream inputStream = defaultImageResource.getInputStream()) {
+            return StreamUtils.copyToByteArray(inputStream);
         } catch (IOException e) {
-            System.err.println("Error reading default profile picture: " + e.getMessage());
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException("Error reading default profile picture: " + e.getMessage(), e);
         }
     }
 }
