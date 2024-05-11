@@ -12,7 +12,6 @@ public class ProfilePictureServiceImpl implements ProfilePictureService {
     public byte[] getDefaultProfilePicture() {
         String defaultImagePath = "/default-profile-pictures/default-profile-image.jpg";
 
-        // Load the default image using the class loader
         try (InputStream inputStream = getClass().getResourceAsStream(defaultImagePath)) {
             if (inputStream != null) {
                 byte[] imageData = inputStream.readAllBytes();
@@ -29,6 +28,5 @@ public class ProfilePictureServiceImpl implements ProfilePictureService {
             e.printStackTrace();
             return null;
         }
-
     }
 }
