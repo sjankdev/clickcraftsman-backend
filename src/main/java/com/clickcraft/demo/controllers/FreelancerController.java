@@ -109,4 +109,14 @@ public class FreelancerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    @GetMapping("/search")
+    public ResponseEntity<List<FreelancerProfileDTO>> searchBySkillName(@RequestParam String skillName) {
+        try {
+            List<FreelancerProfileDTO> profiles = freelancerProfileService.searchBySkillName(skillName);
+            return ResponseEntity.ok(profiles);
+        } catch (Exception e) {
+            logger.error("Error searching freelancers by skill name: {}", skillName, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

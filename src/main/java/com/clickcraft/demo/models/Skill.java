@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "skills")
+@Table(name = "skills", indexes = {@Index(name = "idx_skill_name", columnList = "skillName", unique = true)})
 public class Skill {
 
     @Id

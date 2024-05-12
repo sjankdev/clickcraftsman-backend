@@ -124,6 +124,15 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         return user != null ? user.getProfilePictureData() : null;
     }
 
+    @Override
+    public List<FreelancerProfileDTO> searchBySkillName(String skillName) {
+        skillName = skillName.toLowerCase();
+        List<FreelancerProfile> freelancers = freelancerProfileRepository.findBySkillNameContainingIgnoreCase(skillName);
+        return freelancers.stream()
+                .map(this::convertToFreelancerProfileDTO)
+                .collect(Collectors.toList());
+    }
+
     private FreelancerProfileDTO convertToFreelancerProfileDTO(FreelancerProfile freelancerProfile) {
         FreelancerProfileDTO freelancerProfileDTO = new FreelancerProfileDTO();
         freelancerProfileDTO.setId(freelancerProfile.getId());
