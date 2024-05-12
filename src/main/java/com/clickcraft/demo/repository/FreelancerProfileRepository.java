@@ -11,6 +11,6 @@ public interface FreelancerProfileRepository extends JpaRepository<FreelancerPro
 
     FreelancerProfile findByUserEmail(String email);
 
-    List<FreelancerProfile> findBySkillsSkillName(String skillName);
+    List<FreelancerProfile> findBySkillsSkillNameContaining(String skillName);
 
 }

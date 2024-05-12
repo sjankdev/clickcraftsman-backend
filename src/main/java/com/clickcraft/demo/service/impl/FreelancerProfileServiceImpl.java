@@ -125,7 +125,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     }
 
     public List<FreelancerProfileDTO> searchBySkillName(String skillName) {
-        List<FreelancerProfile> freelancers = freelancerProfileRepository.findBySkillsSkillName(skillName);
+        List<FreelancerProfile> freelancers = freelancerProfileRepository.findBySkillsSkillNameContaining(skillName);
         return freelancers.stream()
                 .map(this::convertToFreelancerProfileDTO)
                 .collect(Collectors.toList());
