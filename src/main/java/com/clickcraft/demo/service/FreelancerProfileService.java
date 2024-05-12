@@ -25,4 +25,6 @@ public interface FreelancerProfileService {
 
     byte[] getProfilePictureData(Long freelancerId);
 
+    List<FreelancerProfileDTO> searchBySkillName(String skillName);
+
 }
