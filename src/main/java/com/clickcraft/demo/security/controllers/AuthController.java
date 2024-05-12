@@ -17,6 +17,7 @@ import com.clickcraft.demo.repository.SkillRepository;
 import com.clickcraft.demo.security.repository.UserRepository;
 import com.clickcraft.demo.security.jwt.JwtUtils;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
+import com.clickcraft.demo.service.ProfilePictureService;
 import jakarta.validation.Valid;
 
 import org.slf4j.Logger;
@@ -50,9 +51,10 @@ public class AuthController {
     private final JwtUtils jwtUtils;
     private final SkillRepository skillRepository;
     private final PhotoRepository photoRepository;
+    private final ProfilePictureService profilePictureService;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils, SkillRepository skillRepository, PhotoRepository photoRepository) {
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils, SkillRepository skillRepository, PhotoRepository photoRepository, ProfilePictureService profilePictureService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -60,6 +62,7 @@ public class AuthController {
         this.jwtUtils = jwtUtils;
         this.skillRepository = skillRepository;
         this.photoRepository = photoRepository;
+        this.profilePictureService = profilePictureService;
     }
 
     @PostMapping("/signin")
@@ -150,6 +153,16 @@ public class AuthController {
                 user.setProfilePictureId(photo.getId());
             } else {
                 logger.info("No profile picture received");
+
+                byte[] defaultImageData = profilePictureService.getDefaultProfilePicture();
+                Photo defaultPhoto = new Photo();
+                defaultPhoto.setData(defaultImageData);
+
+                user = userRepository.save(user);
+                defaultPhoto.setUser(user);
+
+                defaultPhoto = photoRepository.save(defaultPhoto);
+                user.setProfilePictureId(defaultPhoto.getId());
             }
 
             userRepository.save(user);
