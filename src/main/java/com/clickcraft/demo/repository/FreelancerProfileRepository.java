@@ -13,7 +13,7 @@ public interface FreelancerProfileRepository extends JpaRepository<FreelancerPro
 
     FreelancerProfile findByUserEmail(String email);
 
-    @Query("SELECT fp FROM FreelancerProfile fp JOIN fp.skills s WHERE LOWER(s.skillName) LIKE LOWER(CONCAT('%', :skillName, '%'))")
-    List<FreelancerProfile> findBySkillNameContainingIgnoreCase(@Param("skillName") String skillName);
+    @Query("SELECT fp FROM FreelancerProfile fp JOIN fp.skills s WHERE s.id IN :skillIds")
+    List<FreelancerProfile> findBySkillIds(@Param("skillIds") List<Long> skillIds);
 
 }

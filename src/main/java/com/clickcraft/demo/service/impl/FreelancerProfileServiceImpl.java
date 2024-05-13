@@ -125,9 +125,8 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     }
 
     @Override
-    public List<FreelancerProfileDTO> searchBySkillName(String skillName) {
-        skillName = skillName.toLowerCase();
-        List<FreelancerProfile> freelancers = freelancerProfileRepository.findBySkillNameContainingIgnoreCase(skillName);
+    public List<FreelancerProfileDTO> searchBySkillIds(List<Long> skillIds) {
+        List<FreelancerProfile> freelancers = freelancerProfileRepository.findBySkillIds(skillIds);
         return freelancers.stream()
                 .map(this::convertToFreelancerProfileDTO)
                 .collect(Collectors.toList());
