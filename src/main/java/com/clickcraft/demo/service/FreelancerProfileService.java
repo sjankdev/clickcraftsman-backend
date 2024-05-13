@@ -4,6 +4,7 @@ import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileUpdateRequest;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.User;
+import com.clickcraft.demo.models.enums.ELocations;
 
 import java.util.List;
 
@@ -26,5 +27,9 @@ public interface FreelancerProfileService {
     byte[] getProfilePictureData(Long freelancerId);
 
     List<FreelancerProfileDTO> searchBySkillIds(List<Long> skillIds);
+
+    List<FreelancerProfileDTO> searchByLocations(List<ELocations> locations);
+
+    List<FreelancerProfileDTO> searchBySkillAndLocation(List<Long> skillIds, List<ELocations> locations);
 
 }

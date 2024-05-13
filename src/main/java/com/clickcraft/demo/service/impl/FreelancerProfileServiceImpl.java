@@ -5,6 +5,7 @@ import com.clickcraft.demo.dto.freelancer.FreelancerProfileUpdateRequest;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.models.User;
+import com.clickcraft.demo.models.enums.ELocations;
 import com.clickcraft.demo.repository.FreelancerProfileRepository;
 import com.clickcraft.demo.repository.SkillRepository;
 import com.clickcraft.demo.security.repository.UserRepository;
@@ -128,6 +129,22 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     public List<FreelancerProfileDTO> searchBySkillIds(List<Long> skillIds) {
         List<FreelancerProfile> freelancers = freelancerProfileRepository.findBySkillIds(skillIds);
         return freelancers.stream()
+                .map(this::convertToFreelancerProfileDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FreelancerProfileDTO> searchByLocations(List<ELocations> locations) {
+        List<FreelancerProfile> freelancers = freelancerProfileRepository.findByLocations(locations);
+        return freelancers.stream()
+                .map(this::convertToFreelancerProfileDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FreelancerProfileDTO> searchBySkillAndLocation(List<Long> skillIds, List<ELocations> locations) {
+        List<FreelancerProfile> profiles = freelancerProfileRepository.findBySkillIdsAndLocations(skillIds, locations);
+        return profiles.stream()
                 .map(this::convertToFreelancerProfileDTO)
                 .collect(Collectors.toList());
     }
