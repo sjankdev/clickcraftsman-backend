@@ -3,6 +3,7 @@ package com.clickcraft.demo.controllers;
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileUpdateRequest;
 import com.clickcraft.demo.models.User;
+import com.clickcraft.demo.models.enums.ELocations;
 import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
 import com.clickcraft.demo.service.FreelancerProfileService;
@@ -110,7 +111,41 @@ public class FreelancerController {
         }
     }
 
-    @GetMapping("/search")
+    @GetMapping("/searchBySkillAndLocation")
+    public ResponseEntity<List<FreelancerProfileDTO>> searchBySkillIdsAndLocations(@RequestParam(required = false) List<Long> skillIds, @RequestParam(required = false) List<ELocations> locations) {
+        try {
+            if ((skillIds != null && !skillIds.isEmpty()) && (locations != null && !locations.isEmpty())) {
+                List<FreelancerProfileDTO> profiles = freelancerProfileService.searchBySkillAndLocation(skillIds, locations);
+                return ResponseEntity.ok(profiles);
+            } else if (skillIds != null && !skillIds.isEmpty()) {
+                List<FreelancerProfileDTO> profiles = freelancerProfileService.searchBySkillIds(skillIds);
+                return ResponseEntity.ok(profiles);
+            } else if (locations != null && !locations.isEmpty()) {
+                List<FreelancerProfileDTO> profiles = freelancerProfileService.searchByLocations(locations);
+                return ResponseEntity.ok(profiles);
+            } else {
+                return ResponseEntity.badRequest().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/searchByLocation")
+    public ResponseEntity<List<FreelancerProfileDTO>> searchByLocation(@RequestParam List<ELocations> locations) {
+        try {
+            if (locations != null && !locations.isEmpty()) {
+                List<FreelancerProfileDTO> profiles = freelancerProfileService.searchByLocations(locations);
+                return ResponseEntity.ok(profiles);
+            } else {
+                return ResponseEntity.badRequest().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/searchBySkill")
     public ResponseEntity<List<FreelancerProfileDTO>> searchBySkillIds(@RequestParam List<Long> skillIds) {
         try {
             List<FreelancerProfileDTO> profiles = freelancerProfileService.searchBySkillIds(skillIds);
