@@ -117,6 +117,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         return user != null ? user.getProfilePictureData() : null;
     }
 
+    @Override
     public List<FreelancerProfileDTO> searchProfiles(Map<String, String> params) {
         Specification<FreelancerProfile> spec = FreelancerProfileSpecifications.buildSpecification(params);
         List<FreelancerProfile> profiles = freelancerProfileRepository.findAll(spec);

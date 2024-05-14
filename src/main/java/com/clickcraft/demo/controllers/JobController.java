@@ -1,5 +1,6 @@
 package com.clickcraft.demo.controllers;
 
+import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
 import com.clickcraft.demo.dto.job.JobApplicationRequest;
 import com.clickcraft.demo.dto.job.JobApplicationResponse;
 import com.clickcraft.demo.dto.job.JobPostingRequest;
@@ -32,6 +33,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -247,4 +249,13 @@ public class JobController {
         }
     }
 
+    @GetMapping("/searchJobs")
+    public ResponseEntity<List<JobPostingResponse>> searchJobs(@RequestParam Map<String, String> params) {
+        try {
+            List<JobPostingResponse> profiles = jobPostingService.searchJobs(params);
+            return ResponseEntity.ok(profiles);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
