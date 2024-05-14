@@ -24,6 +24,9 @@ public interface FreelancerProfileSpecifications {
         if (yearsOfExperienceRange == null || yearsOfExperienceRange.isEmpty()) {
             return null;
         }
+        if (yearsOfExperienceRange.equals("5+")) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThanOrEqualTo(root.get("yearsOfExperience"), 5);
+        }
         String[] range = yearsOfExperienceRange.split("-");
         int minYears = Integer.parseInt(range[0]);
         int maxYears = range.length > 1 ? Integer.parseInt(range[1]) : Integer.MAX_VALUE;
