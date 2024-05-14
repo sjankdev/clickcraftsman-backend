@@ -251,7 +251,9 @@ public class JobController {
             @RequestParam(required = false) List<String> locations,
             @RequestParam(required = false) List<String> skillIds,
             @RequestParam(required = false) List<String> jobTypes,
-            @RequestParam(required = false) List<String> priceTypes) {
+            @RequestParam(required = false) List<String> priceTypes,
+            @RequestParam(required = false) Double priceRangeFrom,
+            @RequestParam(required = false) Double priceRangeTo) {
         try {
             Map<String, String> params = new HashMap<>();
             if (locations != null && !locations.isEmpty()) {
@@ -267,6 +269,12 @@ public class JobController {
             if (priceTypes != null && !priceTypes.isEmpty()) {
                 List<String> uppercasePriceTypes = priceTypes.stream().map(String::toUpperCase).collect(Collectors.toList());
                 params.put("priceTypes", String.join(",", uppercasePriceTypes));
+            }
+            if (priceRangeFrom != null) {
+                params.put("priceRangeFrom", String.valueOf(priceRangeFrom));
+            }
+            if (priceRangeTo != null) {
+                params.put("priceRangeTo", String.valueOf(priceRangeTo));
             }
 
             List<JobPostingResponse> profiles = jobPostingService.searchJobs(params);

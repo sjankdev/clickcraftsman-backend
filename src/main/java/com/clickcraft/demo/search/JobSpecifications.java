@@ -31,6 +31,18 @@ public interface JobSpecifications {
         return (root, query, criteriaBuilder) -> root.get("priceType").in(priceTypes);
     }
 
+    static Specification<ClientJobPosting> priceRange(Double from, Double to) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (from != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("priceRangeFrom"), from));
+            }
+            if (to != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("priceRangeTo"), to));
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+    }
 
     public static Specification<ClientJobPosting> buildSpecification(Map<String, String> params) {
         return (root, query, criteriaBuilder) -> {
@@ -50,6 +62,12 @@ public interface JobSpecifications {
             if (params.containsKey("priceTypes")) {
                 List<PriceType> priceTypes = Arrays.stream(params.get("priceTypes").split(",")).map(PriceType::valueOf).collect(Collectors.toList());
                 predicates.add(priceTypes(priceTypes).toPredicate(root, query, criteriaBuilder));
+            }
+
+            if (params.containsKey("priceRangeFrom") || params.containsKey("priceRangeTo")) {
+                Double priceRangeFrom = params.containsKey("priceRangeFrom") ? Double.parseDouble(params.get("priceRangeFrom")) : null;
+                Double priceRangeTo = params.containsKey("priceRangeTo") ? Double.parseDouble(params.get("priceRangeTo")) : null;
+                predicates.add(priceRange(priceRangeFrom, priceRangeTo).toPredicate(root, query, criteriaBuilder));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
