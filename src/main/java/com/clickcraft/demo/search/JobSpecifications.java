@@ -31,6 +31,4 @@ public interface JobSpecifications {
     static List<Long> parseLongList(String input) {
         return Stream.of(input.split(",")).map(Long::valueOf).toList();
     }
-
-
 }
