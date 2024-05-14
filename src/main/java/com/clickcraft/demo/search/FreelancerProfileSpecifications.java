@@ -20,6 +20,17 @@ public interface FreelancerProfileSpecifications {
         return (root, query, criteriaBuilder) -> root.get("location").in(locations);
     }
 
+    static Specification<FreelancerProfile> hasYearsOfExperience(String yearsOfExperienceRange) {
+        if (yearsOfExperienceRange == null || yearsOfExperienceRange.isEmpty()) {
+            return null;
+        }
+        String[] range = yearsOfExperienceRange.split("-");
+        int minYears = Integer.parseInt(range[0]);
+        int maxYears = range.length > 1 ? Integer.parseInt(range[1]) : Integer.MAX_VALUE;
+
+        return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("yearsOfExperience"), minYears, maxYears);
+    }
+
     static Specification<FreelancerProfile> buildSpecification(Map<String, String> params) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -30,6 +41,10 @@ public interface FreelancerProfileSpecifications {
             if (params.containsKey("locations")) {
                 List<ELocations> locations = parseLocationList(params.get("locations"));
                 predicates.add(hasLocations(locations).toPredicate(root, query, criteriaBuilder));
+            }
+            if (params.containsKey("yearsOfExperienceRange")) {
+                String yearsOfExperienceRange = params.get("yearsOfExperienceRange");
+                predicates.add(hasYearsOfExperience(yearsOfExperienceRange).toPredicate(root, query, criteriaBuilder));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
