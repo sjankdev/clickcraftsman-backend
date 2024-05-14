@@ -264,11 +264,11 @@ public class JobController {
                 params.put("jobTypes", String.join(",", uppercaseJobTypes));
             }
 
-            logger.info("Search jobs request received with params: {}", params);
+            if (locations != null && !locations.isEmpty()) {
+                params.put("locations", String.join(",", locations));
+            }
 
             List<JobPostingResponse> profiles = jobPostingService.searchJobs(params);
-
-            logger.info("Search jobs request processed successfully");
 
             return ResponseEntity.ok(profiles);
         } catch (Exception e) {

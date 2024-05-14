@@ -18,20 +18,30 @@ public interface JobSpecifications {
         return (root, query, criteriaBuilder) -> root.join("requiredSkills").get("id").in(skillIds);
     }
 
+    static Specification<ClientJobPosting> locations(List<String> locations) {
+        return (root, query, criteriaBuilder) -> root.get("location").in(locations);
+    }
+
+    static Specification<ClientJobPosting> jobTypes(List<JobType> jobTypes) {
+        return (root, query, criteriaBuilder) -> root.get("jobType").in(jobTypes);
+    }
+
     public static Specification<ClientJobPosting> buildSpecification(Map<String, String> params) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (params.containsKey("jobTypes")) {
-                String[] jobTypesArray = params.get("jobTypes").split(",");
-                List<JobType> jobTypes = Arrays.stream(jobTypesArray)
-                        .map(JobType::valueOf)
-                        .collect(Collectors.toList());
-                predicates.add(root.get("jobType").in(jobTypes));
+                List<JobType> jobTypes = Arrays.stream(params.get("jobTypes").split(",")).map(JobType::valueOf).collect(Collectors.toList());
+                predicates.add(jobTypes(jobTypes).toPredicate(root, query, criteriaBuilder));
             }
             if (params.containsKey("skillIds")) {
                 List<Long> skillIds = parseLongList(params.get("skillIds"));
                 predicates.add(requiredSkills(skillIds).toPredicate(root, query, criteriaBuilder));
             }
+            if (params.containsKey("locations")) {
+                List<String> locations = Arrays.asList(params.get("locations").split(","));
+                predicates.add(locations(locations).toPredicate(root, query, criteriaBuilder));
+            }
+
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
