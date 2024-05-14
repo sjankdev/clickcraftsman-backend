@@ -67,10 +67,7 @@ public class JobController {
     }
 
     @PostMapping(value = "/apply/{jobId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> applyForJob(@PathVariable Long jobId,
-                                              @RequestPart(value = "resumeFile", required = false) MultipartFile resumeFile,
-                                              @Valid @ModelAttribute JobApplicationRequest applicationRequest,
-                                              Authentication authentication) {
+    public ResponseEntity<String> applyForJob(@PathVariable Long jobId, @RequestPart(value = "resumeFile", required = false) MultipartFile resumeFile, @Valid @ModelAttribute JobApplicationRequest applicationRequest, Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated.");
         }
@@ -121,9 +118,7 @@ public class JobController {
 
         List<JobApplication> clientJobApplications = jobApplicationRepository.findClientJobApplications(clientProfile);
 
-        List<JobApplicationResponse> responseList = clientJobApplications.stream()
-                .map(JobApplicationResponse::fromEntity)
-                .collect(Collectors.toList());
+        List<JobApplicationResponse> responseList = clientJobApplications.stream().map(JobApplicationResponse::fromEntity).collect(Collectors.toList());
 
         return ResponseEntity.ok(responseList);
     }
@@ -155,9 +150,7 @@ public class JobController {
 
             logger.info("Fetched {} job applications for jobId: {}", jobApplications.size(), jobId);
 
-            List<JobApplicationResponse> responseList = jobApplications.stream()
-                    .map(JobApplicationResponse::fromEntity)
-                    .collect(Collectors.toList());
+            List<JobApplicationResponse> responseList = jobApplications.stream().map(JobApplicationResponse::fromEntity).collect(Collectors.toList());
 
             return ResponseEntity.ok(responseList);
         } catch (Exception e) {
@@ -253,7 +246,9 @@ public class JobController {
             @RequestParam(required = false) List<String> jobTypes,
             @RequestParam(required = false) List<String> priceTypes,
             @RequestParam(required = false) Double priceRangeFrom,
-            @RequestParam(required = false) Double priceRangeTo) {
+            @RequestParam(required = false) Double priceRangeTo,
+            @RequestParam(required = false) Double budgetFrom,
+            @RequestParam(required = false) Double budgetTo) {
         try {
             Map<String, String> params = new HashMap<>();
             if (locations != null && !locations.isEmpty()) {
@@ -275,6 +270,12 @@ public class JobController {
             }
             if (priceRangeTo != null) {
                 params.put("priceRangeTo", String.valueOf(priceRangeTo));
+            }
+            if (budgetFrom != null) {
+                params.put("budgetFrom", String.valueOf(budgetFrom));
+            }
+            if (budgetTo != null) {
+                params.put("budgetTo", String.valueOf(budgetTo));
             }
 
             List<JobPostingResponse> profiles = jobPostingService.searchJobs(params);

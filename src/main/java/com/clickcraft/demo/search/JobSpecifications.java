@@ -31,6 +31,10 @@ public interface JobSpecifications {
         return (root, query, criteriaBuilder) -> root.get("priceType").in(priceTypes);
     }
 
+    static Specification<ClientJobPosting> budgetRange(Double budgetFrom, Double budgetTo) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("budget"), budgetFrom, budgetTo);
+    }
+
     static Specification<ClientJobPosting> priceRange(Double from, Double to) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -68,6 +72,12 @@ public interface JobSpecifications {
                 Double priceRangeFrom = params.containsKey("priceRangeFrom") ? Double.parseDouble(params.get("priceRangeFrom")) : null;
                 Double priceRangeTo = params.containsKey("priceRangeTo") ? Double.parseDouble(params.get("priceRangeTo")) : null;
                 predicates.add(priceRange(priceRangeFrom, priceRangeTo).toPredicate(root, query, criteriaBuilder));
+            }
+
+            if (params.containsKey("budgetFrom") && params.containsKey("budgetTo")) {
+                Double budgetFrom = Double.parseDouble(params.get("budgetFrom"));
+                Double budgetTo = Double.parseDouble(params.get("budgetTo"));
+                predicates.add(budgetRange(budgetFrom, budgetTo).toPredicate(root, query, criteriaBuilder));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
