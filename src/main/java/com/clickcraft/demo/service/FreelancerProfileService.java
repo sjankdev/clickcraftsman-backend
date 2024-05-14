@@ -7,6 +7,7 @@ import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.models.enums.ELocations;
 
 import java.util.List;
+import java.util.Map;
 
 public interface FreelancerProfileService {
 
@@ -26,10 +27,6 @@ public interface FreelancerProfileService {
 
     byte[] getProfilePictureData(Long freelancerId);
 
-    List<FreelancerProfileDTO> searchBySkillIds(List<Long> skillIds);
-
-    List<FreelancerProfileDTO> searchByLocations(List<ELocations> locations);
-
-    List<FreelancerProfileDTO> searchBySkillAndLocation(List<Long> skillIds, List<ELocations> locations);
+    List<FreelancerProfileDTO> searchProfiles(Map<String, String> params);
 
 }

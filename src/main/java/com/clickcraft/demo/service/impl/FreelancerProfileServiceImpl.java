@@ -5,23 +5,21 @@ import com.clickcraft.demo.dto.freelancer.FreelancerProfileUpdateRequest;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.models.User;
-import com.clickcraft.demo.models.enums.ELocations;
 import com.clickcraft.demo.repository.FreelancerProfileRepository;
 import com.clickcraft.demo.repository.SkillRepository;
+import com.clickcraft.demo.search.FreelancerProfileSpecifications;
 import com.clickcraft.demo.security.repository.UserRepository;
 import com.clickcraft.demo.service.FreelancerProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,14 +65,11 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         freelancerProfile.setPortfolio(freelancerProfileUpdateRequest.getPortfolio());
         freelancerProfile.setAboutFreelancer(freelancerProfileUpdateRequest.getAboutFreelancer());
 
-        Set<Skill> skills = freelancerProfileUpdateRequest.getSkills().stream()
-                .map(skillName -> skillRepository.findBySkillName(skillName)
-                        .orElseGet(() -> {
-                            Skill newSkill = new Skill(skillName);
-                            skillRepository.save(newSkill);
-                            return newSkill;
-                        }))
-                .collect(Collectors.toSet());
+        Set<Skill> skills = freelancerProfileUpdateRequest.getSkills().stream().map(skillName -> skillRepository.findBySkillName(skillName).orElseGet(() -> {
+            Skill newSkill = new Skill(skillName);
+            skillRepository.save(newSkill);
+            return newSkill;
+        })).collect(Collectors.toSet());
 
         freelancerProfile.setSkills(skills);
         userRepository.save(user);
@@ -89,15 +84,12 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     @Override
     public List<FreelancerProfileDTO> getAllPublicProfiles() {
         List<FreelancerProfile> freelancerProfiles = freelancerProfileRepository.findAll();
-        return freelancerProfiles.stream()
-                .map(this::convertToFreelancerProfileDTO)
-                .collect(Collectors.toList());
+        return freelancerProfiles.stream().map(this::convertToFreelancerProfileDTO).collect(Collectors.toList());
     }
 
     @Override
     public FreelancerProfileDTO getPublicProfileById(Long freelancerId) {
-        FreelancerProfile freelancerProfile = freelancerProfileRepository.findById(freelancerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
+        FreelancerProfile freelancerProfile = freelancerProfileRepository.findById(freelancerId).orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
         return convertToFreelancerProfileDTO(freelancerProfile);
     }
 
@@ -125,28 +117,10 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         return user != null ? user.getProfilePictureData() : null;
     }
 
-    @Override
-    public List<FreelancerProfileDTO> searchBySkillIds(List<Long> skillIds) {
-        List<FreelancerProfile> freelancers = freelancerProfileRepository.findBySkillIds(skillIds);
-        return freelancers.stream()
-                .map(this::convertToFreelancerProfileDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<FreelancerProfileDTO> searchByLocations(List<ELocations> locations) {
-        List<FreelancerProfile> freelancers = freelancerProfileRepository.findByLocations(locations);
-        return freelancers.stream()
-                .map(this::convertToFreelancerProfileDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<FreelancerProfileDTO> searchBySkillAndLocation(List<Long> skillIds, List<ELocations> locations) {
-        List<FreelancerProfile> profiles = freelancerProfileRepository.findBySkillIdsAndLocations(skillIds, locations);
-        return profiles.stream()
-                .map(this::convertToFreelancerProfileDTO)
-                .collect(Collectors.toList());
+    public List<FreelancerProfileDTO> searchProfiles(Map<String, String> params) {
+        Specification<FreelancerProfile> spec = FreelancerProfileSpecifications.buildSpecification(params);
+        List<FreelancerProfile> profiles = freelancerProfileRepository.findAll(spec);
+        return profiles.stream().map(this::convertToFreelancerProfileDTO).collect(Collectors.toList());
     }
 
     private FreelancerProfileDTO convertToFreelancerProfileDTO(FreelancerProfile freelancerProfile) {
