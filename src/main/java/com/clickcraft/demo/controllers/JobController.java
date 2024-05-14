@@ -250,7 +250,8 @@ public class JobController {
     public ResponseEntity<List<JobPostingResponse>> searchJobs(
             @RequestParam(required = false) List<String> locations,
             @RequestParam(required = false) List<String> skillIds,
-            @RequestParam(required = false) List<String> jobTypes) {
+            @RequestParam(required = false) List<String> jobTypes,
+            @RequestParam(required = false) List<String> priceTypes) {
         try {
             Map<String, String> params = new HashMap<>();
             if (locations != null && !locations.isEmpty()) {
@@ -263,9 +264,9 @@ public class JobController {
                 List<String> uppercaseJobTypes = jobTypes.stream().map(String::toUpperCase).collect(Collectors.toList());
                 params.put("jobTypes", String.join(",", uppercaseJobTypes));
             }
-
-            if (locations != null && !locations.isEmpty()) {
-                params.put("locations", String.join(",", locations));
+            if (priceTypes != null && !priceTypes.isEmpty()) {
+                List<String> uppercasePriceTypes = priceTypes.stream().map(String::toUpperCase).collect(Collectors.toList());
+                params.put("priceTypes", String.join(",", uppercasePriceTypes));
             }
 
             List<JobPostingResponse> profiles = jobPostingService.searchJobs(params);
