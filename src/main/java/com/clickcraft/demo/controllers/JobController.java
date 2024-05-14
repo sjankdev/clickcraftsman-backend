@@ -249,7 +249,7 @@ public class JobController {
     @GetMapping("/searchJobs")
     public ResponseEntity<List<JobPostingResponse>> searchJobs(
             @RequestParam(required = false) List<String> locations,
-            @RequestParam(required = false) List<Long> skillIds,
+            @RequestParam(required = false) List<String> skillIds,
             @RequestParam(required = false) List<String> jobTypes) {
         try {
             Map<String, String> params = new HashMap<>();
@@ -257,17 +257,24 @@ public class JobController {
                 params.put("locations", String.join(",", locations));
             }
             if (skillIds != null && !skillIds.isEmpty()) {
-                params.put("skillIds", skillIds.stream().map(String::valueOf).collect(Collectors.joining(",")));
+                params.put("skillIds", String.join(",", skillIds));
             }
             if (jobTypes != null && !jobTypes.isEmpty()) {
                 List<String> uppercaseJobTypes = jobTypes.stream().map(String::toUpperCase).collect(Collectors.toList());
                 params.put("jobTypes", String.join(",", uppercaseJobTypes));
             }
 
+            logger.info("Search jobs request received with params: {}", params);
+
             List<JobPostingResponse> profiles = jobPostingService.searchJobs(params);
+
+            logger.info("Search jobs request processed successfully");
+
             return ResponseEntity.ok(profiles);
         } catch (Exception e) {
+            logger.error("Error processing search jobs request", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 }

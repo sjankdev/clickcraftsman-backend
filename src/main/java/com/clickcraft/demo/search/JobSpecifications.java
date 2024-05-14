@@ -14,8 +14,8 @@ import java.util.stream.Stream;
 
 public interface JobSpecifications {
 
-    static Specification<ClientJobPosting> skills(List<Long> skillIds) {
-        return (root, query, criteriaBuilder) -> root.join("skills").get("id").in(skillIds);
+    static Specification<ClientJobPosting> requiredSkills(List<Long> skillIds) {
+        return (root, query, criteriaBuilder) -> root.join("requiredSkills").get("id").in(skillIds);
     }
 
     public static Specification<ClientJobPosting> buildSpecification(Map<String, String> params) {
@@ -30,7 +30,7 @@ public interface JobSpecifications {
             }
             if (params.containsKey("skillIds")) {
                 List<Long> skillIds = parseLongList(params.get("skillIds"));
-                predicates.add(skills(skillIds).toPredicate(root, query, criteriaBuilder));
+                predicates.add(requiredSkills(skillIds).toPredicate(root, query, criteriaBuilder));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
