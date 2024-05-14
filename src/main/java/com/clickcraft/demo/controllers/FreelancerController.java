@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -111,47 +112,12 @@ public class FreelancerController {
         }
     }
 
-    @GetMapping("/searchBySkillAndLocation")
-    public ResponseEntity<List<FreelancerProfileDTO>> searchBySkillIdsAndLocations(@RequestParam(required = false) List<Long> skillIds, @RequestParam(required = false) List<ELocations> locations) {
+    @GetMapping("/search")
+    public ResponseEntity<List<FreelancerProfileDTO>> searchProfiles(@RequestParam Map<String, String> params) {
         try {
-            if ((skillIds != null && !skillIds.isEmpty()) && (locations != null && !locations.isEmpty())) {
-                List<FreelancerProfileDTO> profiles = freelancerProfileService.searchBySkillAndLocation(skillIds, locations);
-                return ResponseEntity.ok(profiles);
-            } else if (skillIds != null && !skillIds.isEmpty()) {
-                List<FreelancerProfileDTO> profiles = freelancerProfileService.searchBySkillIds(skillIds);
-                return ResponseEntity.ok(profiles);
-            } else if (locations != null && !locations.isEmpty()) {
-                List<FreelancerProfileDTO> profiles = freelancerProfileService.searchByLocations(locations);
-                return ResponseEntity.ok(profiles);
-            } else {
-                return ResponseEntity.badRequest().build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GetMapping("/searchByLocation")
-    public ResponseEntity<List<FreelancerProfileDTO>> searchByLocation(@RequestParam List<ELocations> locations) {
-        try {
-            if (locations != null && !locations.isEmpty()) {
-                List<FreelancerProfileDTO> profiles = freelancerProfileService.searchByLocations(locations);
-                return ResponseEntity.ok(profiles);
-            } else {
-                return ResponseEntity.badRequest().build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GetMapping("/searchBySkill")
-    public ResponseEntity<List<FreelancerProfileDTO>> searchBySkillIds(@RequestParam List<Long> skillIds) {
-        try {
-            List<FreelancerProfileDTO> profiles = freelancerProfileService.searchBySkillIds(skillIds);
+            List<FreelancerProfileDTO> profiles = freelancerProfileService.searchProfiles(params);
             return ResponseEntity.ok(profiles);
         } catch (Exception e) {
-            logger.error("Error searching freelancers by skill IDs: {}", skillIds, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
