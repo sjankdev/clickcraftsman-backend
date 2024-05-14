@@ -1,5 +1,6 @@
 package com.clickcraft.demo.controllers;
 
+import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
 import com.clickcraft.demo.dto.job.JobApplicationRequest;
 import com.clickcraft.demo.dto.job.JobApplicationResponse;
 import com.clickcraft.demo.dto.job.JobPostingRequest;
@@ -30,9 +31,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -244,6 +243,37 @@ public class JobController {
             return ResponseEntity.ok(new MessageResponse("Job unarchived successfully."));
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/searchJobs")
+    public ResponseEntity<List<JobPostingResponse>> searchJobs(
+            @RequestParam(required = false) List<String> locations,
+            @RequestParam(required = false) List<String> skillIds,
+            @RequestParam(required = false) List<String> jobTypes) {
+        try {
+            Map<String, String> params = new HashMap<>();
+            if (locations != null && !locations.isEmpty()) {
+                params.put("locations", String.join(",", locations));
+            }
+            if (skillIds != null && !skillIds.isEmpty()) {
+                params.put("skillIds", String.join(",", skillIds));
+            }
+            if (jobTypes != null && !jobTypes.isEmpty()) {
+                List<String> uppercaseJobTypes = jobTypes.stream().map(String::toUpperCase).collect(Collectors.toList());
+                params.put("jobTypes", String.join(",", uppercaseJobTypes));
+            }
+
+            if (locations != null && !locations.isEmpty()) {
+                params.put("locations", String.join(",", locations));
+            }
+
+            List<JobPostingResponse> profiles = jobPostingService.searchJobs(params);
+
+            return ResponseEntity.ok(profiles);
+        } catch (Exception e) {
+            logger.error("Error processing search jobs request", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
