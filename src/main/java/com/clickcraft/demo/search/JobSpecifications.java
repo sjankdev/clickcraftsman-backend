@@ -13,18 +13,17 @@ import java.util.stream.Stream;
 
 public interface JobSpecifications {
 
-    static Specification<ClientJobPosting> hasRequiredSkillIds(List<Long> skillIds) {
-        return (root, query, criteriaBuilder) -> root.join("requiredSkills").get("id").in(skillIds);
+    static Specification<ClientJobPosting> hasRequiredSkillIds(List<Long> filters) {
+        return (root, query, criteriaBuilder) -> root.join("filters").get("id").in(filters);
     }
 
     static Specification<ClientJobPosting> buildSpecification(Map<String, String> params) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (params.containsKey("skillIds")) {
-                List<Long> skillIds = parseLongList(params.get("skillIds"));
-                predicates.add(hasRequiredSkillIds(skillIds).toPredicate(root, query, criteriaBuilder));
+            if (params.containsKey("filterId")) {
+                List<Long> filterId = parseLongList(params.get("filterId"));
+                predicates.add(hasRequiredSkillIds(filterId).toPredicate(root, query, criteriaBuilder));
             }
-
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
