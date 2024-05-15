@@ -2,6 +2,7 @@ package com.clickcraft.demo.search;
 
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.enums.JobType;
+import com.clickcraft.demo.models.enums.PriceType;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -26,6 +27,27 @@ public interface JobSpecifications {
         return (root, query, criteriaBuilder) -> root.get("jobType").in(jobTypes);
     }
 
+    static Specification<ClientJobPosting> priceTypes(List<PriceType> priceTypes) {
+        return (root, query, criteriaBuilder) -> root.get("priceType").in(priceTypes);
+    }
+
+    static Specification<ClientJobPosting> budgetRange(Double budgetFrom, Double budgetTo) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("budget"), budgetFrom, budgetTo);
+    }
+
+    static Specification<ClientJobPosting> priceRange(Double from, Double to) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (from != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("priceRangeFrom"), from));
+            }
+            if (to != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("priceRangeTo"), to));
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
     public static Specification<ClientJobPosting> buildSpecification(Map<String, String> params) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -41,10 +63,27 @@ public interface JobSpecifications {
                 List<String> locations = Arrays.asList(params.get("locations").split(","));
                 predicates.add(locations(locations).toPredicate(root, query, criteriaBuilder));
             }
+            if (params.containsKey("priceTypes")) {
+                List<PriceType> priceTypes = Arrays.stream(params.get("priceTypes").split(",")).map(PriceType::valueOf).collect(Collectors.toList());
+                predicates.add(priceTypes(priceTypes).toPredicate(root, query, criteriaBuilder));
+            }
+
+            if (params.containsKey("priceRangeFrom") || params.containsKey("priceRangeTo")) {
+                Double priceRangeFrom = params.containsKey("priceRangeFrom") ? Double.parseDouble(params.get("priceRangeFrom")) : null;
+                Double priceRangeTo = params.containsKey("priceRangeTo") ? Double.parseDouble(params.get("priceRangeTo")) : null;
+                predicates.add(priceRange(priceRangeFrom, priceRangeTo).toPredicate(root, query, criteriaBuilder));
+            }
+
+            if (params.containsKey("budgetFrom") && params.containsKey("budgetTo")) {
+                Double budgetFrom = Double.parseDouble(params.get("budgetFrom"));
+                Double budgetTo = Double.parseDouble(params.get("budgetTo"));
+                predicates.add(budgetRange(budgetFrom, budgetTo).toPredicate(root, query, criteriaBuilder));
+            }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
+
 
     static List<Long> parseLongList(String input) {
         return Stream.of(input.split(",")).map(Long::valueOf).toList();
