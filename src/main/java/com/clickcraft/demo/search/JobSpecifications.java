@@ -85,24 +85,20 @@ public interface JobSpecifications {
         };
     }
 
-    static Specification<ClientJobPosting> datePostedLastTwoWeeks() {
+    static Specification<ClientJobPosting> datePostedThisMonth() {
         return (root, query, criteriaBuilder) -> {
             LocalDate today = LocalDate.now();
-            LocalDate twoWeeksAgo = today.minusWeeks(2);
-            LocalDateTime startOfDay = twoWeeksAgo.atStartOfDay();
-            LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
-            return criteriaBuilder.between(root.get("datePosted"), startOfDay, endOfDay);
+            LocalDate startOfThisMonth = today.with(TemporalAdjusters.firstDayOfMonth());
+            LocalDateTime startOfDay = startOfThisMonth.atStartOfDay();
+            return criteriaBuilder.greaterThanOrEqualTo(root.get("datePosted"), startOfDay);
         };
     }
 
-    static Specification<ClientJobPosting> datePostedLastMonth() {
+    static Specification<ClientJobPosting> datePostedEarlierThanThisMonth() {
         return (root, query, criteriaBuilder) -> {
             LocalDate today = LocalDate.now();
-            LocalDate startOfLastMonth = today.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth());
-            LocalDate endOfLastMonth = today.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
-            LocalDateTime startOfDay = startOfLastMonth.atStartOfDay();
-            LocalDateTime endOfDay = endOfLastMonth.atTime(LocalTime.MAX);
-            return criteriaBuilder.between(root.get("datePosted"), startOfDay, endOfDay);
+            LocalDate startOfThisMonth = today.with(TemporalAdjusters.firstDayOfMonth());
+            return criteriaBuilder.lessThan(root.get("datePosted"), startOfThisMonth);
         };
     }
 
@@ -114,7 +110,7 @@ public interface JobSpecifications {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("resumeRequired"), resumeRequired);
     }
 
-     static Specification<ClientJobPosting> buildSpecification(Map<String, String> params) {
+    static Specification<ClientJobPosting> buildSpecification(Map<String, String> params) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (params.containsKey("jobTypes")) {
@@ -165,11 +161,11 @@ public interface JobSpecifications {
                     case "thisWeek":
                         predicates.add(datePostedThisWeek().toPredicate(root, query, criteriaBuilder));
                         break;
-                    case "lastTwoWeeks":
-                        predicates.add(datePostedLastTwoWeeks().toPredicate(root, query, criteriaBuilder));
+                    case "thisMonth":
+                        predicates.add(datePostedThisMonth().toPredicate(root, query, criteriaBuilder));
                         break;
-                    case "lastMonth":
-                        predicates.add(datePostedLastMonth().toPredicate(root, query, criteriaBuilder));
+                    case "earlierThanThisMonth":
+                        predicates.add(datePostedEarlierThanThisMonth().toPredicate(root, query, criteriaBuilder));
                         break;
                 }
             }
