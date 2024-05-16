@@ -9,6 +9,7 @@ import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.JobApplication;
+import com.clickcraft.demo.search.JobSearchCriteria;
 import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.repository.JobApplicationRepository;
 import com.clickcraft.demo.repository.JobPostingRepository;
@@ -240,61 +241,11 @@ public class JobController {
     }
 
     @GetMapping("/searchJobs")
-    public ResponseEntity<List<JobPostingResponse>> searchJobs(
-            @RequestParam(required = false) List<String> locations,
-            @RequestParam(required = false) List<String> skillIds,
-            @RequestParam(required = false) List<String> jobTypes,
-            @RequestParam(required = false) List<String> priceTypes,
-            @RequestParam(required = false) Double priceRangeFrom,
-            @RequestParam(required = false) Double priceRangeTo,
-            @RequestParam(required = false) Double budgetFrom,
-            @RequestParam(required = false) Double budgetTo,
-            @RequestParam(required = false) String jobName,
-            @RequestParam(required = false) Boolean isRemote,
-            @RequestParam(required = false) Boolean resumeRequired,
-            @RequestParam(required = false) String dateRange) {
+    public ResponseEntity<List<JobPostingResponse>> searchJobs(@RequestParam(required = false) List<String> locations, @RequestParam(required = false) List<String> skillIds, @RequestParam(required = false) List<String> jobTypes, @RequestParam(required = false) List<String> priceTypes, @RequestParam(required = false) Double priceRangeFrom, @RequestParam(required = false) Double priceRangeTo, @RequestParam(required = false) Double budgetFrom, @RequestParam(required = false) Double budgetTo, @RequestParam(required = false) String jobName, @RequestParam(required = false) Boolean isRemote, @RequestParam(required = false) Boolean resumeRequired, @RequestParam(required = false) String dateRange) {
         try {
-            Map<String, String> params = new HashMap<>();
-            if (locations != null && !locations.isEmpty()) {
-                params.put("locations", String.join(",", locations));
-            }
-            if (skillIds != null && !skillIds.isEmpty()) {
-                params.put("skillIds", String.join(",", skillIds));
-            }
-            if (jobTypes != null && !jobTypes.isEmpty()) {
-                List<String> uppercaseJobTypes = jobTypes.stream().map(String::toUpperCase).collect(Collectors.toList());
-                params.put("jobTypes", String.join(",", uppercaseJobTypes));
-            }
-            if (priceTypes != null && !priceTypes.isEmpty()) {
-                List<String> uppercasePriceTypes = priceTypes.stream().map(String::toUpperCase).collect(Collectors.toList());
-                params.put("priceTypes", String.join(",", uppercasePriceTypes));
-            }
-            if (priceRangeFrom != null) {
-                params.put("priceRangeFrom", String.valueOf(priceRangeFrom));
-            }
-            if (priceRangeTo != null) {
-                params.put("priceRangeTo", String.valueOf(priceRangeTo));
-            }
-            if (budgetFrom != null) {
-                params.put("budgetFrom", String.valueOf(budgetFrom));
-            }
-            if (budgetTo != null) {
-                params.put("budgetTo", String.valueOf(budgetTo));
-            }
-            if (jobName != null && !jobName.isEmpty()) {
-                params.put("jobName", jobName);
-            }
-            if (isRemote != null) {
-                params.put("isRemote", String.valueOf(isRemote));
-            }
-            if (resumeRequired != null) {
-                params.put("resumeRequired", String.valueOf(resumeRequired));
-            }
-            if (dateRange != null && !dateRange.isEmpty()) {
-                params.put("dateRange", dateRange);
-            }
+            JobSearchCriteria searchCriteria = new JobSearchCriteria().setLocations(locations).setSkillIds(skillIds).setJobTypes(jobTypes).setPriceTypes(priceTypes).setPriceRangeFrom(priceRangeFrom).setPriceRangeTo(priceRangeTo).setBudgetFrom(budgetFrom).setBudgetTo(budgetTo).setJobName(jobName).setIsRemote(isRemote).setResumeRequired(resumeRequired).setDateRange(dateRange);
 
-            List<JobPostingResponse> profiles = jobPostingService.searchJobs(params);
+            List<JobPostingResponse> profiles = jobPostingService.searchJobs(searchCriteria.toMap());
 
             return ResponseEntity.ok(profiles);
         } catch (Exception e) {
