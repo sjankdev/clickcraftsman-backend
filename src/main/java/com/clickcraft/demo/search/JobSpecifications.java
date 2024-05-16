@@ -56,6 +56,10 @@ public interface JobSpecifications {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("remote"), isRemote);
     }
 
+    static Specification<ClientJobPosting> resumeRequired(Boolean resumeRequired) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("resumeRequired"), resumeRequired);
+    }
+
      static Specification<ClientJobPosting> buildSpecification(Map<String, String> params) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -66,6 +70,10 @@ public interface JobSpecifications {
             if (params.containsKey("skillIds")) {
                 List<Long> skillIds = parseLongList(params.get("skillIds"));
                 predicates.add(requiredSkills(skillIds).toPredicate(root, query, criteriaBuilder));
+            }
+            if (params.containsKey("resumeRequired")) {
+                Boolean resumeRequired = Boolean.parseBoolean(params.get("resumeRequired"));
+                predicates.add(resumeRequired(resumeRequired).toPredicate(root, query, criteriaBuilder));
             }
             if (params.containsKey("locations")) {
                 List<String> locations = Arrays.asList(params.get("locations").split(","));
@@ -78,19 +86,16 @@ public interface JobSpecifications {
             if (params.containsKey("jobName")) {
                 predicates.add(jobName(params.get("jobName")).toPredicate(root, query, criteriaBuilder));
             }
-
             if (params.containsKey("priceRangeFrom") || params.containsKey("priceRangeTo")) {
                 Double priceRangeFrom = params.containsKey("priceRangeFrom") ? Double.parseDouble(params.get("priceRangeFrom")) : null;
                 Double priceRangeTo = params.containsKey("priceRangeTo") ? Double.parseDouble(params.get("priceRangeTo")) : null;
                 predicates.add(priceRange(priceRangeFrom, priceRangeTo).toPredicate(root, query, criteriaBuilder));
             }
-
             if (params.containsKey("budgetFrom") && params.containsKey("budgetTo")) {
                 Double budgetFrom = Double.parseDouble(params.get("budgetFrom"));
                 Double budgetTo = Double.parseDouble(params.get("budgetTo"));
                 predicates.add(budgetRange(budgetFrom, budgetTo).toPredicate(root, query, criteriaBuilder));
             }
-
             if (params.containsKey("isRemote")) {
                 Boolean isRemote = Boolean.parseBoolean(params.get("isRemote"));
                 predicates.add(isRemote(isRemote).toPredicate(root, query, criteriaBuilder));
