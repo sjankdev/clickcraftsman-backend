@@ -248,7 +248,11 @@ public class JobController {
             @RequestParam(required = false) Double priceRangeFrom,
             @RequestParam(required = false) Double priceRangeTo,
             @RequestParam(required = false) Double budgetFrom,
-            @RequestParam(required = false) Double budgetTo) {
+            @RequestParam(required = false) Double budgetTo,
+            @RequestParam(required = false) String jobName,
+            @RequestParam(required = false) Boolean isRemote,
+            @RequestParam(required = false) Boolean resumeRequired,
+            @RequestParam(required = false) String dateRange) {
         try {
             Map<String, String> params = new HashMap<>();
             if (locations != null && !locations.isEmpty()) {
@@ -277,6 +281,18 @@ public class JobController {
             if (budgetTo != null) {
                 params.put("budgetTo", String.valueOf(budgetTo));
             }
+            if (jobName != null && !jobName.isEmpty()) {
+                params.put("jobName", jobName);
+            }
+            if (isRemote != null) {
+                params.put("isRemote", String.valueOf(isRemote));
+            }
+            if (resumeRequired != null) {
+                params.put("resumeRequired", String.valueOf(resumeRequired));
+            }
+            if (dateRange != null && !dateRange.isEmpty()) {
+                params.put("dateRange", dateRange);
+            }
 
             List<JobPostingResponse> profiles = jobPostingService.searchJobs(params);
 
@@ -286,5 +302,4 @@ public class JobController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 }
