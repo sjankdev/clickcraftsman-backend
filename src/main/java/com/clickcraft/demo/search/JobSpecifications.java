@@ -35,6 +35,10 @@ public interface JobSpecifications {
         return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("budget"), budgetFrom, budgetTo);
     }
 
+    static Specification<ClientJobPosting> jobName(String jobName) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("jobName"), "%" + jobName + "%");
+    }
+
     static Specification<ClientJobPosting> priceRange(Double from, Double to) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -48,7 +52,7 @@ public interface JobSpecifications {
         };
     }
 
-    public static Specification<ClientJobPosting> buildSpecification(Map<String, String> params) {
+     static Specification<ClientJobPosting> buildSpecification(Map<String, String> params) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (params.containsKey("jobTypes")) {
@@ -66,6 +70,9 @@ public interface JobSpecifications {
             if (params.containsKey("priceTypes")) {
                 List<PriceType> priceTypes = Arrays.stream(params.get("priceTypes").split(",")).map(PriceType::valueOf).collect(Collectors.toList());
                 predicates.add(priceTypes(priceTypes).toPredicate(root, query, criteriaBuilder));
+            }
+            if (params.containsKey("jobName")) {
+                predicates.add(jobName(params.get("jobName")).toPredicate(root, query, criteriaBuilder));
             }
 
             if (params.containsKey("priceRangeFrom") || params.containsKey("priceRangeTo")) {

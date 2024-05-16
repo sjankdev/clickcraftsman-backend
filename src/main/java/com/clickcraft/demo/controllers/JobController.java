@@ -248,7 +248,8 @@ public class JobController {
             @RequestParam(required = false) Double priceRangeFrom,
             @RequestParam(required = false) Double priceRangeTo,
             @RequestParam(required = false) Double budgetFrom,
-            @RequestParam(required = false) Double budgetTo) {
+            @RequestParam(required = false) Double budgetTo,
+            @RequestParam(required = false) String jobName) {
         try {
             Map<String, String> params = new HashMap<>();
             if (locations != null && !locations.isEmpty()) {
@@ -277,6 +278,9 @@ public class JobController {
             if (budgetTo != null) {
                 params.put("budgetTo", String.valueOf(budgetTo));
             }
+            if (jobName != null && !jobName.isEmpty()) {
+                params.put("jobName", jobName);
+            }
 
             List<JobPostingResponse> profiles = jobPostingService.searchJobs(params);
 
@@ -286,5 +290,4 @@ public class JobController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 }
