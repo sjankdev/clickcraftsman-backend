@@ -251,7 +251,8 @@ public class JobController {
             @RequestParam(required = false) Double budgetTo,
             @RequestParam(required = false) String jobName,
             @RequestParam(required = false) Boolean isRemote,
-            @RequestParam(required = false) Boolean resumeRequired) {
+            @RequestParam(required = false) Boolean resumeRequired,
+            @RequestParam(required = false) String dateRange) {
         try {
             Map<String, String> params = new HashMap<>();
             if (locations != null && !locations.isEmpty()) {
@@ -288,6 +289,9 @@ public class JobController {
             }
             if (resumeRequired != null) {
                 params.put("resumeRequired", String.valueOf(resumeRequired));
+            }
+            if (dateRange != null && !dateRange.isEmpty()) {
+                params.put("dateRange", dateRange);
             }
 
             List<JobPostingResponse> profiles = jobPostingService.searchJobs(params);

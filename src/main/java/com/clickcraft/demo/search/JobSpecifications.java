@@ -6,6 +6,11 @@ import com.clickcraft.demo.models.enums.PriceType;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +54,55 @@ public interface JobSpecifications {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("priceRangeTo"), to));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    static Specification<ClientJobPosting> datePostedToday() {
+        return (root, query, criteriaBuilder) -> {
+            LocalDate today = LocalDate.now();
+            LocalDateTime startOfDay = today.atStartOfDay();
+            LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+            return criteriaBuilder.between(root.get("datePosted"), startOfDay, endOfDay);
+        };
+    }
+
+    static Specification<ClientJobPosting> datePostedYesterday() {
+        return (root, query, criteriaBuilder) -> {
+            LocalDate yesterday = LocalDate.now().minusDays(1);
+            LocalDateTime startOfDay = yesterday.atStartOfDay();
+            LocalDateTime endOfDay = yesterday.atTime(LocalTime.MAX);
+            return criteriaBuilder.between(root.get("datePosted"), startOfDay, endOfDay);
+        };
+    }
+
+    static Specification<ClientJobPosting> datePostedThisWeek() {
+        return (root, query, criteriaBuilder) -> {
+            LocalDate today = LocalDate.now();
+            LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+            LocalDateTime startOfDay = startOfWeek.atStartOfDay();
+            LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+            return criteriaBuilder.between(root.get("datePosted"), startOfDay, endOfDay);
+        };
+    }
+
+    static Specification<ClientJobPosting> datePostedLastTwoWeeks() {
+        return (root, query, criteriaBuilder) -> {
+            LocalDate today = LocalDate.now();
+            LocalDate twoWeeksAgo = today.minusWeeks(2);
+            LocalDateTime startOfDay = twoWeeksAgo.atStartOfDay();
+            LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+            return criteriaBuilder.between(root.get("datePosted"), startOfDay, endOfDay);
+        };
+    }
+
+    static Specification<ClientJobPosting> datePostedLastMonth() {
+        return (root, query, criteriaBuilder) -> {
+            LocalDate today = LocalDate.now();
+            LocalDate startOfLastMonth = today.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth());
+            LocalDate endOfLastMonth = today.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+            LocalDateTime startOfDay = startOfLastMonth.atStartOfDay();
+            LocalDateTime endOfDay = endOfLastMonth.atTime(LocalTime.MAX);
+            return criteriaBuilder.between(root.get("datePosted"), startOfDay, endOfDay);
         };
     }
 
@@ -99,6 +153,25 @@ public interface JobSpecifications {
             if (params.containsKey("isRemote")) {
                 Boolean isRemote = Boolean.parseBoolean(params.get("isRemote"));
                 predicates.add(isRemote(isRemote).toPredicate(root, query, criteriaBuilder));
+            }
+            if (params.containsKey("dateRange") && params.get("dateRange") != null) {
+                switch (params.get("dateRange")) {
+                    case "today":
+                        predicates.add(datePostedToday().toPredicate(root, query, criteriaBuilder));
+                        break;
+                    case "yesterday":
+                        predicates.add(datePostedYesterday().toPredicate(root, query, criteriaBuilder));
+                        break;
+                    case "thisWeek":
+                        predicates.add(datePostedThisWeek().toPredicate(root, query, criteriaBuilder));
+                        break;
+                    case "lastTwoWeeks":
+                        predicates.add(datePostedLastTwoWeeks().toPredicate(root, query, criteriaBuilder));
+                        break;
+                    case "lastMonth":
+                        predicates.add(datePostedLastMonth().toPredicate(root, query, criteriaBuilder));
+                        break;
+                }
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
