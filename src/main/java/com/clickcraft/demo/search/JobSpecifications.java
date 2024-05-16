@@ -3,7 +3,11 @@ package com.clickcraft.demo.search;
 import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.enums.JobType;
 import com.clickcraft.demo.models.enums.PriceType;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.DayOfWeek;
@@ -15,10 +19,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public interface JobSpecifications {
+
+    Logger logger = LoggerFactory.getLogger(JobSpecifications.class);
 
     static Specification<ClientJobPosting> jobName(String jobName) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("jobName"), "%" + jobName + "%");
@@ -114,78 +121,79 @@ public interface JobSpecifications {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (params.containsKey("jobName")) {
-                predicates.add(jobName(params.get("jobName")).toPredicate(root, query, criteriaBuilder));
-            }
+            Map<String, BiConsumer<CriteriaBuilder, Root<ClientJobPosting>>> parameterHandlers = Map.of(
+                    "jobName", (cb, r) -> predicates.add(jobName(params.get("jobName")).toPredicate(r, query, cb)),
+                    "skillIds", (cb, r) -> predicates.add(requiredSkills(parseLongList(params.get("skillIds"))).toPredicate(r, query, cb)),
+                    "locations", (cb, r) -> predicates.add(locations(Arrays.asList(params.get("locations").split(","))).toPredicate(r, query, cb)),
+                    "isRemote", (cb, r) -> predicates.add(isRemote(parseBoolean(params.get("isRemote"))).toPredicate(r, query, cb)),
+                    "jobTypes", (cb, r) -> predicates.add(jobTypes(Arrays.stream(params.get("jobTypes").split(",")).map(JobType::valueOf).collect(Collectors.toList())).toPredicate(r, query, cb)),
+                    "priceTypes", (cb, r) -> predicates.add(priceTypes(Arrays.stream(params.get("priceTypes").split(",")).map(PriceType::valueOf).collect(Collectors.toList())).toPredicate(r, query, cb)),
+                    "budgetFrom", (cb, r) -> {
+                        Double budgetFrom = parseDouble(params.get("budgetFrom"));
+                        Double budgetTo = parseDouble(params.get("budgetTo"));
+                        predicates.add(budgetRange(budgetFrom, budgetTo).toPredicate(r, query, cb));
+                    },
+                    "priceRangeFrom", (cb, r) -> {
+                        Double priceRangeFrom = params.containsKey("priceRangeFrom") ? parseDouble(params.get("priceRangeFrom")) : null;
+                        Double priceRangeTo = params.containsKey("priceRangeTo") ? parseDouble(params.get("priceRangeTo")) : null;
+                        predicates.add(priceRange(priceRangeFrom, priceRangeTo).toPredicate(r, query, cb));
+                    },
+                    "dateRange", (cb, r) -> {
+                        switch (params.get("dateRange")) {
+                            case "today":
+                                predicates.add(datePostedToday().toPredicate(r, query, cb));
+                                break;
+                            case "yesterday":
+                                predicates.add(datePostedYesterday().toPredicate(r, query, cb));
+                                break;
+                            case "thisWeek":
+                                predicates.add(datePostedThisWeek().toPredicate(r, query, cb));
+                                break;
+                            case "thisMonth":
+                                predicates.add(datePostedThisMonth().toPredicate(r, query, cb));
+                                break;
+                            case "earlierThanThisMonth":
+                                predicates.add(datePostedEarlierThanThisMonth().toPredicate(r, query, cb));
+                                break;
+                        }
+                    },
+                    "resumeRequired", (cb, r) -> predicates.add(resumeRequired(parseBoolean(params.get("resumeRequired"))).toPredicate(r, query, cb))
+            );
 
-            if (params.containsKey("skillIds")) {
-                List<Long> skillIds = parseLongList(params.get("skillIds"));
-                predicates.add(requiredSkills(skillIds).toPredicate(root, query, criteriaBuilder));
-            }
-
-            if (params.containsKey("locations")) {
-                List<String> locations = Arrays.asList(params.get("locations").split(","));
-                predicates.add(locations(locations).toPredicate(root, query, criteriaBuilder));
-            }
-
-            if (params.containsKey("isRemote")) {
-                Boolean isRemote = Boolean.parseBoolean(params.get("isRemote"));
-                predicates.add(isRemote(isRemote).toPredicate(root, query, criteriaBuilder));
-            }
-
-            if (params.containsKey("jobTypes")) {
-                List<JobType> jobTypes = Arrays.stream(params.get("jobTypes").split(",")).map(JobType::valueOf).collect(Collectors.toList());
-                predicates.add(jobTypes(jobTypes).toPredicate(root, query, criteriaBuilder));
-            }
-
-            if (params.containsKey("priceTypes")) {
-                List<PriceType> priceTypes = Arrays.stream(params.get("priceTypes").split(",")).map(PriceType::valueOf).collect(Collectors.toList());
-                predicates.add(priceTypes(priceTypes).toPredicate(root, query, criteriaBuilder));
-            }
-
-            if (params.containsKey("budgetFrom") && params.containsKey("budgetTo")) {
-                Double budgetFrom = Double.parseDouble(params.get("budgetFrom"));
-                Double budgetTo = Double.parseDouble(params.get("budgetTo"));
-                predicates.add(budgetRange(budgetFrom, budgetTo).toPredicate(root, query, criteriaBuilder));
-            }
-
-            if (params.containsKey("priceRangeFrom") || params.containsKey("priceRangeTo")) {
-                Double priceRangeFrom = params.containsKey("priceRangeFrom") ? Double.parseDouble(params.get("priceRangeFrom")) : null;
-                Double priceRangeTo = params.containsKey("priceRangeTo") ? Double.parseDouble(params.get("priceRangeTo")) : null;
-                predicates.add(priceRange(priceRangeFrom, priceRangeTo).toPredicate(root, query, criteriaBuilder));
-            }
-
-            if (params.containsKey("dateRange") && params.get("dateRange") != null) {
-                switch (params.get("dateRange")) {
-                    case "today":
-                        predicates.add(datePostedToday().toPredicate(root, query, criteriaBuilder));
-                        break;
-                    case "yesterday":
-                        predicates.add(datePostedYesterday().toPredicate(root, query, criteriaBuilder));
-                        break;
-                    case "thisWeek":
-                        predicates.add(datePostedThisWeek().toPredicate(root, query, criteriaBuilder));
-                        break;
-                    case "thisMonth":
-                        predicates.add(datePostedThisMonth().toPredicate(root, query, criteriaBuilder));
-                        break;
-                    case "earlierThanThisMonth":
-                        predicates.add(datePostedEarlierThanThisMonth().toPredicate(root, query, criteriaBuilder));
-                        break;
+            parameterHandlers.forEach((key, handler) -> {
+                if (params.containsKey(key)) {
+                    handler.accept(criteriaBuilder, root);
                 }
-            }
-
-            if (params.containsKey("resumeRequired")) {
-                Boolean resumeRequired = Boolean.parseBoolean(params.get("resumeRequired"));
-                predicates.add(resumeRequired(resumeRequired).toPredicate(root, query, criteriaBuilder));
-            }
+            });
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
 
-
     static List<Long> parseLongList(String input) {
-        return Stream.of(input.split(",")).map(Long::valueOf).toList();
+        try {
+            return Stream.of(input.split(",")).map(Long::valueOf).toList();
+        } catch (NumberFormatException e) {
+            logger.error("Error parsing long list: {}", e.getMessage());
+            throw new IllegalArgumentException("Invalid input for long list: " + input, e);
+        }
+    }
+
+    static Double parseDouble(String input) {
+        try {
+            return Double.parseDouble(input);
+        } catch (NumberFormatException e) {
+            logger.error("Error parsing double value: {}", e.getMessage());
+            throw new IllegalArgumentException("Invalid input for double value: " + input, e);
+        }
+    }
+
+    static Boolean parseBoolean(String input) {
+        try {
+            return Boolean.parseBoolean(input);
+        } catch (NumberFormatException e) {
+            logger.error("Error parsing boolean value: {}", e.getMessage());
+            throw new IllegalArgumentException("Invalid input for boolean value: " + input, e);
+        }
     }
 }
