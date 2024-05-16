@@ -52,6 +52,10 @@ public interface JobSpecifications {
         };
     }
 
+    static Specification<ClientJobPosting> isRemote(Boolean isRemote) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("remote"), isRemote);
+    }
+
      static Specification<ClientJobPosting> buildSpecification(Map<String, String> params) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -85,6 +89,11 @@ public interface JobSpecifications {
                 Double budgetFrom = Double.parseDouble(params.get("budgetFrom"));
                 Double budgetTo = Double.parseDouble(params.get("budgetTo"));
                 predicates.add(budgetRange(budgetFrom, budgetTo).toPredicate(root, query, criteriaBuilder));
+            }
+
+            if (params.containsKey("isRemote")) {
+                Boolean isRemote = Boolean.parseBoolean(params.get("isRemote"));
+                predicates.add(isRemote(isRemote).toPredicate(root, query, criteriaBuilder));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
