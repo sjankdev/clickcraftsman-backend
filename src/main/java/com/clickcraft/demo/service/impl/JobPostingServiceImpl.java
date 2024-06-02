@@ -116,6 +116,8 @@ public class JobPostingServiceImpl implements JobPostingService {
         jobPostingResponse.setResumeRequired(clientJobPosting.getResumeRequired());
         jobPostingResponse.setRequiredSkillNames(skillNamesList);
         jobPostingResponse.setFormattedApplicationTime(clientJobPosting.getFormattedDatePosted());
+        jobPostingResponse.setNumberOfApplicants(clientJobPosting.getNumberOfApplicants());
+
         return jobPostingResponse;
     }
 

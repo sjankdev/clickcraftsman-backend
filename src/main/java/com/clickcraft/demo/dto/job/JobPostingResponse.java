@@ -30,6 +30,7 @@ public class JobPostingResponse {
     private Boolean resumeRequired;
     private List<String> requiredSkillNames;
     private String formattedApplicationTime;
+    private int numberOfApplicants;
 
     public JobPostingResponse() {
     }
