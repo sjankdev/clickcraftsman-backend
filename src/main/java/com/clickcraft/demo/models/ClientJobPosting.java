@@ -97,6 +97,10 @@ public class ClientJobPosting {
         this.requiredSkills = requiredSkills;
     }
 
+    public int getNumberOfApplicants() {
+        return this.jobApplications.size();
+    }
+
     public String getFormattedDatePosted() {
         return ApplicationTimeFormatter.formatApplicationTime(this.getDatePosted());
     }
