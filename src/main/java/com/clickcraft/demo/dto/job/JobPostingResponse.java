@@ -31,6 +31,7 @@ public class JobPostingResponse {
     private List<String> requiredSkillNames;
     private String formattedApplicationTime;
     private int numberOfApplicants;
+    private int numberOfRecentApplicants;
 
     public JobPostingResponse() {
     }
@@ -54,6 +55,9 @@ public class JobPostingResponse {
         response.setRequiredSkillNames(jobPosting.getRequiredSkills().stream()
                 .map(Skill::getSkillName)
                 .collect(Collectors.toList()));
+
+        response.setNumberOfApplicants(jobPosting.getNumberOfApplicants());
+        response.setNumberOfRecentApplicants(jobPosting.getNumberOfRecentApplicants());
 
         return response;
     }

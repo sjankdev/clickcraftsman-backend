@@ -101,6 +101,13 @@ public class ClientJobPosting {
         return this.jobApplications.size();
     }
 
+    public int getNumberOfRecentApplicants() {
+        LocalDateTime threeHoursAgo = LocalDateTime.now().minusHours(3);
+        return (int) this.jobApplications.stream()
+                .filter(application -> application.getApplicationTime().isAfter(threeHoursAgo))
+                .count();
+    }
+
     public String getFormattedDatePosted() {
         return ApplicationTimeFormatter.formatApplicationTime(this.getDatePosted());
     }
