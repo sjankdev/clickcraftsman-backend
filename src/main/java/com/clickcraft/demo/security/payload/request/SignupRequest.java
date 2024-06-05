@@ -34,8 +34,7 @@ public class SignupRequest {
     private String lastName;
 
     @NotBlank
-    @SerbiaMobilePhone
-    @Size(min = 12, max = 12, message = "Serbian mobile phone number must be exactly 12 digits long including the country code")
+    @Pattern(regexp="^\\+381\\d{8,9}$", message="Please enter a valid Serbian phone number")
     private String contactPhone;
 
     @NotBlank
