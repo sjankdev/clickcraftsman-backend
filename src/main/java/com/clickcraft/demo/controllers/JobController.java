@@ -160,6 +160,23 @@ public class JobController {
         }
     }
 
+    @GetMapping("/details/{jobId}")
+    public ResponseEntity<JobPostingResponse> getJobDetails(@PathVariable Long jobId) {
+        try {
+            Optional<ClientJobPosting> jobPostingOptional = jobPostingRepository.findById(jobId);
+            if (jobPostingOptional.isPresent()) {
+                ClientJobPosting jobPosting = jobPostingOptional.get();
+                JobPostingResponse response = JobPostingResponse.fromEntity(jobPosting);
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+        } catch (Exception e) {
+            logger.error("Error fetching job details for job {}", jobId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PostMapping("/post")
     public ResponseEntity<MessageResponse> postJob(@RequestBody @Valid JobPostingRequest jobPostingRequest, Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
