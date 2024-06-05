@@ -1,9 +1,9 @@
 package com.clickcraft.demo.service.impl;
 
 import com.clickcraft.demo.dto.client.ClientProfileUpdateRequest;
-import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.User;
+import com.clickcraft.demo.models.enums.ELocations;
 import com.clickcraft.demo.repository.ClientProfileRepository;
 import com.clickcraft.demo.security.repository.UserRepository;
 import com.clickcraft.demo.service.ClientProfileService;
@@ -40,7 +40,7 @@ public class ClientProfileServiceImpl implements ClientProfileService {
         clientProfile.setFirstName(clientProfileUpdateRequest.getFirstName());
         clientProfile.setLastName(clientProfileUpdateRequest.getLastName());
         clientProfile.setContactPhone(clientProfileUpdateRequest.getContactPhone());
-        clientProfile.setLocation(clientProfileUpdateRequest.getLocation());
+        clientProfile.setLocation(ELocations.valueOf(clientProfileUpdateRequest.getLocation()));
         clientProfile.setCompanyName(clientProfileUpdateRequest.getCompanyName());
         clientProfile.setCompanyIndustry(clientProfileUpdateRequest.getCompanyIndustry());
         clientProfile.setCompanySize(clientProfileUpdateRequest.getCompanySize());

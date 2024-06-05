@@ -6,7 +6,7 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.util.regex.Pattern;
 
 public class SerbiaMobilePhoneValidator implements ConstraintValidator<SerbiaMobilePhone, String> {
-    private static final String SERBIA_MOBILE_PHONE_REGEX = "\\+3816[0-9]{7,8}";
+    private static final String SERBIA_MOBILE_PHONE_REGEX = "\\+3816[0-9]{9,13}";
 
     @Override
     public void initialize(SerbiaMobilePhone constraintAnnotation) {

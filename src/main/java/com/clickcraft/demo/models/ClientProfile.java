@@ -5,6 +5,7 @@ import com.clickcraft.demo.security.payload.request.SignupRequest;
 import com.clickcraft.demo.utils.SerbiaMobilePhone;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,8 +32,7 @@ public class ClientProfile {
     private String lastName;
 
     @NotBlank
-    @SerbiaMobilePhone
-    @Size(min = 3, max = 20)
+    @Pattern(regexp="^\\+381\\d{8,9}$", message="Please enter a valid Serbian phone number")
     private String contactPhone;
 
     @Enumerated(EnumType.STRING)
