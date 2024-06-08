@@ -26,6 +26,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -178,7 +179,11 @@ public class JobController {
     }
 
     @PostMapping("/post")
-    public ResponseEntity<MessageResponse> postJob(@RequestBody @Valid JobPostingRequest jobPostingRequest, Authentication authentication) {
+    public ResponseEntity<MessageResponse> postJob(@RequestBody @Valid JobPostingRequest jobPostingRequest, BindingResult bindingResult, Authentication authentication) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Validation failed. Please check your input."));
+        }
+
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.badRequest().body(new MessageResponse("User not authenticated."));
         }
