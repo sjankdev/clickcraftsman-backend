@@ -9,9 +9,11 @@ import com.clickcraft.demo.repository.JobPostingRepository;
 import com.clickcraft.demo.search.JobSpecifications;
 import com.clickcraft.demo.service.JobPostingService;
 import com.clickcraft.demo.service.SkillService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Validated
 public class JobPostingServiceImpl implements JobPostingService {
 
     private final JobPostingRepository jobPostingRepository;
@@ -31,7 +34,7 @@ public class JobPostingServiceImpl implements JobPostingService {
     }
 
     @Override
-    public void saveJobPosting(ClientJobPosting jobPosting) {
+    public void saveJobPosting(@Valid ClientJobPosting jobPosting) {
         jobPostingRepository.save(jobPosting);
     }
 
@@ -52,7 +55,15 @@ public class JobPostingServiceImpl implements JobPostingService {
     public ClientJobPosting createClientJobPosting(JobPostingRequest jobPostingRequest, ClientProfile clientProfile) {
         List<Skill> requiredSkills = skillService.getSkillsByNames(jobPostingRequest.getRequiredSkillIds());
 
-        ClientJobPosting jobPosting = new ClientJobPosting(jobPostingRequest.getJobName(), jobPostingRequest.getDescription(), clientProfile, LocalDateTime.now(), jobPostingRequest.getIsRemote(), jobPostingRequest.getLocation(), requiredSkills);
+        ClientJobPosting jobPosting = new ClientJobPosting(
+                jobPostingRequest.getJobName(),
+                jobPostingRequest.getDescription(),
+                clientProfile,
+                LocalDateTime.now(),
+                jobPostingRequest.getIsRemote(),
+                jobPostingRequest.getLocation(),
+                requiredSkills
+        );
 
         jobPosting.setPriceType(jobPostingRequest.getPriceType());
         jobPosting.setPriceRangeFrom(jobPostingRequest.getPriceRangeFrom());

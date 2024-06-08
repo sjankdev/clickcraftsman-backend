@@ -7,8 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,11 +28,11 @@ public class ClientJobPosting {
     private Long id;
 
     @NotBlank
-    @Size(max = 100)
+    @Size(min = 5, max = 100)
     private String jobName;
 
     @NotBlank
-    @Size(max = 1000)
+    @Size(min = 10, max = 1000)
     private String description;
 
     @Column(name = "date_posted")
@@ -53,6 +52,7 @@ public class ClientJobPosting {
     private Boolean remote;
 
     @Column(name = "location")
+    @Size(max = 255)
     private String location;
 
     @Column(name = "is_archived")
@@ -63,12 +63,15 @@ public class ClientJobPosting {
     private PriceType priceType;
 
     @Column(name = "price_range_from")
+    @PositiveOrZero
     private Double priceRangeFrom;
 
     @Column(name = "price_range_to")
+    @PositiveOrZero
     private Double priceRangeTo;
 
     @Column(name = "budget")
+    @PositiveOrZero
     private Double budget;
 
     @Column(name = "job_type")
@@ -112,4 +115,30 @@ public class ClientJobPosting {
         return ApplicationTimeFormatter.formatApplicationTime(this.getDatePosted());
     }
 
+    @AssertTrue(message = "Price range 'from' should be less than or equal to 'to'")
+    private boolean isPriceRangeValid() {
+        return priceRangeFrom == null || priceRangeTo == null || priceRangeFrom <= priceRangeTo;
+    }
+
+    @AssertTrue(message = "Location must be specified if the job is not remote")
+    private boolean isLocationValid() {
+        return Boolean.TRUE.equals(remote) || (location != null && !location.isBlank());
+    }
+
+    public void setPriceRangeFrom(Double priceRangeFrom) {
+        if (priceRangeFrom != null && priceRangeFrom < 0) {
+            throw new IllegalArgumentException("Price range from cannot be negative");
+        }
+        this.priceRangeFrom = priceRangeFrom;
+    }
+
+    public void setPriceRangeTo(Double priceRangeTo) {
+        if (priceRangeTo != null && priceRangeTo < 0) {
+            throw new IllegalArgumentException("Price range to cannot be negative");
+        }
+        if (priceRangeFrom != null && priceRangeTo != null && priceRangeTo < priceRangeFrom) {
+            throw new IllegalArgumentException("Price range to must be greater than or equal to price range from");
+        }
+        this.priceRangeTo = priceRangeTo;
+    }
 }
