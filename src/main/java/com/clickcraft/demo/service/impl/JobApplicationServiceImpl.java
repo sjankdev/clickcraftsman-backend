@@ -16,13 +16,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.*;
 
-import static sun.font.CreatedFontTracker.MAX_FILE_SIZE;
 
 @Service
 public class JobApplicationServiceImpl implements JobApplicationService {
 
     private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<>(List.of("pdf", "doc", "docx", "txt"));
-
+    private static final int MAX_FILE_SIZE = 10 * 1024 * 1024;
     private final FreelancerProfileService freelancerProfileService;
     private final JobPostingRepository jobPostingRepository;
     private final JobApplicationRepository jobApplicationRepository;
