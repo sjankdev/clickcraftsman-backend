@@ -5,24 +5,15 @@ networks:
     driver: bridge
 
 services:
-  mysql:
-    image: mysql:latest
-    container_name: cc-mysql-1
+  postgres:
+    image: postgres:latest
+    container_name: cc-postgres-1
     ports:
-      - "3306:3306"
+      - "5432:5432"
     environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: clickcraftdb
-      MYSQL_USER: adminstefan
-      MYSQL_PASSWORD: adminstefan123.A
-      MYSQL_ALLOW_CLEAR_PASSWORD: 'yes'
-      MYSQL_RANDOM_ROOT_PASSWORD: 'no'
-      MYSQL_AUTH_PLUGIN: mysql_native_password
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "--silent"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      POSTGRES_DB: clickcraftdb
+      POSTGRES_USER: clickcraftdb_user
+      POSTGRES_PASSWORD: ICei2MK0Hj5MgjB0mJu6LVBXTiA3gxXD
     networks:
       - clickcraftsman-network
 
@@ -33,11 +24,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://cc-mysql-1:3306/clickcraftdb?allowPublicKeyRetrieval=true&useSSL=FALSE
-      SPRING_DATASOURCE_USERNAME: adminstefan
-      SPRING_DATASOURCE_PASSWORD: adminstefan123.A
+      SPRING_DATASOURCE_URL: jdbc:postgresql://cc-postgres-1:5432/clickcraftdb
+      SPRING_DATASOURCE_USERNAME: clickcraftdb_user
+      SPRING_DATASOURCE_PASSWORD: ICei2MK0Hj5MgjB0mJu6LVBXTiA3gxXD
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
     networks:
       - clickcraftsman-network
@@ -50,4 +41,3 @@ services:
       - "80:80"
     environment:
       REACT_APP_API_URL: http://backend:8080
-
