@@ -15,7 +15,7 @@ public class Photo {
     private Long id;
 
     @Lob
-    @Column(columnDefinition = "LONGBLOB")
+    @Column(columnDefinition = "bytea")
     private byte[] data;
 
     @OneToOne(fetch = FetchType.LAZY)
