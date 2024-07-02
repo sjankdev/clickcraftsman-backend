@@ -1,0 +1,43 @@
+version: '3.8'
+
+networks:
+  clickcraftsman-network:
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: cc-postgres-1
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: clickcraftdb
+      POSTGRES_USER: clickcraftdb_user
+      POSTGRES_PASSWORD: ICei2MK0Hj5MgjB0mJu6LVBXTiA3gxXD
+    networks:
+      - clickcraftsman-network
+
+  backend:
+    build:
+      context: ./clickcraftsman-backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://cc-postgres-1:5432/clickcraftdb
+      SPRING_DATASOURCE_USERNAME: clickcraftdb_user
+      SPRING_DATASOURCE_PASSWORD: ICei2MK0Hj5MgjB0mJu6LVBXTiA3gxXD
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - clickcraftsman-network
+
+  frontend:
+    build:
+      context: ./clickcraftsman-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      REACT_APP_API_URL: http://backend:8080
