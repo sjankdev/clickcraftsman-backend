@@ -70,8 +70,10 @@ public class WebSecurityConfig {
     public static class CorsConfig implements WebMvcConfigurer {
         @Override
         public void addCorsMappings(CorsRegistry registry) {
-            registry.addMapping("/**").allowedOrigins("http://localhost:3000").allowedMethods("GET", "POST", "PUT", "DELETE");
-
+            registry.addMapping("/**")
+                    .allowedOrigins("*") // Allow requests from all origins
+                    .allowedMethods("GET", "POST", "PUT", "DELETE")
+                    .allowedHeaders("*"); // You can refine allowed headers if needed
         }
     }
 }
