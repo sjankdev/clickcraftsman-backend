@@ -14,8 +14,7 @@ public class Photo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
-    @Column(columnDefinition = "bytea")
+    @Column(name = "data", columnDefinition="bytea")
     private byte[] data;
 
     @OneToOne(fetch = FetchType.LAZY)
