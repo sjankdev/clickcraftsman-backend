@@ -24,14 +24,12 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://ep-long-surf-a2o9bc1e.eu-central-1.aws.neon.tech:5432/verceldb?sslmode=require
-      SPRING_DATASOURCE_USERNAME: default
-      SPRING_DATASOURCE_PASSWORD: qjVtfLAJ4vi6
-      DRIVER_CLASS_NAME: org.postgresql.Driver
-      SPRING_PROFILES_ACTIVE: prod  # Add this if you have different profiles
-      PORT: 8080  # Ensure this matches the port your application is listening on
+      SPRING_DATASOURCE_URL: jdbc:postgresql://cc-postgres-1:5432/clickcraftdb
+      SPRING_DATASOURCE_USERNAME: clickcraftdb_user
+      SPRING_DATASOURCE_PASSWORD: ICei2MK0Hj5MgjB0mJu6LVBXTiA3gxXD
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - clickcraftsman-network
 
@@ -42,7 +40,7 @@ services:
     ports:
       - "80:80"
     environment:
-      REACT_APP_API_URL: https://clickcraftsman-backend-latest.onrender.com  # Use backend service name and port
-      PORT: 80  # Ensure this matches the port your application is listening on
+      REACT_APP_API_URL: https://clickcraftsman-backend-latest.onrender.com
+      PORT: 80
     networks:
       - clickcraftsman-network
