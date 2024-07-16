@@ -6,6 +6,7 @@ import com.clickcraft.demo.utils.SerbiaMobilePhone;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
@@ -13,6 +14,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "freelancers_profiles")
 public class FreelancerProfile {
@@ -30,7 +32,7 @@ public class FreelancerProfile {
     private String lastName;
 
     @NotBlank
-    @Pattern(regexp="^\\+381\\d{8,9}$", message="Please enter a valid Serbian phone number")
+    @Pattern(regexp = "^\\+381\\d{8,9}$", message = "Please enter a valid Serbian phone number")
     private String contactPhone;
 
     @NotNull
@@ -56,9 +58,6 @@ public class FreelancerProfile {
 
     @OneToMany(mappedBy = "freelancerProfile", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<JobApplication> jobApplications = new HashSet<>();
-
-    public FreelancerProfile() {
-    }
 
     public void addSkill(Skill skill) {
         this.skills.add(skill);

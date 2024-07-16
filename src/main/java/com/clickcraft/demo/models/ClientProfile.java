@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "client_profiles")
 public class ClientProfile {
@@ -32,7 +34,7 @@ public class ClientProfile {
     private String lastName;
 
     @NotBlank
-    @Pattern(regexp="^\\+381\\d{8,9}$", message="Please enter a valid Serbian phone number")
+    @Pattern(regexp = "^\\+381\\d{8,9}$", message = "Please enter a valid Serbian phone number")
     private String contactPhone;
 
     @Enumerated(EnumType.STRING)
@@ -52,9 +54,6 @@ public class ClientProfile {
 
     @OneToMany(mappedBy = "clientProfile", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ClientJobPosting> jobPostings = new HashSet<>();
-
-    public ClientProfile() {
-    }
 
     public void addJobPosting(ClientJobPosting jobPosting) {
         jobPostings.add(jobPosting);
