@@ -7,23 +7,17 @@ import com.clickcraft.demo.models.enums.ELocations;
 import com.clickcraft.demo.repository.ClientProfileRepository;
 import com.clickcraft.demo.security.repository.UserRepository;
 import com.clickcraft.demo.service.ClientProfileService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class ClientProfileServiceImpl implements ClientProfileService {
 
     private final ClientProfileRepository clientProfileRepository;
-
     private final UserRepository userRepository;
-
-    @Autowired
-    public ClientProfileServiceImpl(ClientProfileRepository clientProfileRepository, UserRepository userRepository) {
-        this.clientProfileRepository = clientProfileRepository;
-        this.userRepository = userRepository;
-    }
 
     @Override
     public User getClientByEmail(String email) {

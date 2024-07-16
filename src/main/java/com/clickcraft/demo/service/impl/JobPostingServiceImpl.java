@@ -10,7 +10,7 @@ import com.clickcraft.demo.search.JobSpecifications;
 import com.clickcraft.demo.service.JobPostingService;
 import com.clickcraft.demo.service.SkillService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -22,16 +22,11 @@ import java.util.stream.Collectors;
 
 @Service
 @Validated
+@RequiredArgsConstructor
 public class JobPostingServiceImpl implements JobPostingService {
 
     private final JobPostingRepository jobPostingRepository;
     private final SkillService skillService;
-
-    @Autowired
-    public JobPostingServiceImpl(JobPostingRepository jobPostingRepository, SkillService skillService) {
-        this.jobPostingRepository = jobPostingRepository;
-        this.skillService = skillService;
-    }
 
     @Override
     public void saveJobPosting(@Valid ClientJobPosting jobPosting) {
@@ -41,9 +36,7 @@ public class JobPostingServiceImpl implements JobPostingService {
     @Override
     public List<JobPostingResponse> getAllJobPostings() {
         List<ClientJobPosting> jobPostings = jobPostingRepository.findAll();
-        return jobPostings.stream()
-                .map(JobPostingResponse::fromEntity)
-                .collect(Collectors.toList());
+        return jobPostings.stream().map(JobPostingResponse::fromEntity).collect(Collectors.toList());
     }
 
     @Override
@@ -55,15 +48,7 @@ public class JobPostingServiceImpl implements JobPostingService {
     public ClientJobPosting createClientJobPosting(JobPostingRequest jobPostingRequest, ClientProfile clientProfile) {
         List<Skill> requiredSkills = skillService.getSkillsByNames(jobPostingRequest.getRequiredSkillIds());
 
-        ClientJobPosting jobPosting = new ClientJobPosting(
-                jobPostingRequest.getJobName(),
-                jobPostingRequest.getDescription(),
-                clientProfile,
-                LocalDateTime.now(),
-                jobPostingRequest.getIsRemote(),
-                jobPostingRequest.getLocation(),
-                requiredSkills
-        );
+        ClientJobPosting jobPosting = new ClientJobPosting(jobPostingRequest.getJobName(), jobPostingRequest.getDescription(), clientProfile, LocalDateTime.now(), jobPostingRequest.getIsRemote(), jobPostingRequest.getLocation(), requiredSkills);
 
         jobPosting.setPriceType(jobPostingRequest.getPriceType());
         jobPosting.setPriceRangeFrom(jobPostingRequest.getPriceRangeFrom());
@@ -106,9 +91,7 @@ public class JobPostingServiceImpl implements JobPostingService {
         int numberOfApplicants = clientJobPosting.getNumberOfApplicants();
         int numberOfRecentApplicants = clientJobPosting.getNumberOfRecentApplicants();
 
-        List<String> skillNamesList = clientJobPosting.getRequiredSkills()
-                .stream()
-                .map(Skill::getSkillName).distinct().collect(Collectors.toList());
+        List<String> skillNamesList = clientJobPosting.getRequiredSkills().stream().map(Skill::getSkillName).distinct().collect(Collectors.toList());
 
         jobPostingResponse.setId(clientJobPosting.getId());
         jobPostingResponse.setJobName(clientJobPosting.getJobName());
