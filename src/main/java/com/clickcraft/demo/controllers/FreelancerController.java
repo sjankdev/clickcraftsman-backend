@@ -3,7 +3,6 @@ package com.clickcraft.demo.controllers;
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileUpdateRequest;
 import com.clickcraft.demo.models.User;
-import com.clickcraft.demo.models.enums.ELocations;
 import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
 import com.clickcraft.demo.service.FreelancerProfileService;
@@ -70,7 +69,6 @@ public class FreelancerController {
         return ResponseEntity.ok(freelancerProfileDTO);
     }
 
-
     @GetMapping("/getAllFreelancers")
     public ResponseEntity<List<FreelancerProfileDTO>> getAllPublicProfiles() {
         try {
@@ -82,6 +80,7 @@ public class FreelancerController {
         }
     }
 
+    @GetMapping("/profile-pictures")
     public ResponseEntity<List<String>> getProfilePictures(@RequestParam List<Long> freelancerIds) {
         try {
             List<String> profilePictures = freelancerProfileService.getProfilePictures(freelancerIds);
