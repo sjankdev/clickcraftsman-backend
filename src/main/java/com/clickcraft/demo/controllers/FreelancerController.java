@@ -8,9 +8,9 @@ import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
 import com.clickcraft.demo.service.FreelancerProfileService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,16 +22,12 @@ import java.util.Map;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/freelancer")
+@RequiredArgsConstructor
 public class FreelancerController {
 
     private static final Logger logger = LoggerFactory.getLogger(FreelancerController.class);
 
     private final FreelancerProfileService freelancerProfileService;
-
-    @Autowired
-    public FreelancerController(FreelancerProfileService freelancerProfileService) {
-        this.freelancerProfileService = freelancerProfileService;
-    }
 
     @PostMapping("/update")
     public ResponseEntity<MessageResponse> updateFreelancerProfile(@Valid @RequestBody FreelancerProfileUpdateRequest freelancerProfileUpdateRequest, Authentication authentication) {

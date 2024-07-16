@@ -19,6 +19,7 @@ import com.clickcraft.demo.service.JobApplicationService;
 import com.clickcraft.demo.service.JobPostingService;
 import com.clickcraft.demo.service.SkillService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/job")
+@RequiredArgsConstructor
 public class JobController {
 
     private static final Logger logger = LoggerFactory.getLogger(JobController.class);
@@ -53,16 +55,6 @@ public class JobController {
     private final ClientProfileService clientProfileService;
     private final JobPostingService jobPostingService;
     private final JobApplicationService jobApplicationService;
-
-    @Autowired
-    public JobController(JobPostingRepository jobPostingRepository, JobApplicationRepository jobApplicationRepository, FreelancerProfileService freelancerProfileService, ClientProfileService clientProfileService, JobPostingService jobPostingService, SkillService skillService, JobApplicationService jobApplicationService) {
-        this.jobPostingRepository = jobPostingRepository;
-        this.jobApplicationRepository = jobApplicationRepository;
-        this.freelancerProfileService = freelancerProfileService;
-        this.clientProfileService = clientProfileService;
-        this.jobPostingService = jobPostingService;
-        this.jobApplicationService = jobApplicationService;
-    }
 
     @PostMapping(value = "/apply/{jobId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MessageResponse> applyForJob(@PathVariable Long jobId, @RequestPart(value = "resumeFile", required = false) MultipartFile resumeFile, @Valid @ModelAttribute JobApplicationRequest applicationRequest, Authentication authentication) {
