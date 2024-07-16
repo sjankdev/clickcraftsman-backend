@@ -1,5 +1,6 @@
 package com.clickcraft.demo.controllers;
 
+import com.clickcraft.demo.constants.ErrorConstants;
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileUpdateRequest;
 import com.clickcraft.demo.models.User;
@@ -40,7 +41,7 @@ public class FreelancerController {
 
         if (user == null) {
             logger.error("User not found: {}", userDetails.getEmail());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(ErrorConstants.HTTP_NOT_FOUND).build();
         }
 
         try {
@@ -49,20 +50,20 @@ public class FreelancerController {
             logger.info("Freelancer profile updated successfully for user: {}", userDetails.getEmail());
             return ResponseEntity.ok(new MessageResponse("Freelancer profile updated successfully!"));
         } catch (Exception e) {
-            logger.error("Error updating Freelancer profile", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            logger.error(ErrorConstants.ERROR_UNEXPECTED, e);
+            return ResponseEntity.status(ErrorConstants.HTTP_INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @GetMapping("/profile")
     public ResponseEntity<FreelancerProfileDTO> getFreelancerProfile(Authentication authentication) {
         if (authentication == null || !(authentication.getPrincipal() instanceof UserDetailsImpl userDetails)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(ErrorConstants.HTTP_UNAUTHORIZED).build();
         }
 
         User user = freelancerProfileService.getFreelancerByEmail(userDetails.getEmail());
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(ErrorConstants.HTTP_NOT_FOUND).build();
         }
 
         FreelancerProfileDTO freelancerProfileDTO = FreelancerProfileDTO.fromUser(user);
@@ -75,8 +76,8 @@ public class FreelancerController {
             List<FreelancerProfileDTO> publicProfiles = freelancerProfileService.getAllPublicProfiles();
             return ResponseEntity.ok(publicProfiles);
         } catch (Exception e) {
-            logger.error("Error fetching all public profiles", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            logger.error(ErrorConstants.ERROR_UNEXPECTED, e);
+            return ResponseEntity.status(ErrorConstants.HTTP_INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -86,8 +87,8 @@ public class FreelancerController {
             List<String> profilePictures = freelancerProfileService.getProfilePictures(freelancerIds);
             return ResponseEntity.ok(profilePictures);
         } catch (Exception e) {
-            logger.error("Error fetching profile pictures", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            logger.error(ErrorConstants.ERROR_UNEXPECTED, e);
+            return ResponseEntity.status(ErrorConstants.HTTP_INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -106,8 +107,8 @@ public class FreelancerController {
             logger.error("Freelancer Profile not found with ID: {}", freelancerId);
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            logger.error("Error fetching public profile by ID: {}", freelancerId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            logger.error(ErrorConstants.ERROR_UNEXPECTED, e);
+            return ResponseEntity.status(ErrorConstants.HTTP_INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -117,7 +118,8 @@ public class FreelancerController {
             List<FreelancerProfileDTO> profiles = freelancerProfileService.searchProfiles(params);
             return ResponseEntity.ok(profiles);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            logger.error(ErrorConstants.ERROR_UNEXPECTED, e);
+            return ResponseEntity.status(ErrorConstants.HTTP_INTERNAL_SERVER_ERROR).build();
         }
     }
 }
