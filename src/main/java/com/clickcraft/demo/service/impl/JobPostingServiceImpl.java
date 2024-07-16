@@ -81,6 +81,9 @@ public class JobPostingServiceImpl implements JobPostingService {
     @Override
     public List<JobPostingResponse> searchJobs(Map<String, String> params) {
         Specification<ClientJobPosting> spec = JobSpecifications.buildSpecification(params);
+
+        spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("archived"), false));
+
         List<ClientJobPosting> jobPostings = jobPostingRepository.findAll(spec);
         return jobPostings.stream().map(this::convertToJobPostingResponse).collect(Collectors.toList());
     }
