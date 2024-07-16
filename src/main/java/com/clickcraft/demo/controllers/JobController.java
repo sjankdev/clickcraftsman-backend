@@ -69,18 +69,18 @@ public class JobController {
     }
 
     @PostMapping(value = "/apply/{jobId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> applyForJob(@PathVariable Long jobId, @RequestPart(value = "resumeFile", required = false) MultipartFile resumeFile, @Valid @ModelAttribute JobApplicationRequest applicationRequest, Authentication authentication) {
+    public ResponseEntity<MessageResponse> applyForJob(@PathVariable Long jobId, @RequestPart(value = "resumeFile", required = false) MultipartFile resumeFile, @Valid @ModelAttribute JobApplicationRequest applicationRequest, Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("User not authenticated."));
         }
 
         String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
 
         try {
             jobApplicationService.applyForJob(jobId, userEmail, resumeFile, applicationRequest);
-            return ResponseEntity.ok("Job application submitted successfully");
+            return ResponseEntity.ok(new MessageResponse("Job application submitted successfully"));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(e.getMessage()));
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to process file upload", e);
         }
@@ -170,7 +170,7 @@ public class JobController {
                 JobPostingResponse response = JobPostingResponse.fromEntity(jobPosting);
                 return ResponseEntity.ok(response);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
             logger.error("Error fetching job details for job {}", jobId, e);
@@ -231,13 +231,13 @@ public class JobController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteJobPosting(@PathVariable("id") Long id) {
+    public ResponseEntity<MessageResponse> deleteJobPosting(@PathVariable("id") Long id) {
         jobPostingService.deleteJobPosting(id);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/archive/{id}")
-    public ResponseEntity<?> archiveJob(@PathVariable Long id) {
+    public ResponseEntity<MessageResponse> archiveJob(@PathVariable Long id) {
         Optional<ClientJobPosting> optionalJobPosting = jobPostingRepository.findById(id);
         if (optionalJobPosting.isPresent()) {
             ClientJobPosting jobPosting = optionalJobPosting.get();
@@ -250,7 +250,7 @@ public class JobController {
     }
 
     @PutMapping("/unarchive/{id}")
-    public ResponseEntity<?> unarchiveJob(@PathVariable Long id) {
+    public ResponseEntity<MessageResponse> unarchiveJob(@PathVariable Long id) {
         Optional<ClientJobPosting> optionalJobPosting = jobPostingRepository.findById(id);
         if (optionalJobPosting.isPresent()) {
             ClientJobPosting jobPosting = optionalJobPosting.get();
