@@ -245,7 +245,7 @@ public class JobController {
         }
     }
     @PutMapping("/unarchive/{id}")
-    public ResponseEntity<?> unarchiveJob(@PathVariable Long id) {
+    public ResponseEntity<MessageResponse> unarchiveJob(@PathVariable Long id) {
         Optional<ClientJobPosting> optionalJobPosting = jobPostingRepository.findById(id);
         if (optionalJobPosting.isPresent()) {
             ClientJobPosting jobPosting = optionalJobPosting.get();
