@@ -15,6 +15,7 @@ public class ProfilePictureServiceImpl implements ProfilePictureService {
     @Value("classpath:${default.profile.picture.path}")
     private Resource defaultImageResource;
 
+    @Override
     public byte[] getDefaultProfilePicture() {
         try (InputStream inputStream = defaultImageResource.getInputStream()) {
             return StreamUtils.copyToByteArray(inputStream);

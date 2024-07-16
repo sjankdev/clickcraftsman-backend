@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "skills", indexes = {@Index(name = "idx_skill_name", columnList = "skillName", unique = true)})
 public class Skill {
@@ -19,9 +21,6 @@ public class Skill {
     @NotBlank
     @Size(min = 2, max = 50)
     private String skillName;
-
-    public Skill() {
-    }
 
     public Skill(String skillName) {
         this.skillName = skillName;
