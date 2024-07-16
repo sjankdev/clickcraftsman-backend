@@ -11,6 +11,7 @@ import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.JobApplication;
 import com.clickcraft.demo.repository.JobApplicationRepository;
 import com.clickcraft.demo.repository.JobPostingRepository;
+import com.clickcraft.demo.search.JobSearchCriteria;
 import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.service.ClientProfileService;
 import com.clickcraft.demo.service.FreelancerProfileService;
@@ -241,6 +242,32 @@ public class JobController {
             return ResponseEntity.ok(new MessageResponse("Job archived successfully"));
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+    @PutMapping("/unarchive/{id}")
+    public ResponseEntity<?> unarchiveJob(@PathVariable Long id) {
+        Optional<ClientJobPosting> optionalJobPosting = jobPostingRepository.findById(id);
+        if (optionalJobPosting.isPresent()) {
+            ClientJobPosting jobPosting = optionalJobPosting.get();
+            jobPosting.setArchived(false);
+            jobPostingRepository.save(jobPosting);
+            return ResponseEntity.ok(new MessageResponse("Job unarchived successfully."));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/searchJobs")
+    public ResponseEntity<List<JobPostingResponse>> searchJobs(@RequestParam(required = false) List<String> locations, @RequestParam(required = false) List<String> skillIds, @RequestParam(required = false) List<String> jobTypes, @RequestParam(required = false) List<String> priceTypes, @RequestParam(required = false) Double priceRangeFrom, @RequestParam(required = false) Double priceRangeTo, @RequestParam(required = false) Double budgetFrom, @RequestParam(required = false) Double budgetTo, @RequestParam(required = false) String jobName, @RequestParam(required = false) Boolean isRemote, @RequestParam(required = false) Boolean resumeRequired, @RequestParam(required = false) String dateRange) {
+        try {
+            JobSearchCriteria searchCriteria = new JobSearchCriteria().setLocations(locations).setSkillIds(skillIds).setJobTypes(jobTypes).setPriceTypes(priceTypes).setPriceRangeFrom(priceRangeFrom).setPriceRangeTo(priceRangeTo).setBudgetFrom(budgetFrom).setBudgetTo(budgetTo).setJobName(jobName).setIsRemote(isRemote).setResumeRequired(resumeRequired).setDateRange(dateRange);
+
+            List<JobPostingResponse> profiles = jobPostingService.searchJobs(searchCriteria.toMap());
+
+            return ResponseEntity.ok(profiles);
+        } catch (Exception e) {
+            logger.error("Error processing search jobs request", e);
+            return ResponseEntity.status(ErrorConstants.HTTP_INTERNAL_SERVER_ERROR).build();
         }
     }
 }
