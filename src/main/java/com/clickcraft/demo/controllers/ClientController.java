@@ -38,10 +38,10 @@ public class ClientController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<?> getClientProfile() {
+    public ResponseEntity<ClientProfileDTO> getClientProfile() {
         Optional<UserDetailsImpl> userDetailsOpt = getUserDetails();
         if (userDetailsOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         UserDetailsImpl userDetails = userDetailsOpt.get();
@@ -49,7 +49,7 @@ public class ClientController {
             logger.info("Received a request to fetch client profile. Logged-in Client: {} (Email: {})", userDetails.getUsername(), userDetails.getEmail());
             User user = clientProfileService.getClientByEmail(userDetails.getEmail());
             if (user == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
             ClientProfileDTO clientProfileDTO = ClientProfileDTO.fromUser(user);
@@ -57,25 +57,24 @@ public class ClientController {
             return ResponseEntity.ok(clientProfileDTO);
         } catch (UsernameNotFoundException ex) {
             logger.error("Client not found by email", ex);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             logger.error("Error fetching client profile", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-
     @PostMapping("/update")
-    public ResponseEntity<?> updateClientProfile(@Valid @RequestBody ClientProfileUpdateRequest clientProfileUpdateRequest) {
+    public ResponseEntity<ClientProfileDTO> updateClientProfile(@Valid @RequestBody ClientProfileUpdateRequest clientProfileUpdateRequest) {
         Optional<UserDetailsImpl> userDetailsOpt = getUserDetails();
         if (userDetailsOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         UserDetailsImpl userDetails = userDetailsOpt.get();
         User user = clientProfileService.getClientByEmail(userDetails.getEmail());
         if (user == null || user.getClientProfile() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client profile not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         try {
@@ -85,10 +84,10 @@ public class ClientController {
             return ResponseEntity.ok(updatedProfileDTO);
         } catch (DataAccessException ex) {
             logger.error("Error updating client profile", ex);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating client profile");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
             logger.error("Unexpected error updating client profile", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error updating client profile");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -96,37 +95,35 @@ public class ClientController {
     public ResponseEntity<Integer> countLiveClientJobPostings() {
         Optional<String> userEmailOpt = getUserEmail();
         if (userEmailOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(0);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         String userEmail = userEmailOpt.get();
         ClientProfile clientProfile = clientProfileService.getClientProfileByEmail(userEmail);
         if (clientProfile == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         int liveJobPostingCount = jobPostingService.countLiveJobPostingsByClientProfile(clientProfile);
         return ResponseEntity.ok(liveJobPostingCount);
     }
 
-
     @GetMapping("/client-job-postings/archived-count")
     public ResponseEntity<Integer> countArchivedClientJobPostings() {
         Optional<String> userEmailOpt = getUserEmail();
         if (userEmailOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(0);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         String userEmail = userEmailOpt.get();
         ClientProfile clientProfile = clientProfileService.getClientProfileByEmail(userEmail);
         if (clientProfile == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         int archivedJobPostingCount = jobPostingService.countArchivedJobPostingsByClientProfile(clientProfile);
         return ResponseEntity.ok(archivedJobPostingCount);
     }
-
 
     private Optional<UserDetailsImpl> getUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
