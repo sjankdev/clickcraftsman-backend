@@ -6,6 +6,7 @@ import com.clickcraft.demo.dto.client.ClientProfileUpdateRequest;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
+import com.clickcraft.demo.security.services.UserDetailsServiceImpl;
 import com.clickcraft.demo.service.ClientProfileService;
 import com.clickcraft.demo.service.JobPostingService;
 import jakarta.validation.Valid;
@@ -14,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,16 +29,18 @@ public class ClientController {
 
     private final ClientProfileService clientProfileService;
     private final JobPostingService jobPostingService;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
 
     @Autowired
-    public ClientController(ClientProfileService clientProfileService, JobPostingService jobPostingService) {
+    public ClientController(ClientProfileService clientProfileService, JobPostingService jobPostingService, UserDetailsServiceImpl userDetailsServiceImpl) {
         this.clientProfileService = clientProfileService;
         this.jobPostingService = jobPostingService;
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
     }
 
     @GetMapping("/profile")
     public ResponseEntity<ClientProfileDTO> getClientProfile() {
-        Optional<UserDetailsImpl> userDetailsOpt = getUserDetails();
+        Optional<UserDetailsImpl> userDetailsOpt = userDetailsServiceImpl.getUserDetails();
         if (userDetailsOpt.isEmpty()) {
             return ResponseEntity.status(ErrorConstants.HTTP_UNAUTHORIZED).build();
         }
@@ -66,7 +67,7 @@ public class ClientController {
 
     @PostMapping("/update")
     public ResponseEntity<ClientProfileDTO> updateClientProfile(@Valid @RequestBody ClientProfileUpdateRequest clientProfileUpdateRequest) {
-        Optional<UserDetailsImpl> userDetailsOpt = getUserDetails();
+        Optional<UserDetailsImpl> userDetailsOpt = userDetailsServiceImpl.getUserDetails();
         if (userDetailsOpt.isEmpty()) {
             return ResponseEntity.status(ErrorConstants.HTTP_UNAUTHORIZED).build();
         }
@@ -93,7 +94,7 @@ public class ClientController {
 
     @GetMapping("/client-job-postings/live-count")
     public ResponseEntity<Integer> countLiveClientJobPostings() {
-        Optional<String> userEmailOpt = getUserEmail();
+        Optional<String> userEmailOpt = userDetailsServiceImpl.getUserEmail();
         if (userEmailOpt.isEmpty()) {
             return ResponseEntity.status(ErrorConstants.HTTP_UNAUTHORIZED).build();
         }
@@ -110,7 +111,7 @@ public class ClientController {
 
     @GetMapping("/client-job-postings/archived-count")
     public ResponseEntity<Integer> countArchivedClientJobPostings() {
-        Optional<String> userEmailOpt = getUserEmail();
+        Optional<String> userEmailOpt = userDetailsServiceImpl.getUserEmail();
         if (userEmailOpt.isEmpty()) {
             return ResponseEntity.status(ErrorConstants.HTTP_UNAUTHORIZED).build();
         }
@@ -123,17 +124,5 @@ public class ClientController {
 
         int archivedJobPostingCount = jobPostingService.countArchivedJobPostingsByClientProfile(clientProfile);
         return ResponseEntity.ok(archivedJobPostingCount);
-    }
-
-    private Optional<UserDetailsImpl> getUserDetails() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
-            return Optional.of((UserDetailsImpl) authentication.getPrincipal());
-        }
-        return Optional.empty();
-    }
-
-    private Optional<String> getUserEmail() {
-        return getUserDetails().map(UserDetailsImpl::getEmail);
     }
 }
