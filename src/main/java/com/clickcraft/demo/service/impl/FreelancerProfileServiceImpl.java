@@ -10,9 +10,9 @@ import com.clickcraft.demo.repository.SkillRepository;
 import com.clickcraft.demo.search.FreelancerProfileSpecifications;
 import com.clickcraft.demo.security.repository.UserRepository;
 import com.clickcraft.demo.service.FreelancerProfileService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.clickcraft.demo.service.converter.FreelancerProfileConverter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,21 +23,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
-    private static final Logger logger = LoggerFactory.getLogger(FreelancerProfileServiceImpl.class);
-
     private final FreelancerProfileRepository freelancerProfileRepository;
-
+    private final FreelancerProfileConverter freelancerProfileConverter;
     private final UserRepository userRepository;
     private final SkillRepository skillRepository;
-
-    @Autowired
-    public FreelancerProfileServiceImpl(FreelancerProfileRepository freelancerProfileRepository, UserRepository userRepository, SkillRepository skillRepository) {
-        this.freelancerProfileRepository = freelancerProfileRepository;
-        this.userRepository = userRepository;
-        this.skillRepository = skillRepository;
-    }
 
     @Override
     public User getFreelancerByEmail(String email) {
@@ -57,21 +50,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
             user.setFreelancerProfile(freelancerProfile);
         }
 
-        freelancerProfile.setFirstName(freelancerProfileUpdateRequest.getFirstName());
-        freelancerProfile.setLastName(freelancerProfileUpdateRequest.getLastName());
-        freelancerProfile.setContactPhone(freelancerProfileUpdateRequest.getContactPhone());
-        freelancerProfile.setLocation(freelancerProfileUpdateRequest.getLocation());
-        freelancerProfile.setYearsOfExperience(freelancerProfileUpdateRequest.getYearsOfExperience());
-        freelancerProfile.setPortfolio(freelancerProfileUpdateRequest.getPortfolio());
-        freelancerProfile.setAboutFreelancer(freelancerProfileUpdateRequest.getAboutFreelancer());
-
-        Set<Skill> skills = freelancerProfileUpdateRequest.getSkills().stream().map(skillName -> skillRepository.findBySkillName(skillName).orElseGet(() -> {
-            Skill newSkill = new Skill(skillName);
-            skillRepository.save(newSkill);
-            return newSkill;
-        })).collect(Collectors.toSet());
-
-        freelancerProfile.setSkills(skills);
+        freelancerProfileConverter.updateFromRequest(freelancerProfile, freelancerProfileUpdateRequest);
         userRepository.save(user);
     }
 

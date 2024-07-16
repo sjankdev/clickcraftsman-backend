@@ -1,6 +1,6 @@
 package com.clickcraft.demo.controllers;
 
-import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
+import com.clickcraft.demo.constants.ErrorConstants;
 import com.clickcraft.demo.dto.job.JobApplicationRequest;
 import com.clickcraft.demo.dto.job.JobApplicationResponse;
 import com.clickcraft.demo.dto.job.JobPostingRequest;
@@ -9,17 +9,21 @@ import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.ClientProfile;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.JobApplication;
-import com.clickcraft.demo.search.JobSearchCriteria;
-import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.repository.JobApplicationRepository;
 import com.clickcraft.demo.repository.JobPostingRepository;
-import com.clickcraft.demo.service.*;
+import com.clickcraft.demo.search.JobSearchCriteria;
+import com.clickcraft.demo.security.payload.response.MessageResponse;
+import com.clickcraft.demo.service.ClientProfileService;
+import com.clickcraft.demo.service.FreelancerProfileService;
+import com.clickcraft.demo.service.JobApplicationService;
+import com.clickcraft.demo.service.JobPostingService;
+import com.clickcraft.demo.service.SkillService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -32,71 +36,55 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/job")
+@RequiredArgsConstructor
 public class JobController {
 
     private static final Logger logger = LoggerFactory.getLogger(JobController.class);
 
     private final JobPostingRepository jobPostingRepository;
-
     private final JobApplicationRepository jobApplicationRepository;
-
     private final FreelancerProfileService freelancerProfileService;
-
     private final ClientProfileService clientProfileService;
-
     private final JobPostingService jobPostingService;
-
-    private final SkillService skillService;
-
     private final JobApplicationService jobApplicationService;
 
-    @Autowired
-    public JobController(JobPostingRepository jobPostingRepository, JobApplicationRepository jobApplicationRepository, FreelancerProfileService freelancerProfileService, ClientProfileService clientProfileService, JobPostingService jobPostingService, SkillService skillService, JobApplicationService jobApplicationService) {
-        this.jobPostingRepository = jobPostingRepository;
-        this.jobApplicationRepository = jobApplicationRepository;
-        this.freelancerProfileService = freelancerProfileService;
-        this.clientProfileService = clientProfileService;
-        this.jobPostingService = jobPostingService;
-        this.skillService = skillService;
-        this.jobApplicationService = jobApplicationService;
-    }
-
     @PostMapping(value = "/apply/{jobId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> applyForJob(@PathVariable Long jobId, @RequestPart(value = "resumeFile", required = false) MultipartFile resumeFile, @Valid @ModelAttribute JobApplicationRequest applicationRequest, Authentication authentication) {
+    public ResponseEntity<MessageResponse> applyForJob(@PathVariable Long jobId, @RequestPart(value = "resumeFile", required = false) MultipartFile resumeFile, @Valid @ModelAttribute JobApplicationRequest applicationRequest, Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated.");
+            return ResponseEntity.status(ErrorConstants.HTTP_UNAUTHORIZED).body(new MessageResponse("User not authenticated."));
         }
 
         String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
 
         try {
             jobApplicationService.applyForJob(jobId, userEmail, resumeFile, applicationRequest);
-            return ResponseEntity.ok("Job application submitted successfully");
+            return ResponseEntity.ok(new MessageResponse("Job application submitted successfully"));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(ErrorConstants.HTTP_BAD_REQUEST).body(new MessageResponse(e.getMessage()));
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to process file upload", e);
+            throw new ResponseStatusException(ErrorConstants.HTTP_INTERNAL_SERVER_ERROR, "Failed to process file upload", e);
         }
     }
 
     @GetMapping("/applied-jobs")
     public ResponseEntity<List<Long>> getAppliedJobs(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
+            return ResponseEntity.status(ErrorConstants.HTTP_UNAUTHORIZED).body(Collections.emptyList());
         }
 
         String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
         FreelancerProfile freelancerProfile = freelancerProfileService.getFreelancerProfileByEmail(userEmail);
 
         if (freelancerProfile == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+            return ResponseEntity.status(ErrorConstants.HTTP_NOT_FOUND).body(Collections.emptyList());
         }
 
         List<Long> appliedJobIds = jobApplicationRepository.findAppliedJobIdsByFreelancerProfile(freelancerProfile);
@@ -107,7 +95,7 @@ public class JobController {
     @GetMapping("/client-received-applications")
     public ResponseEntity<List<JobApplicationResponse>> getClientJobApplications(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
+            return ResponseEntity.status(ErrorConstants.HTTP_UNAUTHORIZED).body(Collections.emptyList());
         }
 
         String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
@@ -115,7 +103,7 @@ public class JobController {
         ClientProfile clientProfile = clientProfileService.getClientProfileByEmail(userEmail);
 
         if (clientProfile == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+            return ResponseEntity.status(ErrorConstants.HTTP_NOT_FOUND).body(Collections.emptyList());
         }
 
         List<JobApplication> clientJobApplications = jobApplicationRepository.findClientJobApplications(clientProfile);
@@ -157,7 +145,7 @@ public class JobController {
             return ResponseEntity.ok(responseList);
         } catch (Exception e) {
             logger.error("Error fetching job applications for job {}", jobId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(ErrorConstants.HTTP_INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -170,11 +158,11 @@ public class JobController {
                 JobPostingResponse response = JobPostingResponse.fromEntity(jobPosting);
                 return ResponseEntity.ok(response);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
             logger.error("Error fetching job details for job {}", jobId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(ErrorConstants.HTTP_INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -200,7 +188,7 @@ public class JobController {
             jobPostingService.saveJobPosting(jobPosting);
             return ResponseEntity.ok(new MessageResponse("Job posted successfully!"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Failed to post job. Please try again later."));
+            return ResponseEntity.status(ErrorConstants.HTTP_INTERNAL_SERVER_ERROR).body(new MessageResponse("Failed to post job. Please try again later."));
         }
     }
 
@@ -231,26 +219,26 @@ public class JobController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteJobPosting(@PathVariable("id") Long id) {
+    public ResponseEntity<MessageResponse> deleteJobPosting(@PathVariable("id") Long id) {
         jobPostingService.deleteJobPosting(id);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/archive/{id}")
-    public ResponseEntity<?> archiveJob(@PathVariable Long id) {
+    public ResponseEntity<MessageResponse> archiveJob(@PathVariable Long id) {
         Optional<ClientJobPosting> optionalJobPosting = jobPostingRepository.findById(id);
         if (optionalJobPosting.isPresent()) {
             ClientJobPosting jobPosting = optionalJobPosting.get();
             jobPosting.setArchived(true);
             jobPostingRepository.save(jobPosting);
-            return ResponseEntity.ok(new MessageResponse("Job archived successfully."));
+            return ResponseEntity.ok(new MessageResponse("Job archived successfully"));
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PutMapping("/unarchive/{id}")
-    public ResponseEntity<?> unarchiveJob(@PathVariable Long id) {
+    public ResponseEntity<MessageResponse> unarchiveJob(@PathVariable Long id) {
         Optional<ClientJobPosting> optionalJobPosting = jobPostingRepository.findById(id);
         if (optionalJobPosting.isPresent()) {
             ClientJobPosting jobPosting = optionalJobPosting.get();
@@ -272,7 +260,7 @@ public class JobController {
             return ResponseEntity.ok(profiles);
         } catch (Exception e) {
             logger.error("Error processing search jobs request", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(ErrorConstants.HTTP_INTERNAL_SERVER_ERROR).build();
         }
     }
 }

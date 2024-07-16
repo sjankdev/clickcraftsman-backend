@@ -8,36 +8,31 @@ import com.clickcraft.demo.repository.JobApplicationRepository;
 import com.clickcraft.demo.repository.JobPostingRepository;
 import com.clickcraft.demo.service.FreelancerProfileService;
 import com.clickcraft.demo.service.JobApplicationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.*;
-
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class JobApplicationServiceImpl implements JobApplicationService {
 
     private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<>(List.of("pdf", "doc", "docx", "txt"));
     private static final int MAX_FILE_SIZE = 10 * 1024 * 1024;
+
     private final FreelancerProfileService freelancerProfileService;
     private final JobPostingRepository jobPostingRepository;
     private final JobApplicationRepository jobApplicationRepository;
 
-    @Autowired
-    public JobApplicationServiceImpl(FreelancerProfileService freelancerProfileService, JobPostingRepository jobPostingRepository, JobApplicationRepository jobApplicationRepository) {
-        this.freelancerProfileService = freelancerProfileService;
-        this.jobPostingRepository = jobPostingRepository;
-        this.jobApplicationRepository = jobApplicationRepository;
-    }
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void applyForJob(Long jobId, String userEmail, MultipartFile resumeFile, JobApplicationRequest applicationRequest) throws IOException {
-        ClientJobPosting jobPosting = jobPostingRepository.findById(jobId)
-                .orElseThrow(() -> new IllegalArgumentException("Job posting not found with ID: " + jobId));
+        ClientJobPosting jobPosting = jobPostingRepository.findById(jobId).orElseThrow(() -> new IllegalArgumentException("Job posting not found with ID: " + jobId));
 
         FreelancerProfile freelancerProfile = freelancerProfileService.getFreelancerProfileByEmail(userEmail);
         if (freelancerProfile == null) {
