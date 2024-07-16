@@ -10,6 +10,7 @@ import com.clickcraft.demo.repository.SkillRepository;
 import com.clickcraft.demo.search.FreelancerProfileSpecifications;
 import com.clickcraft.demo.security.repository.UserRepository;
 import com.clickcraft.demo.service.FreelancerProfileService;
+import com.clickcraft.demo.service.converter.FreelancerProfileConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
     private final FreelancerProfileRepository freelancerProfileRepository;
+    private final FreelancerProfileConverter freelancerProfileConverter;
     private final UserRepository userRepository;
     private final SkillRepository skillRepository;
 
@@ -48,21 +50,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
             user.setFreelancerProfile(freelancerProfile);
         }
 
-        freelancerProfile.setFirstName(freelancerProfileUpdateRequest.getFirstName());
-        freelancerProfile.setLastName(freelancerProfileUpdateRequest.getLastName());
-        freelancerProfile.setContactPhone(freelancerProfileUpdateRequest.getContactPhone());
-        freelancerProfile.setLocation(freelancerProfileUpdateRequest.getLocation());
-        freelancerProfile.setYearsOfExperience(freelancerProfileUpdateRequest.getYearsOfExperience());
-        freelancerProfile.setPortfolio(freelancerProfileUpdateRequest.getPortfolio());
-        freelancerProfile.setAboutFreelancer(freelancerProfileUpdateRequest.getAboutFreelancer());
-
-        Set<Skill> skills = freelancerProfileUpdateRequest.getSkills().stream().map(skillName -> skillRepository.findBySkillName(skillName).orElseGet(() -> {
-            Skill newSkill = new Skill(skillName);
-            skillRepository.save(newSkill);
-            return newSkill;
-        })).collect(Collectors.toSet());
-
-        freelancerProfile.setSkills(skills);
+        freelancerProfileConverter.updateFromRequest(freelancerProfile, freelancerProfileUpdateRequest);
         userRepository.save(user);
     }
 
