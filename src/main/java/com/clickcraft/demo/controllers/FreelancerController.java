@@ -3,6 +3,7 @@ package com.clickcraft.demo.controllers;
 import com.clickcraft.demo.constants.ErrorConstants;
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileUpdateRequest;
+import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.security.payload.response.MessageResponse;
 import com.clickcraft.demo.security.services.UserDetailsImpl;
@@ -116,5 +117,10 @@ public class FreelancerController {
             logger.error(ErrorConstants.ERROR_UNEXPECTED, e);
             return ResponseEntity.status(ErrorConstants.HTTP_INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/{freelancerId}/recommended-jobs")
+    public List<ClientJobPosting> getRecommendedJobs(@PathVariable Long freelancerId) {
+        return freelancerProfileService.findMatchingJobs(freelancerId);
     }
 }

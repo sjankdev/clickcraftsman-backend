@@ -2,6 +2,7 @@ package com.clickcraft.demo.service;
 
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileUpdateRequest;
+import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.models.enums.ELocations;
@@ -28,5 +29,7 @@ public interface FreelancerProfileService {
     byte[] getProfilePictureData(Long freelancerId);
 
     List<FreelancerProfileDTO> searchProfiles(Map<String, String> params);
+
+    public List<ClientJobPosting> findMatchingJobs(Long freelancerId);
 
 }
