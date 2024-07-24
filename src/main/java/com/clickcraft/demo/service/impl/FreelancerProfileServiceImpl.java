@@ -2,19 +2,23 @@ package com.clickcraft.demo.service.impl;
 
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileDTO;
 import com.clickcraft.demo.dto.freelancer.FreelancerProfileUpdateRequest;
+import com.clickcraft.demo.models.ClientJobPosting;
 import com.clickcraft.demo.models.FreelancerProfile;
 import com.clickcraft.demo.models.Skill;
 import com.clickcraft.demo.models.User;
 import com.clickcraft.demo.repository.FreelancerProfileRepository;
+import com.clickcraft.demo.repository.JobPostingRepository;
 import com.clickcraft.demo.repository.SkillRepository;
 import com.clickcraft.demo.search.FreelancerProfileSpecifications;
 import com.clickcraft.demo.security.repository.UserRepository;
+import com.clickcraft.demo.security.services.UserDetailsImpl;
 import com.clickcraft.demo.service.FreelancerProfileService;
 import com.clickcraft.demo.service.converter.FreelancerProfileConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +35,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     private final FreelancerProfileConverter freelancerProfileConverter;
     private final UserRepository userRepository;
     private final SkillRepository skillRepository;
+    private final JobPostingRepository jobPostingRepository;
 
     @Override
     public User getFreelancerByEmail(String email) {
@@ -89,8 +94,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
     @Override
     public byte[] getProfilePictureData(Long freelancerId) {
-        FreelancerProfile freelancerProfile = freelancerProfileRepository.findById(freelancerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
+        FreelancerProfile freelancerProfile = freelancerProfileRepository.findById(freelancerId).orElseThrow(() -> new ResourceNotFoundException("Freelancer Profile not found with id: " + freelancerId));
 
         User user = freelancerProfile.getUser();
         return user != null ? user.getProfilePictureData() : null;
@@ -101,6 +105,25 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         Specification<FreelancerProfile> spec = FreelancerProfileSpecifications.buildSpecification(params);
         List<FreelancerProfile> profiles = freelancerProfileRepository.findAll(spec);
         return profiles.stream().map(this::convertToFreelancerProfileDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ClientJobPosting> findMatchingJobs(Long freelancerId) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = userDetails.getEmail();
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Freelancer not found with email: " + email));
+
+        FreelancerProfile freelancerProfile = user.getFreelancerProfile();
+        if (freelancerProfile == null) {
+            throw new ResourceNotFoundException("Freelancer Profile not found for user with email: " + email);
+        }
+
+        Set<Long> freelancerSkillIds = freelancerProfile.getSkills().stream().map(Skill::getId).collect(Collectors.toSet());
+
+        List<ClientJobPosting> allJobs = jobPostingRepository.findAll();
+
+        return allJobs.stream().filter(job -> job.getRequiredSkills().stream().anyMatch(skill -> freelancerSkillIds.contains(skill.getId()))).collect(Collectors.toList());
     }
 
     private FreelancerProfileDTO convertToFreelancerProfileDTO(FreelancerProfile freelancerProfile) {
